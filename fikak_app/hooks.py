@@ -153,9 +153,10 @@ app_license = "MIT"
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "fikak_app.event.get_events"
-# }
+
+override_whitelisted_methods = {
+	"api.handler.nafath_callback": "fikak_app.fikak_api.integrations_api.nafath_callback",
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

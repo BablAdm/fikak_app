@@ -92,20 +92,70 @@ def generate_request_id():
 @frappe.whitelist(allow_guest = True)
 def nafath_callback(token , transId , requestId):
     try:
-        token_decoded = decode_jwt_token(token)
-        if token_decoded.get('error'):
-            return token_decoded
+        decoded_token = decode_jwt_token(token)
+        if decoded_token.get('error'):
+            return decoded_token
+        
+        user_doc = insert_user_data(decoded_token)
+        insert_personal_data(user_doc , decoded_token)
         request_doc = frappe.get_doc("NAFATH Request" , {"transaction_id" : transId })
-        request_doc.request_jwt_decoded = token_decoded
+        request_doc.request_jwt_decoded = decoded_token
         request_doc.request_token = token
         request_doc.save(ignore_permissions=True)
         return {
             "status" : True,
-            "data": token_decoded,
+            "data": decoded_token,
             "message" : "Request updated successfully"
         } 
     except Exception as e:
         return str(e)
+
+@frappe.whitelist(allow_guest=True)
+def check_request_status(national_id , tansaction_id , random ):
+
+    nafath_settings = frappe.get_single('NAFATH Settings')
+    response = check_request(national_id , tansaction_id, random , nafath_settings.api_url , nafath_settings.get_password('app_id') ,nafath_settings.get_password('app_key'))
+    frappe.local.response.http_status_code = response[0]
+    return response[1]
+
+def check_request(national_id , tansaction_id , random , endpoint, app_id , app_key):
+    try:
+        # Define the JSON body
+        payload = {
+            "nationalId":national_id,
+            "transId": tansaction_id,
+            "random": random
+        }
+
+        # Define headers if required (e.g., authentication headers)
+        headers = {
+            "Content-Type": "application/json",
+            "APP-ID": app_id,  # Replace with the actual token
+            "APP-KEY" : app_key
+        }
+
+        # Make the POST request
+        response = requests.post(endpoint +"/api/v1/mfa/request/status",  json=payload, headers=headers)
+        if response.status_code in (200 , 201):
+            return 200 , {
+                "status" : True,
+                "data" : response.json(),
+            }
+        else:
+            frappe.log_error(frappe.get_traceback(), " Nafath request error : " + response.text)
+            
+            return 500 , {
+                "status" : False,
+                "message": _(REQUEST_ERRORS[response.json()['code']])
+            }
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(),"Nafath exception : " + str(e))
+        return 500 , {
+            "status" : False,
+            "message": str(e)
+        }
+
+
 
 def decode_jwt_token(token):
     try:
@@ -118,3 +168,56 @@ def decode_jwt_token(token):
     except jwt.InvalidTokenError as e:
         frappe.throw(f"Invalid token: {str(e)}")
 
+def insert_user_data(nafath_data):
+    user_exists = frappe.db.exists("User" , {"username" : nafath_data['nin']})
+    if not user_exists:
+        user = frappe.new_doc("User")
+        user.last_name = nafath_data['familyName']
+        user.first_name = nafath_data['firstName']
+        formatted_date = datetime.strptime(nafath_data['dateOfBirthG'], "%d-%m-%Y").strftime("%Y-%m-%d")
+        user.birth_date = formatted_date
+        user.username = nafath_data['nin']
+        user.email = nafath_data['nin'] + "@waseera.sa"
+        user.save(ignore_permissions=True)
+        return user.name
+    else:
+        return user_exists
+
+
+def insert_personal_data(user_name , nafath_data):
+    try:
+        if not frappe.db.exists("Person Data" , {"user" : user_name}):
+            personal_data = frappe.new_doc("Person Data")
+            formatted_date = datetime.strptime(nafath_data['dateOfBirthG'], "%d-%m-%Y").strftime("%Y-%m-%d")
+            personal_data.birth_date = formatted_date
+            personal_data.user = user_name
+            
+            personal_data.first_name = nafath_data['firstName']
+            personal_data.last_name = nafath_data['familyName']
+            personal_data.nin = nafath_data['nin']
+            personal_data.user_type = "B2C User"
+            personal_data.grand_father_name = nafath_data['grandFatherName']
+            personal_data.second_name = nafath_data['fatherName']
+            
+            # personal_data.nationality = nafath_data['nationality'] 
+            personal_data.father_name = nafath_data['fatherName']
+            personal_data.english_third_name = nafath_data['englishThirdName']
+            personal_data.gender = "Male" if nafath_data['gender'] == "M" else "Female"
+            personal_data.nationality_code = nafath_data["nationalityCode"]
+            personal_data.exp = nafath_data["exp"]
+            personal_data.street = nafath_data["nationalAddress"][0]["streetName"]
+            if not frappe.db.exists("City" , nafath_data["nationalAddress"][0]["city"]):
+                city = frappe.new_doc("City")
+                city.city_name = nafath_data["nationalAddress"][0]["city"]
+                city.save(ignore_permissions=True)
+
+            personal_data.city = nafath_data["nationalAddress"][0]["city"]
+            personal_data.region_name = nafath_data["nationalAddress"][0]["regionName"]
+            personal_data.additional_number = nafath_data["nationalAddress"][0]["additionalNumber"]
+            personal_data.building_number = nafath_data["nationalAddress"][0]["buildingNumber"]
+            personal_data.post_code = nafath_data["nationalAddress"][0]["postCode"]
+            personal_data.district = nafath_data["nationalAddress"][0]["district"]
+            personal_data.save(ignore_permissions=True)
+            return personal_data
+    except Exception as e:
+        frappe.throw(str(e))
