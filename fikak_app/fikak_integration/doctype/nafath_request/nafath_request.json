@@ -1,0 +1,91 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2024-10-22 14:05:48.778943",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "national_id",
+  "request_id",
+  "transaction_id",
+  "random",
+  "request_jwt_decoded",
+  "request_token",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "national_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "National ID",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "request_id",
+   "fieldtype": "Data",
+   "label": "Request ID",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "transaction_id",
+   "fieldtype": "Data",
+   "label": "Transaction ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "random",
+   "fieldtype": "Data",
+   "label": "Random",
+   "read_only": 1
+  },
+  {
+   "fieldname": "request_jwt_decoded",
+   "fieldtype": "JSON",
+   "label": "Request JWT Decoded",
+   "read_only": 1
+  },
+  {
+   "fieldname": "request_token",
+   "fieldtype": "Long Text",
+   "label": "Request Token",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "WAITING\nCOMPLETED\nREJECTED\nEXPIRED"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-10-22 22:58:25.145003",
+ "modified_by": "Administrator",
+ "module": "Fikak Integration",
+ "name": "NAFATH Request",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

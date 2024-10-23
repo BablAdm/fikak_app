@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-22 14:00:55.506859",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "app_id",
+  "app_key",
+  "is_enabled",
+  "api_url"
+ ],
+ "fields": [
+  {
+   "fieldname": "app_id",
+   "fieldtype": "Password",
+   "in_list_view": 1,
+   "label": "APP ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "app_key",
+   "fieldtype": "Password",
+   "in_list_view": 1,
+   "label": "APP KEY",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_enabled",
+   "fieldtype": "Check",
+   "label": "Is Enabled?"
+  },
+  {
+   "fieldname": "api_url",
+   "fieldtype": "Data",
+   "label": "API Url",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-10-22 15:41:13.932248",
+ "modified_by": "Administrator",
+ "module": "Fikak Integration",
+ "name": "NAFATH Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

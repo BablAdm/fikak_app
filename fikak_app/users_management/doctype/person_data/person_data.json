@@ -1,0 +1,200 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{user}",
+ "creation": "2024-10-23 18:23:33.616159",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "personal_date_section",
+  "user_type",
+  "first_name",
+  "second_name",
+  "grand_father_name",
+  "birth_date",
+  "nationality",
+  "nin",
+  "column_break_crc1e",
+  "user",
+  "last_name",
+  "father_name",
+  "english_third_name",
+  "gender",
+  "nationality_code",
+  "exp",
+  "address_details_section",
+  "street",
+  "city",
+  "region_name",
+  "additional_number",
+  "column_break_gzvxo",
+  "building_number",
+  "post_code",
+  "district"
+ ],
+ "fields": [
+  {
+   "fieldname": "personal_date_section",
+   "fieldtype": "Section Break",
+   "label": "Personal Date"
+  },
+  {
+   "fieldname": "user_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "User Type",
+   "options": "B2C User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "First Name",
+   "reqd": 1,
+   "translatable": 1
+  },
+  {
+   "fieldname": "second_name",
+   "fieldtype": "Data",
+   "label": "Second Name"
+  },
+  {
+   "fieldname": "grand_father_name",
+   "fieldtype": "Data",
+   "label": "Grand Father Name"
+  },
+  {
+   "fieldname": "birth_date",
+   "fieldtype": "Date",
+   "label": "Birth Date"
+  },
+  {
+   "fieldname": "nin",
+   "fieldtype": "Data",
+   "label": "NIN"
+  },
+  {
+   "fieldname": "column_break_crc1e",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User",
+   "unique": 1
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Last Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "father_name",
+   "fieldtype": "Data",
+   "label": "Father Name"
+  },
+  {
+   "fieldname": "english_third_name",
+   "fieldtype": "Data",
+   "label": "English Third Name"
+  },
+  {
+   "fieldname": "gender",
+   "fieldtype": "Link",
+   "label": "Gender",
+   "options": "Gender"
+  },
+  {
+   "fieldname": "nationality_code",
+   "fieldtype": "Int",
+   "label": "Nationality Code"
+  },
+  {
+   "fieldname": "exp",
+   "fieldtype": "Data",
+   "label": "Exp"
+  },
+  {
+   "fieldname": "address_details_section",
+   "fieldtype": "Section Break",
+   "label": "Address Details"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Link",
+   "label": "City",
+   "options": "City"
+  },
+  {
+   "fieldname": "region_name",
+   "fieldtype": "Data",
+   "label": "Region Name"
+  },
+  {
+   "fieldname": "additional_number",
+   "fieldtype": "Data",
+   "label": "Additional Number"
+  },
+  {
+   "fieldname": "street",
+   "fieldtype": "Data",
+   "label": "Street"
+  },
+  {
+   "fieldname": "building_number",
+   "fieldtype": "Data",
+   "label": "Building Number"
+  },
+  {
+   "fieldname": "post_code",
+   "fieldtype": "Data",
+   "label": "Post Code"
+  },
+  {
+   "fieldname": "district",
+   "fieldtype": "Data",
+   "label": "District"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Link",
+   "label": "Nationality",
+   "options": "Country"
+  },
+  {
+   "fieldname": "column_break_gzvxo",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-10-23 19:35:45.626337",
+ "modified_by": "Administrator",
+ "module": "Users Management",
+ "name": "Person Data",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
