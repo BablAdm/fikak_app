@@ -16,9 +16,8 @@ def custom_login(email, password):
         login_manager = frappe.auth.LoginManager()
         login_manager.authenticate(user=email, pwd=password)
 
-        print(frappe.session.user , "ssssssssssssssssssss")
         login_manager.post_login()
-        bearer_token = generate_jwt_token(email)
+        bearer_token = generate_jwt_token(email)[:130]
         store_bearer_token_in_frappe(email, bearer_token)
         # If login is successful, return a success response
         return {
