@@ -112,11 +112,20 @@ def nafath_callback(token , transId , requestId):
 
 @frappe.whitelist(allow_guest=True)
 def check_request_status(national_id , tansaction_id , random ):
-
     nafath_settings = frappe.get_single('NAFATH Settings')
     response = check_request(national_id , tansaction_id, random , nafath_settings.api_url , nafath_settings.get_password('app_id') ,nafath_settings.get_password('app_key'))
+    if response[1]['status']:
+        if response[1]['data']['status'] != "WAITING":
+            update_request_status(national_id , tansaction_id , response[1]['data']['status'])
     frappe.local.response.http_status_code = response[0]
     return response[1]
+
+def update_request_status(national_id , tansaction_id , status):
+    request_record = frappe.get_doc("NAFATH Request" , {"national_id" : national_id , "transaction_id" : tansaction_id})
+    if request_record.status != status:
+        request_record.status = status
+        request_record.save(ignore_permissions=True)
+    
 
 def check_request(national_id , tansaction_id , random , endpoint, app_id , app_key):
     try:
@@ -221,3 +230,10 @@ def insert_personal_data(user_name , nafath_data):
             return personal_data
     except Exception as e:
         frappe.throw(str(e))
+
+@frappe.whitelist(allow_guest=True)
+def get_user_data(national_id , random , transaction_id):
+    user_data = frappe.get_doc("Person Data" , {"nin" : national_id})
+    if not frappe.db.exists("NAFAth Request" , {"national_id" : national_id , "transaction_id" : transaction_id , "random" : random}):
+        frappe.throw("Request not found")
+    return user_data
