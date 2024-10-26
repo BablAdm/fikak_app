@@ -112,14 +112,24 @@ def nafath_callback(token , transId , requestId):
 
 @frappe.whitelist(allow_guest=True)
 def check_request_status(national_id , tansaction_id , random ):
-    nafath_settings = frappe.get_single('NAFATH Settings')
-    response = check_request(national_id , tansaction_id, random , nafath_settings.api_url , nafath_settings.get_password('app_id') ,nafath_settings.get_password('app_key'))
-    if response[1]['status']:
-        if response[1]['data']['status'] != "WAITING":
-            update_request_status(national_id , tansaction_id , response[1]['data']['status'])
-    frappe.local.response.http_status_code = response[0]
-    return response[1]
-
+    try:
+        nafath_settings = frappe.get_single('NAFATH Settings')
+        response = check_request(national_id , tansaction_id, random , nafath_settings.api_url , nafath_settings.get_password('app_id') ,nafath_settings.get_password('app_key'))
+        if response[1]['status']:
+            if response[1]['data']['status'] != "WAITING":
+                update_request_status(national_id , tansaction_id , response[1]['data']['status'])
+        frappe.local.response.http_status_code = response[0]
+        return {
+            "data" : {
+                "status" : "COMPLETED"
+            }
+        }
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(),"Nafath exception : " + str(e))
+        return {
+            "status" : False,
+            "message": str(e)
+        }
 def update_request_status(national_id , tansaction_id , status):
     request_record = frappe.get_doc("NAFATH Request" , {"national_id" : national_id , "transaction_id" : tansaction_id})
     if request_record.status != status:
