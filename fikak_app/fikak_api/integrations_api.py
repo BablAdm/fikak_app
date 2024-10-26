@@ -36,6 +36,7 @@ def creat_new_nafath_request(national_id , request_id , endpoint , app_id , app_
 
         # Make the POST request
         response = requests.post(endpoint +"/api/v1/mfa/request", params=params, json=payload, headers=headers)
+        
         if response.status_code in (200 , 201):
             return 200 , {
                 "status" : True,
@@ -43,10 +44,13 @@ def creat_new_nafath_request(national_id , request_id , endpoint , app_id , app_
             }
         else:
             frappe.log_error(frappe.get_traceback(), " Nafath request error : " + response.text)
-            
+            try:
+                error =  _(REQUEST_ERRORS[response.json()['code']])
+            except :
+                error = response.text
             return 500 , {
                 "status" : False,
-                "message": _(REQUEST_ERRORS[response.json()['code']])
+                "message": error
             }
     except Exception as e:
         frappe.log_error(frappe.get_traceback(),"Nafath exception : " + str(e))
@@ -65,17 +69,23 @@ def create_new_nafath_request(national_id , request_id):
 
 @frappe.whitelist(allow_guest=True)
 def generate_nafath_transaction(national_id):
-    request_id = generate_request_id()
-    request_doc = create_new_nafath_request(national_id , request_id)
-    nafath_settings = frappe.get_single('NAFATH Settings')
-    response = creat_new_nafath_request(national_id , request_id , nafath_settings.api_url , nafath_settings.get_password('app_id') ,nafath_settings.get_password('app_key'))
-    if response[1]['status']:
-        request_doc.transaction_id = response[1]['data']['transId']
-        request_doc.random = response[1]['data']['random']
-        request_doc.save()
-    frappe.local.response.http_status_code = response[0]
-    return response[1]
-    
+    try:
+        request_id = generate_request_id()
+        request_doc = create_new_nafath_request(national_id , request_id)
+        nafath_settings = frappe.get_single('NAFATH Settings')
+        response = creat_new_nafath_request(national_id , request_id , nafath_settings.api_url , nafath_settings.get_password('app_id') ,nafath_settings.get_password('app_key'))
+        if response[1]['status']:
+            request_doc.transaction_id = response[1]['data']['transId']
+            request_doc.random = response[1]['data']['random']
+            request_doc.save()
+        frappe.local.response.http_status_code = response[0]
+        return response[1]
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(),"Nafath exception : " + str(e))
+        return {
+            "status" : False,
+            "message": str(e)
+        }
 
 def generate_request_id():
     # Generate a UUID
