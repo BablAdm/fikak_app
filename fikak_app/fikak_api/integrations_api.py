@@ -96,8 +96,13 @@ def nafath_callback(token , transId , requestId):
         if decoded_token.get('error'):
             return decoded_token
         
+        if decoded_token.get("status") == "REJECTED":
+            update_request_status(transId , requestId ,"REJECTED")
+            return
+
         user_doc = insert_user_data(decoded_token)
         insert_personal_data(user_doc , decoded_token)
+        update_request_status(transId , requestId , "COMPLETED")
         request_doc = frappe.get_doc("NAFATH Request" , {"transaction_id" : transId })
         request_doc.request_jwt_decoded = decoded_token
         request_doc.request_token = token
@@ -113,25 +118,26 @@ def nafath_callback(token , transId , requestId):
 @frappe.whitelist(allow_guest=True)
 def check_request_status(national_id , tansaction_id , random ):
     try:
-        nafath_settings = frappe.get_single('NAFATH Settings')
-        response = check_request(national_id , tansaction_id, random , nafath_settings.api_url , nafath_settings.get_password('app_id') ,nafath_settings.get_password('app_key'))
-        if response[1]['status']:
-            if response[1]['data']['status'] != "WAITING":
-                update_request_status(national_id , tansaction_id , response[1]['data']['status'])
-        frappe.local.response.http_status_code = response[0]
+        # nafath_settings = frappe.get_single('NAFATH Settings')
+        #response = check_request(national_id , tansaction_id, random , nafath_settings.api_url , nafath_settings.get_password('app_id') ,nafath_settings.get_password('app_key'))
+        # frappe.local.response.http_status_code = response[0]
+        # return response[1]
+        request_record = frappe.get_doc("NAFATH Request" , {  "transaction_id" : tansaction_id , "random" : random})
         return {
+            "status" : True,
             "data" : {
-                "status" : "COMPLETED"
+                "status" : request_record.status
             }
         }
+        
     except Exception as e:
         frappe.log_error(frappe.get_traceback(),"Nafath exception : " + str(e))
         return {
             "status" : False,
             "message": str(e)
         }
-def update_request_status(national_id , tansaction_id , status):
-    request_record = frappe.get_doc("NAFATH Request" , {"national_id" : national_id , "transaction_id" : tansaction_id})
+def update_request_status(tansaction_id ,request_id , status):
+    request_record = frappe.get_doc("NAFATH Request" , {"request_id" : request_id , "transaction_id" : tansaction_id})
     if request_record.status != status:
         request_record.status = status
         request_record.save(ignore_permissions=True)
@@ -156,16 +162,16 @@ def check_request(national_id , tansaction_id , random , endpoint, app_id , app_
         # Make the POST request
         response = requests.post(endpoint +"/api/v1/mfa/request/status",  json=payload, headers=headers)
         if response.status_code in (200 , 201):
-            return 200 , {
+            return response.status_code , {
                 "status" : True,
                 "data" : response.json(),
             }
         else:
             frappe.log_error(frappe.get_traceback(), " Nafath request error : " + response.text)
             
-            return 500 , {
+            return response.status_code   , {
                 "status" : False,
-                "message": _(REQUEST_ERRORS[response.json()['code']])
+                "message": _(REQUEST_ERRORS[response.text])
             }
     except Exception as e:
         frappe.log_error(frappe.get_traceback(),"Nafath exception : " + str(e))
