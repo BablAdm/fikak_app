@@ -90,23 +90,26 @@ def generate_request_id():
     return request_id
 
 @frappe.whitelist(allow_guest = True)
-def nafath_callback(token , transId , requestId):
+def nafath_callback(token , transId , requestId , national_id = None):
     try:
         decoded_token = decode_jwt_token(token)
         if decoded_token.get('error'):
             return decoded_token
-        
+        if national_id:
+            decoded_token['nin'] = national_id
         if decoded_token.get("status") == "REJECTED":
             update_request_status(transId , requestId ,"REJECTED")
             return
 
         user_doc = insert_user_data(decoded_token)
+        
         insert_personal_data(user_doc , decoded_token)
         update_request_status(transId , requestId , "COMPLETED")
         request_doc = frappe.get_doc("NAFATH Request" , {"transaction_id" : transId })
         request_doc.request_jwt_decoded = decoded_token
         request_doc.request_token = token
         request_doc.save(ignore_permissions=True)
+        frappe.db.commit()
         return {
             "status" : True,
             "data": decoded_token,
@@ -250,6 +253,6 @@ def insert_personal_data(user_name , nafath_data):
 @frappe.whitelist(allow_guest=True)
 def get_user_data(national_id , random , transaction_id):
     user_data = frappe.get_doc("Person Data" , {"nin" : national_id})
-    if not frappe.db.exists("NAFAth Request" , {"national_id" : national_id , "transaction_id" : transaction_id , "random" : random}):
+    if not frappe.db.exists("NAFATH Request" , {"national_id" : national_id , "transaction_id" : transaction_id , "random" : random}):
         frappe.throw("Request not found")
     return user_data
