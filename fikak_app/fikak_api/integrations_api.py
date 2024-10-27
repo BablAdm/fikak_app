@@ -217,15 +217,15 @@ def decode_jwt_token(token):
         frappe.throw(f"Invalid token: {str(e)}")
 
 def insert_user_data(nafath_data):
-    user_exists = frappe.db.exists("User" , {"username" : nafath_data['PersonId']})
+    user_exists = frappe.db.exists("User" , {"username" : str(nafath_data['PersonId'])})
     if not user_exists:
         user = frappe.new_doc("User")
-        user.last_name = nafath_data['familyName']
+        user.last_name = nafath_data.get('familyName') or nafath_data.get('lastName')
         user.first_name = nafath_data['firstName']
         formatted_date = datetime.strptime(nafath_data['dateOfBirthG'], "%d-%m-%Y").strftime("%Y-%m-%d")
         user.birth_date = formatted_date
-        user.username = nafath_data['PersonId']
-        user.email = nafath_data['PersonId'] + "@waseera.sa"
+        user.username = str(nafath_data['PersonId'])
+        user.email = str(nafath_data['PersonId']) + "@waseera.sa"
         user.save(ignore_permissions=True)
         return user.name
     else:
@@ -240,31 +240,31 @@ def insert_personal_data(user_name , nafath_data):
             personal_data.birth_date = formatted_date
             personal_data.user = user_name
             
-            personal_data.first_name = nafath_data['firstName']
-            personal_data.last_name = nafath_data['familyName']
-            personal_data.nin = nafath_data['PersonId']
+            personal_data.first_name = nafath_data.get('firstName')
+            personal_data.last_name = nafath_data.get('familyName') or nafath_data.get('lastName')
+            personal_data.nin = nafath_data.get('PersonId')
             personal_data.user_type = "B2C User"
-            personal_data.grand_father_name = nafath_data['grandFatherName']
-            personal_data.second_name = nafath_data['fatherName']
+            personal_data.grand_father_name = nafath_data.get('grandFatherName')
+            personal_data.second_name = nafath_data.get('fatherName')
             
             # personal_data.nationality = nafath_data['nationality'] 
-            personal_data.father_name = nafath_data['fatherName']
-            personal_data.english_third_name = nafath_data['englishThirdName']
-            personal_data.gender = "Male" if nafath_data['gender'] == "M" else "Female"
-            personal_data.nationality_code = nafath_data["nationalityCode"]
-            personal_data.exp = nafath_data["exp"]
-            personal_data.street = nafath_data["nationalAddress"][0]["streetName"]
-            if not frappe.db.exists("City" , nafath_data["nationalAddress"][0]["city"]):
+            personal_data.father_name = nafath_data.get('fatherName')
+            personal_data.english_third_name = nafath_data.get('englishThirdName')
+            personal_data.gender = "Male" if nafath_data.get('gender') == "M" else "Female"
+            personal_data.nationality_code = nafath_data.get("nationalityCode")
+            personal_data.exp = nafath_data.get("exp")
+            personal_data.street = nafath_data["nationalAddress"][0].get("streetName")
+            if not frappe.db.exists("City" , nafath_data["nationalAddress"][0].get("city")):
                 city = frappe.new_doc("City")
-                city.city_name = nafath_data["nationalAddress"][0]["city"]
+                city.city_name = nafath_data["nationalAddress"][0].get("city")
                 city.save(ignore_permissions=True)
 
-            personal_data.city = nafath_data["nationalAddress"][0]["city"]
-            personal_data.region_name = nafath_data["nationalAddress"][0]["regionName"]
-            personal_data.additional_number = nafath_data["nationalAddress"][0]["additionalNumber"]
-            personal_data.building_number = nafath_data["nationalAddress"][0]["buildingNumber"]
-            personal_data.post_code = nafath_data["nationalAddress"][0]["postCode"]
-            personal_data.district = nafath_data["nationalAddress"][0]["district"]
+            personal_data.city = nafath_data["nationalAddress"][0].get("city")
+            personal_data.region_name = nafath_data["nationalAddress"][0].get("regionName")
+            personal_data.additional_number = nafath_data["nationalAddress"][0].get("additionalNumber")
+            personal_data.building_number = nafath_data["nationalAddress"][0].get("buildingNumber")
+            personal_data.post_code = nafath_data["nationalAddress"][0].get("postCode")
+            personal_data.district = nafath_data["nationalAddress"][0].get("district")
             personal_data.save(ignore_permissions=True)
             return personal_data
     except Exception as e:
