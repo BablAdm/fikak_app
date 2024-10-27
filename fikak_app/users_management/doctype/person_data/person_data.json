@@ -197,7 +197,7 @@
    "fieldname": "martial_status",
    "fieldtype": "Select",
    "label": "Martial Status",
-   "options": "Widowed\nSingle\nMarried\nWidowed\nDivorced"
+   "options": "\nWidowed\nSingle\nMarried\nWidowed\nDivorced"
   },
   {
    "fieldname": "income_range",
@@ -217,7 +217,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-27 18:24:56.681765",
+ "modified": "2024-10-28 02:05:11.494470",
  "modified_by": "Administrator",
  "module": "Users Management",
  "name": "Person Data",

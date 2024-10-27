@@ -275,8 +275,8 @@ def insert_personal_data(user_name , nafath_data):
             personal_data.user_type = "B2C User"
             personal_data.grand_father_name = nafath_data.get('grandFatherName')
             personal_data.second_name = nafath_data.get('fatherName')
-            
-            # personal_data.nationality = nafath_data['nationality'] 
+            country_exists = frappe.get_all("Country" , filters={'code' : str(nafath_data.get("nationalityCode"))}  , fields= ["name"] , pluck="name")
+            personal_data.nationality = country_exists[0] if country_exists else None
             personal_data.father_name = nafath_data.get('fatherName')
             personal_data.english_third_name = nafath_data.get('englishThirdName')
             personal_data.gender = "Male" if nafath_data.get('gender') == "M" else "Female"
@@ -313,17 +313,25 @@ def upate_customer_data(random , transaction_id , national_id , user_data ):
     try:
         
         user = frappe.get_doc("User" , {"username" : national_id})
-        update_password(user.name , user_data.pop("password"))
+        update_password(user.name , user_data.get("password"))
         user.email = user_data.get("email")
         user.save(ignore_permissions=True)
-        user_data = frappe.get_doc("Person Data" , {"nin" : national_id})
-        user_data.income_range = user_data.get("income_range")
-        user_data.income_source = user_data.get("income_source")
-        user_data.martial_status = user_data.get("martial_status")
-        user_data.phone_number = user_data.get("phone_number")
-        user_data.save(ignore_permissions=True)
+        person_data = frappe.get_doc("Person Data" , {"nin" : national_id})
+        person_data.income_range = user_data.get("income_range")
+        person_data.income_source = user_data.get("income_source")
+        person_data.martial_status = user_data.get("martial_status")
+        person_data.phone_number = user_data.get("phone_number")
+        person_data.save(ignore_permissions=True)
         
         frappe.db.commit()
+        login_manager = frappe.auth.LoginManager()
+        login_manager.authenticate(user=user.name, pwd=user_data.get("password"))
+        login_manager.post_login()
+
         return user_data
     except Exception as e:
-        frappe.throw(str(e))
+        frappe.local.response.http_status_code = 500
+        return {
+            "status" : False,
+            "message" : str(e)
+        }
