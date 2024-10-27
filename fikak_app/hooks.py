@@ -213,3 +213,10 @@ app_license = "MIT"
 # auth_hooks = [
 # 	"fikak_app.auth.validate"
 # ]
+
+website_route_rules = [
+    {"from_route": "/login", "to_route": "login"}
+]
+
+app_include_css = "/assets/fikak_app/css/custom_login.css"
+website_include_css = "/assets/fikak_app/css/custom_style.css"
