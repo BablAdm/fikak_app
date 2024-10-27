@@ -4,8 +4,11 @@ from frappe import _
 import requests
 import uuid
 
-from datetime import datetime
+from datetime import datetime , timedelta
+import frappe.utils
 import jwt
+
+from frappe.utils.password import update_password
 
 REQUEST_ERRORS = {
     "422-031-046" : "طلب غير صالح: تم إرسال بيانات غير صالحة",
@@ -70,6 +73,12 @@ def create_new_nafath_request(national_id , request_id):
 @frappe.whitelist(allow_guest=True)
 def generate_nafath_transaction(national_id):
     try:
+        if frappe.db.exists("User" , {'username' : national_id}):
+            frappe.local.response.http_status_code = 400
+            return {
+                "status" : False,
+                "message": _("المستخدم موجود بالفعل , يرجى تسجيل الدخول") 
+            }
         request_id = generate_request_id()
         request_doc = create_new_nafath_request(national_id , request_id)
         nafath_settings = frappe.get_single('NAFATH Settings')
@@ -146,10 +155,14 @@ def check_request_status(national_id , tansaction_id , random ):
         # frappe.local.response.http_status_code = response[0]
         # return response[1]
         request_record = frappe.get_doc("NAFATH Request" , {  "transaction_id" : tansaction_id , "random" : random})
+        status = request_record.status
+        if is_request_older_than_3_minutes(request_record):
+            update_request_status(tansaction_id , request_record.request_id , "EXPIRED")
+            status = "EXPIRED"
         return {
             "status" : True,
             "data" : {
-                "status" : request_record.status
+                "status" : status
             }
         }
         
@@ -159,6 +172,22 @@ def check_request_status(national_id , tansaction_id , random ):
             "status" : False,
             "message": str(e)
         }
+
+def is_request_older_than_3_minutes(request_record):
+    
+    # Get the creation timestamp from the record
+    # Get the creation timestamp from the record and convert it to datetime
+    creation_time = datetime.strptime(str(request_record.creation), "%Y-%m-%d %H:%M:%S.%f")
+    
+    # Calculate the time 3 minutes after the creation time
+    time_limit = creation_time + timedelta(minutes=3)
+
+    # Get the current time from frappe.utils.now() and convert it to datetime
+    current_time = datetime.strptime(frappe.utils.now(), "%Y-%m-%d %H:%M:%S.%f")
+
+    # Check if the current time has passed the time limit
+    return current_time > time_limit  # True if more than 3 minutes have passed, False otherwise
+
 def update_request_status(tansaction_id ,request_id , status):
     request_record = frappe.get_doc("NAFATH Request" , {"request_id" : request_id , "transaction_id" : tansaction_id})
     if request_record.status != status:
@@ -276,3 +305,25 @@ def get_user_data(national_id , random , transaction_id):
     if not frappe.db.exists("NAFATH Request" , {"national_id" : national_id , "transaction_id" : transaction_id , "random" : random}):
         frappe.throw("Request not found")
     return user_data
+
+@frappe.whitelist(allow_guest=True)
+def upate_customer_data(random , transaction_id , national_id , user_data ):
+    if not frappe.db.exists("NAFATH Request" , {"national_id" : national_id , "transaction_id" : transaction_id , "random" : random}):
+        frappe.throw("Request not found")
+    try:
+        
+        user = frappe.get_doc("User" , {"username" : national_id})
+        update_password(user.name , user_data.pop("password"))
+        user.email = user_data.get("email")
+        user.save(ignore_permissions=True)
+        user_data = frappe.get_doc("Person Data" , {"nin" : national_id})
+        user_data.income_range = user_data.get("income_range")
+        user_data.income_source = user_data.get("income_source")
+        user_data.martial_status = user_data.get("martial_status")
+        user_data.phone_number = user_data.get("phone_number")
+        user_data.save(ignore_permissions=True)
+        
+        frappe.db.commit()
+        return user_data
+    except Exception as e:
+        frappe.throw(str(e))

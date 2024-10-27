@@ -8,6 +8,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "details_tab",
   "personal_date_section",
   "user_type",
   "first_name",
@@ -24,6 +25,7 @@
   "gender",
   "nationality_code",
   "exp",
+  "phone_number",
   "address_details_section",
   "street",
   "city",
@@ -32,7 +34,12 @@
   "column_break_gzvxo",
   "building_number",
   "post_code",
-  "district"
+  "district",
+  "customer_data_tab",
+  "income_source",
+  "martial_status",
+  "column_break_y4rlc",
+  "income_range"
  ],
  "fields": [
   {
@@ -170,11 +177,47 @@
   {
    "fieldname": "column_break_gzvxo",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fieldname": "customer_data_tab",
+   "fieldtype": "Tab Break",
+   "label": "Customer Data"
+  },
+  {
+   "fieldname": "martial_status",
+   "fieldtype": "Select",
+   "label": "Martial Status",
+   "options": "Widowed\nSingle\nMarried\nWidowed\nDivorced"
+  },
+  {
+   "fieldname": "income_range",
+   "fieldtype": "Currency",
+   "label": "Income Range"
+  },
+  {
+   "fieldname": "income_source",
+   "fieldtype": "Select",
+   "label": "Income Source",
+   "options": "\nSalary\nFreelancer\nBusiness\nInvestment\nOther"
+  },
+  {
+   "fieldname": "column_break_y4rlc",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-23 19:35:45.626337",
+ "modified": "2024-10-27 18:24:56.681765",
  "modified_by": "Administrator",
  "module": "Users Management",
  "name": "Person Data",
