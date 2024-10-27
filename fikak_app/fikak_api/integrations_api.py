@@ -103,6 +103,7 @@ def generate_request_id():
 def nafath_callback(token , transId , requestId , national_id = None):
     try:
         decoded_token = decode_jwt_token(token)
+        callback_id = insert_callback(token , decoded_token)
         if decoded_token.get('error'):
             return decoded_token
         if national_id:
@@ -110,14 +111,13 @@ def nafath_callback(token , transId , requestId , national_id = None):
         if decoded_token.get("status") == "REJECTED":
             update_request_status(transId , requestId ,"REJECTED")
             return
-
+        
         user_doc = insert_user_data(decoded_token)
         
         insert_personal_data(user_doc , decoded_token)
         update_request_status(transId , requestId , "COMPLETED")
         request_doc = frappe.get_doc("NAFATH Request" , {"transaction_id" : transId })
-        request_doc.request_jwt_decoded = decoded_token
-        request_doc.request_token = token
+        request_doc.nafath_callback = callback_id
         request_doc.save(ignore_permissions=True)
         frappe.db.commit()
         return {
@@ -127,6 +127,14 @@ def nafath_callback(token , transId , requestId , national_id = None):
         } 
     except Exception as e:
         return str(e)
+
+def insert_callback(jwt , decoded_json):
+    doc = frappe.new_doc("NAFATH Callback")
+    doc.jwt_token = jwt
+    doc.decoded_json = decoded_json
+    doc.save(ignore_permissions=True)
+    frappe.db.commit()
+    return doc.name
 
 @frappe.whitelist(allow_guest=True)
 def check_request_status(national_id , tansaction_id , random ):
