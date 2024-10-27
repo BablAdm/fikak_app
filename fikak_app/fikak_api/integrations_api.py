@@ -106,8 +106,9 @@ def nafath_callback(token , transId , requestId , national_id = None):
         callback_id = insert_callback(token , decoded_token)
         if decoded_token.get('error'):
             return decoded_token
+        
         if national_id:
-            decoded_token['nin'] = national_id
+            decoded_token['PersonId'] = national_id
         if decoded_token.get("status") == "REJECTED":
             update_request_status(transId , requestId ,"REJECTED")
             return
@@ -126,6 +127,7 @@ def nafath_callback(token , transId , requestId , national_id = None):
             "message" : "Request updated successfully"
         } 
     except Exception as e:
+        frappe.log_error(frappe.get_traceback(),"Nafath callback : " + str(e))
         return str(e)
 
 def insert_callback(jwt , decoded_json):
@@ -215,15 +217,15 @@ def decode_jwt_token(token):
         frappe.throw(f"Invalid token: {str(e)}")
 
 def insert_user_data(nafath_data):
-    user_exists = frappe.db.exists("User" , {"username" : nafath_data['nin']})
+    user_exists = frappe.db.exists("User" , {"username" : nafath_data['PersonId']})
     if not user_exists:
         user = frappe.new_doc("User")
         user.last_name = nafath_data['familyName']
         user.first_name = nafath_data['firstName']
         formatted_date = datetime.strptime(nafath_data['dateOfBirthG'], "%d-%m-%Y").strftime("%Y-%m-%d")
         user.birth_date = formatted_date
-        user.username = nafath_data['nin']
-        user.email = nafath_data['nin'] + "@waseera.sa"
+        user.username = nafath_data['PersonId']
+        user.email = nafath_data['PersonId'] + "@waseera.sa"
         user.save(ignore_permissions=True)
         return user.name
     else:
@@ -240,7 +242,7 @@ def insert_personal_data(user_name , nafath_data):
             
             personal_data.first_name = nafath_data['firstName']
             personal_data.last_name = nafath_data['familyName']
-            personal_data.nin = nafath_data['nin']
+            personal_data.nin = nafath_data['PersonId']
             personal_data.user_type = "B2C User"
             personal_data.grand_father_name = nafath_data['grandFatherName']
             personal_data.second_name = nafath_data['fatherName']
