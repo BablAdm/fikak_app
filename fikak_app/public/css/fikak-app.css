@@ -15,3 +15,16 @@ button.btn.btn-sm.btn-primary.btn-block.btn-login {
     width: 53px;
     background: #33cc66;
 }
+/* custom_desk_style.css */
+.app-logo::before {
+    background-image: url("/assets/fikak_app/img/logo.png") !important;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 150px; /* Adjust width as needed */
+    height: auto; /* Adjust as needed */
+}
+
+/* Optionally, hide the default logo text */
+.app-logo .logo-text {
+    display: none;
+}
