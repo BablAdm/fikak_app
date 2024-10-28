@@ -1,0 +1,96 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{kyc_title}",
+ "creation": "2024-10-28 11:56:47.930227",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "kyc_title",
+  "high_risk_percentage",
+  "enabled",
+  "column_break_as9b9",
+  "no_risk_percentage",
+  "medium_risk_percentage",
+  "section_break_kydzs",
+  "questions"
+ ],
+ "fields": [
+  {
+   "fieldname": "kyc_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "KYC Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "high_risk_percentage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "High Risk Percentage",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled?"
+  },
+  {
+   "fieldname": "column_break_as9b9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "no_risk_percentage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "No Risk Percentage",
+   "reqd": 1
+  },
+  {
+   "fieldname": "medium_risk_percentage",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Medium Risk Percentage",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_kydzs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "questions",
+   "fieldtype": "Table",
+   "label": "Questions",
+   "options": "KYC Question Item",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-10-28 11:56:47.930227",
+ "modified_by": "Administrator",
+ "module": "KYC Management",
+ "name": "KYC",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
