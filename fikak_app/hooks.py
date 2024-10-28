@@ -217,3 +217,12 @@ app_include_urls = [
 # auth_hooks = [
 # 	"fikak_app.auth.validate"
 # ]
+
+website_route_rules = [
+    {"from_route": "/login", "to_route": "login"}
+]
+
+app_include_css = "assets/fikak_app/css/fikak-app.css"
+
+# hooks.py in your app
+app_include_js = "assets/fikak_app/js/fikak-app.js"

@@ -1,0 +1,30 @@
+.login-page {
+    background-color: #f0f0f0;  /* Change background */
+}
+
+.page-card {
+    border-radius: 8px;  /* Style login card */
+}
+button.btn-primary {
+    background-color: #33cc66 !important;
+}
+button.btn.btn-sm.btn-primary.btn-block.btn-login {
+    background-color: #33cc66;
+}
+.body-sidebar {
+    width: 53px;
+    background: #33cc66;
+}
+/* custom_desk_style.css */
+.app-logo::before {
+    background-image: url("/assets/fikak_app/img/logo.png") !important;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 150px; /* Adjust width as needed */
+    height: auto; /* Adjust as needed */
+}
+
+/* Optionally, hide the default logo text */
+.app-logo .logo-text {
+    display: none;
+}

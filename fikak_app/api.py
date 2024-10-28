@@ -26,8 +26,8 @@ def custom_login(email, password):
             "message": _("Logged In Successfully"),
             "user": frappe.session.user,
             "token" : bearer_token,
-            # "csrf_token" : frappe.sessions.get_csrf_token(),
-            # "session_id": frappe.session.sid  # Return the session ID
+            "csrf_token" : frappe.sessions.get_csrf_token(),
+            "session_id": frappe.session.sid  # Return the session ID
         }
     except frappe.exceptions.AuthenticationError:
         # If authentication fails, return an error
@@ -81,7 +81,8 @@ def store_bearer_token_in_frappe(user, token):
 
     # Calculate token expiry (based on your token's expiration time)
     expiry = frappe.utils.add_to_date(issued_at, seconds=EXPIRATION_TIME)
-
+    if not frappe.db.exists("User" , user):
+        user = frappe.db.exists("User" , {"username" , user})
     # Insert a new Bearer Token entry in the OAuth Bearer Token DocType
     bearer_token = frappe.get_doc({
         "doctype": "OAuth Bearer Token",
