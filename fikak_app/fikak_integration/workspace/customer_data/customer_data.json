@@ -1,0 +1,77 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"WbdBuQsL9N\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer Data</span>\",\"col\":12}},{\"id\":\"xRv91YZZ8s\",\"type\":\"card\",\"data\":{\"card_name\":\"Nafath Requests\",\"col\":4}},{\"id\":\"r8IEJ7l948\",\"type\":\"card\",\"data\":{\"card_name\":\"Customers\",\"col\":4}}]",
+ "creation": "2024-10-28 12:01:28.461972",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "customer",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Customer Data",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Nafath Requests",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "NAFATH Request",
+   "link_count": 0,
+   "link_to": "NAFATH Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "NAFATH Callback",
+   "link_count": 0,
+   "link_to": "NAFATH Callback",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customers",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 0,
+   "link_to": "Person Data",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2024-10-28 12:16:03.171547",
+ "modified_by": "Administrator",
+ "module": "Fikak Integration",
+ "name": "Customer Data",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 3.0,
+ "shortcuts": [],
+ "title": "Customer Data"
+}

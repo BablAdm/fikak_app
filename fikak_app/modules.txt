@@ -1,3 +1,5 @@
 Fikak App
 Fikak Integration
 Users Management
+KYC Management
+Fikak Settings

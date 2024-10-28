@@ -12,9 +12,8 @@
   "request_id",
   "transaction_id",
   "random",
-  "request_jwt_decoded",
-  "request_token",
-  "status"
+  "status",
+  "nafath_callback"
  ],
  "fields": [
   {
@@ -45,27 +44,22 @@
    "read_only": 1
   },
   {
-   "fieldname": "request_jwt_decoded",
-   "fieldtype": "JSON",
-   "label": "Request JWT Decoded",
-   "read_only": 1
-  },
-  {
-   "fieldname": "request_token",
-   "fieldtype": "Long Text",
-   "label": "Request Token",
-   "read_only": 1
-  },
-  {
+   "default": "WAITING",
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
    "options": "WAITING\nCOMPLETED\nREJECTED\nEXPIRED"
+  },
+  {
+   "fieldname": "nafath_callback",
+   "fieldtype": "Link",
+   "label": "NAFATH Callback",
+   "options": "NAFATH Callback"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-22 22:58:25.145003",
+ "modified": "2024-10-27 11:43:57.235532",
  "modified_by": "Administrator",
  "module": "Fikak Integration",
  "name": "NAFATH Request",

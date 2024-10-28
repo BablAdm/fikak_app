@@ -1,32 +1,39 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:city_name",
- "creation": "2024-10-23 17:51:05.466148",
+ "autoname": "hash",
+ "creation": "2024-10-27 11:40:52.529158",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "city_name"
+  "jwt_token",
+  "decoded_json"
  ],
  "fields": [
   {
-   "fieldname": "city_name",
-   "fieldtype": "Data",
+   "fieldname": "jwt_token",
+   "fieldtype": "Long Text",
    "in_list_view": 1,
-   "label": "City Name",
-   "reqd": 1,
-   "unique": 1
+   "label": "JWT Token",
+   "reqd": 1
+  },
+  {
+   "fieldname": "decoded_json",
+   "fieldtype": "JSON",
+   "in_list_view": 1,
+   "label": "Decoded JSON",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-24 00:17:24.356948",
+ "modified": "2024-10-27 11:40:52.529158",
  "modified_by": "Administrator",
- "module": "Users Management",
- "name": "City",
- "naming_rule": "By fieldname",
+ "module": "Fikak Integration",
+ "name": "NAFATH Callback",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [
   {

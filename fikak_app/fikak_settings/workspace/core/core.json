@@ -1,0 +1,67 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"L_JbHBq2wD\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Core</span>\",\"col\":12}},{\"id\":\"JM35M7siSj\",\"type\":\"card\",\"data\":{\"card_name\":\"Fikak Settings\",\"col\":4}},{\"id\":\"4K__g2jKND\",\"type\":\"card\",\"data\":{\"card_name\":\"Integrations Settings\",\"col\":4}}]",
+ "creation": "2024-10-28 11:59:43.823988",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "setting-gear",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Core",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fikak Settings",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fikak Settings",
+   "link_count": 0,
+   "link_to": "Fikak Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Integrations Settings",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "NAFATH Settings",
+   "link_count": 0,
+   "link_to": "NAFATH Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2024-10-28 12:15:38.496922",
+ "modified_by": "Administrator",
+ "module": "Fikak Settings",
+ "name": "Core",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [],
+ "title": "Core"
+}

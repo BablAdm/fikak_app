@@ -1,32 +1,48 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:city_name",
- "creation": "2024-10-23 17:51:05.466148",
+ "autoname": "format:{question_title}",
+ "creation": "2024-10-28 11:51:56.240288",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "city_name"
+  "question_title",
+  "question_code",
+  "answers"
  ],
  "fields": [
   {
-   "fieldname": "city_name",
+   "fieldname": "question_title",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "City Name",
+   "label": "Question Title",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "answers",
+   "fieldtype": "Table",
+   "label": "Answers",
+   "options": "KYC Question Answer Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "question_code",
+   "fieldtype": "Data",
+   "label": "Question Code",
    "reqd": 1,
    "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-24 00:17:24.356948",
+ "modified": "2024-10-28 11:52:49.718680",
  "modified_by": "Administrator",
- "module": "Users Management",
- "name": "City",
- "naming_rule": "By fieldname",
+ "module": "KYC Management",
+ "name": "KYC Question",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

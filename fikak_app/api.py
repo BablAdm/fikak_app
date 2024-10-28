@@ -5,6 +5,7 @@ import frappe
 from frappe import _
 import jwt
 import datetime
+from frappe.utils import now_datetime
 
 EXPIRATION_TIME = 360000  # Token expiration time in seconds
 SECRET_KEY = "FIKAK_LOGIN_SECRET_KEY"
@@ -16,10 +17,9 @@ def custom_login(email, password):
         login_manager = frappe.auth.LoginManager()
         login_manager.authenticate(user=email, pwd=password)
 
-        print(frappe.session.user , "ssssssssssssssssssss")
         login_manager.post_login()
-        bearer_token = generate_jwt_token(email)
-        store_bearer_token_in_frappe(email, bearer_token)
+        bearer_token = get_or_create_token(email)
+        
         # If login is successful, return a success response
         return {
             "status": "success",
@@ -32,11 +32,32 @@ def custom_login(email, password):
     except frappe.exceptions.AuthenticationError:
         # If authentication fails, return an error
         frappe.clear_messages()
+        frappe.local.response["http_status_code"] = 401
         return {
             "status": "error",
             "message": _("Invalid email or password")
         }
-    
+def get_or_create_token(user):
+    # Query the OAuth Bearer Token DocType for an existing token
+    existing_token = frappe.db.get_value(
+        "OAuth Bearer Token",
+        filters={
+            "user": user
+        },
+        fieldname=["access_token", "expiration_time"]
+    )
+
+    # Check if a valid token exists and is not expired
+    if existing_token:
+        access_token, expiration_time = existing_token
+        if expiration_time and expiration_time > now_datetime():
+            return access_token  # Return existing valid token
+
+    # If no valid token is found, generate a new one
+    new_token = generate_jwt_token(user)[:130]
+    store_bearer_token_in_frappe(user, new_token)
+    return new_token
+
 def generate_jwt_token(email):
     """
     Generate a JWT token containing the user's email and expiration time.
@@ -82,3 +103,5 @@ def store_bearer_token_in_frappe(user, token):
 @frappe.whitelist(allow_guest=True)
 def get_country_list():
     return frappe.get_all("Country" , fields=["name" , "country_name"])
+
+

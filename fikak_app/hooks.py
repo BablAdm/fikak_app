@@ -153,8 +153,12 @@ app_license = "MIT"
 # Overriding Methods
 # ------------------------------
 #
+app_include_urls = [
+    "fikak_app.api.handler"  # Path to the custom route handler
+]
+
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "fikak_app.event.get_events"
+# 	"api.handler.nafath_callback": "fikak_app.fikak_api.integrations_api.nafath_callback",
 # }
 #
 # each overriding function accepts a `data` argument;
