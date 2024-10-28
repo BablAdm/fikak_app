@@ -1,0 +1,58 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"Z-4obDjePI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KYC Management</span>\",\"col\":12}},{\"id\":\"XzdtGAU6Wy\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}}]",
+ "creation": "2024-10-28 12:00:26.613339",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "list",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "KYC Management",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Master Data",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "KYC",
+   "link_count": 0,
+   "link_to": "KYC",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "KYC Question",
+   "link_count": 0,
+   "link_to": "KYC Question",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2024-10-28 12:15:51.258798",
+ "modified_by": "Administrator",
+ "module": "KYC Management",
+ "name": "KYC Management",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 2.0,
+ "shortcuts": [],
+ "title": "KYC Management"
+}
