@@ -81,7 +81,8 @@ def store_bearer_token_in_frappe(user, token):
 
     # Calculate token expiry (based on your token's expiration time)
     expiry = frappe.utils.add_to_date(issued_at, seconds=EXPIRATION_TIME)
-
+    if not frappe.db.exists("User" , user):
+        user = frappe.db.exists("User" , {"username" , user})
     # Insert a new Bearer Token entry in the OAuth Bearer Token DocType
     bearer_token = frappe.get_doc({
         "doctype": "OAuth Bearer Token",
