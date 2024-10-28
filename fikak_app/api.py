@@ -26,8 +26,8 @@ def custom_login(email, password):
             "message": _("Logged In Successfully"),
             "user": frappe.session.user,
             "token" : bearer_token,
-            # "csrf_token" : frappe.sessions.get_csrf_token(),
-            # "session_id": frappe.session.sid  # Return the session ID
+            "csrf_token" : frappe.sessions.get_csrf_token(),
+            "session_id": frappe.session.sid  # Return the session ID
         }
     except frappe.exceptions.AuthenticationError:
         # If authentication fails, return an error
