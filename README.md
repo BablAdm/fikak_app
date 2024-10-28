@@ -15,4 +15,8 @@ bench --site fikak.localhost migrate
 bench --site fikak.localhost clear-cache
 
 # Add the fikak_app as default
- 
+cd sites/fikak.localhost
+bench --site fikak.localhost set-config app fikak_app
+
+# show the site config
+bench --site fikak.localhost show-config --format text
