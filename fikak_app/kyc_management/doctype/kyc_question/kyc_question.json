@@ -9,7 +9,10 @@
  "engine": "InnoDB",
  "field_order": [
   "question_title",
+  "question_type",
+  "column_break_2v7i3",
   "question_code",
+  "section_break_bukoh",
   "answers"
  ],
  "fields": [
@@ -34,11 +37,26 @@
    "label": "Question Code",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "question_type",
+   "fieldtype": "Select",
+   "label": "Question Type",
+   "options": "\nSingle Choice\nMultiple Choice",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2v7i3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_bukoh",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-28 11:52:49.718680",
+ "modified": "2024-10-30 16:44:17.580197",
  "modified_by": "Administrator",
  "module": "KYC Management",
  "name": "KYC Question",
