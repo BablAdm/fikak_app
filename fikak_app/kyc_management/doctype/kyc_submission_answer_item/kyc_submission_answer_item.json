@@ -1,14 +1,17 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2024-10-28 11:51:46.098430",
+ "creation": "2024-10-30 17:39:09.740884",
+ "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "question",
   "answer_code",
   "answer",
-  "weight"
+  "selected",
+  "user_answer"
  ],
  "fields": [
   {
@@ -22,25 +25,35 @@
    "fieldname": "answer",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Answer",
-   "reqd": 1,
-   "translatable": 1
+   "label": "Question Answer",
+   "reqd": 1
   },
   {
-   "fieldname": "weight",
-   "fieldtype": "Percent",
-   "in_list_view": 1,
-   "label": "Weight",
+   "default": "0",
+   "fieldname": "selected",
+   "fieldtype": "Check",
+   "label": "Selected"
+  },
+  {
+   "fieldname": "question",
+   "fieldtype": "Link",
+   "label": "Question",
+   "options": "KYC Question",
    "reqd": 1
+  },
+  {
+   "fieldname": "user_answer",
+   "fieldtype": "Data",
+   "label": "User Answer"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-10-31 12:11:23.581665",
+ "modified": "2024-10-31 13:50:46.992916",
  "modified_by": "Administrator",
  "module": "KYC Management",
- "name": "KYC Question Answer Item",
+ "name": "KYC Submission Answer Item",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",
