@@ -11,7 +11,8 @@ from datetime import datetime , timedelta
 def get_deed_data():
     try:
         # Construct the file path
-        file_path = frappe.get_app_path('fikak_app', 'data', 'deed.json')
+
+        file_path = frappe.get_app_path('fikak_app', 'data', 'najiz_deed.json')
         with open(file_path, 'r') as file:
             data = json.load(file)
         return data
