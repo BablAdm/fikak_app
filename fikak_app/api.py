@@ -1,6 +1,4 @@
 
-
-
 import frappe
 from frappe import _
 import jwt
