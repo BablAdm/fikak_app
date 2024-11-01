@@ -324,10 +324,6 @@ def upate_customer_data(random , transaction_id , national_id , user_data ):
         person_data.save(ignore_permissions=True)
         
         frappe.db.commit()
-        login_manager = frappe.auth.LoginManager()
-        login_manager.authenticate(user=user.name, pwd=user_data.get("password"))
-        login_manager.post_login()
-
         return user_data
     except Exception as e:
         frappe.local.response.http_status_code = 500
