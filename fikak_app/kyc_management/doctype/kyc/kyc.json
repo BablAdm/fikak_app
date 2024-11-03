@@ -10,10 +10,12 @@
  "field_order": [
   "kyc_title",
   "high_risk_percentage",
+  "start_date",
   "enabled",
   "column_break_as9b9",
   "no_risk_percentage",
   "medium_risk_percentage",
+  "end_date",
   "section_break_kydzs",
   "questions"
  ],
@@ -66,11 +68,22 @@
    "label": "Questions",
    "options": "KYC Question Item",
    "reqd": 1
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-28 11:56:47.930227",
+ "modified": "2024-11-02 18:32:33.732327",
  "modified_by": "Administrator",
  "module": "KYC Management",
  "name": "KYC",
