@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class DeedNajiz(Document):
+class WATHIQSettings(Document):
 	pass

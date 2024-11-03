@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class NAJIZCallback(Document):
+class WATHIQCallback(Document):
 	pass

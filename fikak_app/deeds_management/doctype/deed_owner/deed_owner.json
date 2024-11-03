@@ -6,16 +6,16 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "ownername",
-  "birthdate",
-  "idnumber",
-  "idtype",
-  "idtypetext",
-  "ownertype",
+  "owner_name",
+  "birth_date",
+  "id_number",
+  "id_type",
+  "id_type_text",
+  "owner_type",
   "nationality",
   "column_break_pzuu",
-  "owningarea",
-  "owningamount",
+  "owning_area",
+  "owning_amount",
   "constrained",
   "halt",
   "pawned",
@@ -23,55 +23,9 @@
  ],
  "fields": [
   {
-   "fieldname": "ownername",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "ownerName"
-  },
-  {
-   "fieldname": "birthdate",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "birthDate"
-  },
-  {
-   "fieldname": "idnumber",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "idNumber",
-   "not_nullable": 1,
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "fieldname": "idtype",
-   "fieldtype": "Data",
-   "label": "idType"
-  },
-  {
-   "fieldname": "idtypetext",
-   "fieldtype": "Data",
-   "label": "idTypeText"
-  },
-  {
-   "fieldname": "ownertype",
-   "fieldtype": "Data",
-   "label": "ownerType"
-  },
-  {
    "fieldname": "nationality",
    "fieldtype": "Data",
    "label": "nationality"
-  },
-  {
-   "fieldname": "owningarea",
-   "fieldtype": "Data",
-   "label": "owningArea"
-  },
-  {
-   "fieldname": "owningamount",
-   "fieldtype": "Data",
-   "label": "owningAmount"
   },
   {
    "fieldname": "constrained",
@@ -96,12 +50,58 @@
   {
    "fieldname": "column_break_pzuu",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "owner_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Owner Name"
+  },
+  {
+   "fieldname": "birth_date",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Birth Date"
+  },
+  {
+   "fieldname": "id_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Id Number",
+   "not_nullable": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "id_type",
+   "fieldtype": "Data",
+   "label": "Id Type"
+  },
+  {
+   "fieldname": "id_type_text",
+   "fieldtype": "Data",
+   "label": "Id Type Text"
+  },
+  {
+   "fieldname": "owner_type",
+   "fieldtype": "Data",
+   "label": "Owner Type"
+  },
+  {
+   "fieldname": "owning_area",
+   "fieldtype": "Data",
+   "label": "Owning Area"
+  },
+  {
+   "fieldname": "owning_amount",
+   "fieldtype": "Data",
+   "label": "Owning Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-03 14:18:35.593967",
+ "modified": "2024-11-03 15:23:42.691873",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "Deed Owner",
