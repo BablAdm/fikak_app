@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "field:idnumber",
+ "autoname": "autoincrement",
  "creation": "2024-11-01 19:04:37.855048",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -25,19 +25,23 @@
   {
    "fieldname": "ownername",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "ownerName"
   },
   {
    "fieldname": "birthdate",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "birthDate"
   },
   {
    "fieldname": "idnumber",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "idNumber",
-   "search_index": 1,
-   "unique": 1
+   "not_nullable": 1,
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "idtype",
@@ -97,11 +101,11 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-01 19:52:45.814570",
+ "modified": "2024-11-03 14:18:35.593967",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "Deed Owner",
- "naming_rule": "By fieldname",
+ "naming_rule": "Autoincrement",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "creation",
