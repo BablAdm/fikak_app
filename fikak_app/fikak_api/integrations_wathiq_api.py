@@ -150,42 +150,42 @@ def insert_deed(data):
             deed_data = frappe.new_doc("Deed Wathiq")
             deed_data.deed_number = data["deedDetails"]["deedNumber"]
             deed_data.deed_serial = data["deedDetails"]["deedSerial"]
-            deed_data.deeddate = data["deedDetails"]["deedDate"]      
-            deed_data.deedtext = data["deedDetails"]["deedText"]
+            deed_data.deed_date = data["deedDetails"]["deedDate"]      
+            deed_data.deed_text = data["deedDetails"]["deedText"]
             # courtdetails_section
-            deed_data.deedsource = data["courtDetails"]["deedSource"]
-            deed_data.deedcity = data["courtDetails"]["deedCity"]
+            deed_data.deed_source = data["courtDetails"]["deedSource"]
+            deed_data.deed_city = data["courtDetails"]["deedCity"]
             # informations_tab
-            deed_data.deedstatus = data["deedStatus"]      
-            deed_data.deedarea = data["deedInfo"]["deedArea"]   
-            deed_data.deedareatext = data["deedInfo"]["deedAreaText"] 
+            deed_data.deed_status = data["deedStatus"]      
+            deed_data.deed_area = data["deedInfo"]["deedArea"]   
+            deed_data.deed_area_text = data["deedInfo"]["deedAreaText"] 
             # informations_tab
-            deed_data.isrealestateconstrained = data["deedInfo"]["isRealEstateConstrained"]      
-            deed_data.isrealestatehalted = data["deedInfo"]["isRealEstateHalted"]   
-            deed_data.isrealestatemortgaged = data["deedInfo"]["isRealEstateMortgaged"] 
-            deed_data.isrealestatetestamented = data["deedInfo"]["isRealEstateTestamented"] 
+            deed_data.is_real_estate_constrained = data["deedInfo"]["isRealEstateConstrained"]      
+            deed_data.is_real_estate_halted = data["deedInfo"]["isRealEstateHalted"]   
+            deed_data.is_reale_state_mortgaged = data["deedInfo"]["isRealEstateMortgaged"] 
+            deed_data.is_reale_statet_estamented = data["deedInfo"]["isRealEstateTestamented"] 
 
             # # deedlimitsdetails__n_s__section
-            deed_data.northlimitname = data["deedLimitsDetails"]["northLimitName"]      
-            deed_data.northlimitdescription = data["deedLimitsDetails"]["northLimitDescription"]   
-            deed_data.northlimitlength = data["deedLimitsDetails"]["northLimitLength"] 
-            deed_data.northlimitlengthchar = data["deedLimitsDetails"]["northLimitLengthChar"]
+            deed_data.north_limit_name = data["deedLimitsDetails"]["northLimitName"]      
+            deed_data.north_limit_description = data["deedLimitsDetails"]["northLimitDescription"]   
+            deed_data.north_limit_length = data["deedLimitsDetails"]["northLimitLength"] 
+            deed_data.north_limit_length_char = data["deedLimitsDetails"]["northLimitLengthChar"]
 
-            deed_data.southlimitname = data["deedLimitsDetails"]["southLimitName"]      
-            deed_data.southlimitdescription = data["deedLimitsDetails"]["southLimitDescription"]   
-            deed_data.southlimitlength = data["deedLimitsDetails"]["southLimitLength"] 
-            deed_data.southlimitlengthchar = data["deedLimitsDetails"]["southLimitLengthChar"]
+            deed_data.south_limit_name = data["deedLimitsDetails"]["southLimitName"]      
+            deed_data.south_limit_description = data["deedLimitsDetails"]["southLimitDescription"]   
+            deed_data.south_limit_length = data["deedLimitsDetails"]["southLimitLength"] 
+            deed_data.south_limit_length_char = data["deedLimitsDetails"]["southLimitLengthChar"]
 
             # # informations_tab
-            deed_data.eastlimitname = data["deedLimitsDetails"]["eastLimitName"]      
-            deed_data.eastlimitdescription = data["deedLimitsDetails"]["eastLimitDescription"]   
-            deed_data.eastlimitlength = data["deedLimitsDetails"]["eastLimitLength"] 
-            deed_data.eastlimitlengthchar = data["deedLimitsDetails"]["eastLimitLengthChar"]
+            deed_data.east_limit_name = data["deedLimitsDetails"]["eastLimitName"]      
+            deed_data.east_limit_description = data["deedLimitsDetails"]["eastLimitDescription"]   
+            deed_data.east_limit_length = data["deedLimitsDetails"]["eastLimitLength"] 
+            deed_data.east_limit_length_char = data["deedLimitsDetails"]["eastLimitLengthChar"]
 
-            deed_data.westlimitname = data["deedLimitsDetails"]["westLimitName"]      
-            deed_data.westlimitdescription = data["deedLimitsDetails"]["westLimitDescription"]   
-            deed_data.westlimitlength = data["deedLimitsDetails"]["westLimitLength"] 
-            deed_data.westlimitlengthchar = data["deedLimitsDetails"]["westLimitLengthChar"]
+            deed_data.west_limit_name = data["deedLimitsDetails"]["westLimitName"]      
+            deed_data.west_limit_description = data["deedLimitsDetails"]["westLimitDescription"]   
+            deed_data.west_limit_length = data["deedLimitsDetails"]["westLimitLength"] 
+            deed_data.west_limit_lengthchar = data["deedLimitsDetails"]["westLimitLengthChar"]
 
 
             # Add Owner Details to the Deed (assuming each owner is a row in deedOwners)
@@ -201,17 +201,17 @@ def insert_deed(data):
                 #     })
                 # else:
                 # Now append this newly created owner to the deed
-                deed_data.append("table_fmbl", {
+                deed_data.append("owner_details", {
                     "doctype": "Deed Owner",
-                    "idnumber": owner["idNumber"],
-                    "ownername": owner["ownerName"],
-                    "birthdate": owner["birthDate"],
-                    "idtype":owner["idType"],
-                    "idtypetext":owner["idTypeText"],
-                    "ownertype":owner["ownerType"],
+                    "id_number": owner["idNumber"],
+                    "owner_name": owner["ownerName"],
+                    "birth_date": owner["birthDate"],
+                    "id_type":owner["idType"],
+                    "id_type_text":owner["idTypeText"],
+                    "owner_type":owner["ownerType"],
                     "nationality":owner["nationality"],
-                    "owningarea":owner["owningArea"],
-                    "owningamount":owner["owningAmount"],
+                    "owning_area":owner["owningArea"],
+                    "owning_amount":owner["owningAmount"],
                     "constrained":owner["constrained"],
                     "halt":owner["halt"],
                     "pawned":owner["pawned"],
@@ -230,42 +230,42 @@ def insert_deed(data):
                 #     })
                 # else:
                 # Now append this newly created RealEstate to the deed
-                deed_data.append("table_bepd", {
-                    "doctype": "realEstateDetails",
-                    "deedserial": property["deedSerial"],
-                    "regioncode": property["regionCode"],
-                    "regionname": property["regionName"],
-                    "citycode": property["cityCode"],
-                    "cityname": property["cityName"],
-                    "realestatetypename": property["realEstateTypeName"],
-                    "landnumber": property["landNumber"],
-                    "plannumber": property["planNumber"],
+                deed_data.append("real_estate_details", {
+                    "doctype": "Real Estate Details",
+                    "deed_serial": property["deedSerial"],
+                    "region_code": property["regionCode"],
+                    "region_name": property["regionName"],
+                    "city_code": property["cityCode"],
+                    "city_name": property["cityName"],
+                    "real_estate_type_name": property["realEstateTypeName"],
+                    "land_number": property["landNumber"],
+                    "plan_number": property["planNumber"],
                     "area": property["area"],
-                    "areatext": property["areaText"],
-                    "districtcode": property["districtCode"],
-                    "districtname": property["districtName"],
-                    "locationdescription": property["locationDescription"],
+                    "area_text": property["areaText"],
+                    "district_code": property["districtCode"],
+                    "district_name": property["districtName"],
+                    "location_description": property["locationDescription"],
                     "constrained": property["constrained"],
                     "halt": property["halt"],
                     "pawned": property["pawned"],
                     "testament": property["testament"],
-                    "isnorthriyadhexceptioned": property["isNorthRiyadhExceptioned"],
-                    "northlimitcode": property["realEstateBorderDetails"]["northLimitCode"],
-                    "northlimitcescription": property["realEstateBorderDetails"]["northLimitDescription"],
-                    "northlimitlength": property["realEstateBorderDetails"]["northLimitLength"],
-                    "northlimitlLengthchar": property["realEstateBorderDetails"]["northLimitLengthChar"],
-                    "southlimitcode": property["realEstateBorderDetails"]["southLimitCode"],
-                    "southlimitdescription": property["realEstateBorderDetails"]["southLimitDescription"],
-                    "southlimitlength": property["realEstateBorderDetails"]["southLimitLength"],
-                    "southlimitlengthchar": property["realEstateBorderDetails"]["southLimitLengthChar"],
-                    "eastlimitcode": property["realEstateBorderDetails"]["eastLimitCode"],
-                    "eastlimitdescription": property["realEstateBorderDetails"]["eastLimitDescription"],
-                    "eastlimitlength": property["realEstateBorderDetails"]["eastLimitLength"],
-                    "eastlimitlengthchar": property["realEstateBorderDetails"]["eastLimitLengthChar"],
-                    "westlimitcode": property["realEstateBorderDetails"]["westLimitCode"],
-                    "westlimitdescription": property["realEstateBorderDetails"]["westLimitDescription"],
-                    "westlimitlength": property["realEstateBorderDetails"]["westLimitLength"],
-                    "westlimitlengthchar": property["realEstateBorderDetails"]["westLimitLengthChar"],
+                    "is_north_riyadh_exceptioned": property["isNorthRiyadhExceptioned"],
+                    "north_limit_code": property["realEstateBorderDetails"]["northLimitCode"],
+                    "north_limit_description": property["realEstateBorderDetails"]["northLimitDescription"],
+                    "north_limit_length": property["realEstateBorderDetails"]["northLimitLength"],
+                    "north_limit_length_char": property["realEstateBorderDetails"]["northLimitLengthChar"],
+                    "south_limit_code": property["realEstateBorderDetails"]["southLimitCode"],
+                    "south_limit_description": property["realEstateBorderDetails"]["southLimitDescription"],
+                    "south_limit_length": property["realEstateBorderDetails"]["southLimitLength"],
+                    "south_limit_length_char": property["realEstateBorderDetails"]["southLimitLengthChar"],
+                    "east_limit_code": property["realEstateBorderDetails"]["eastLimitCode"],
+                    "east_limit_description": property["realEstateBorderDetails"]["eastLimitDescription"],
+                    "east_limit_length": property["realEstateBorderDetails"]["eastLimitLength"],
+                    "east_limit_length_char": property["realEstateBorderDetails"]["eastLimitLengthChar"],
+                    "west_limit_code": property["realEstateBorderDetails"]["westLimitCode"],
+                    "west_limit_description": property["realEstateBorderDetails"]["westLimitDescription"],
+                    "west_limit_length": property["realEstateBorderDetails"]["westLimitLength"],
+                    "west_limit_length_char": property["realEstateBorderDetails"]["westLimitLengthChar"],
                     })
             deed_data.save(ignore_permissions=True)
             frappe.db.commit()
