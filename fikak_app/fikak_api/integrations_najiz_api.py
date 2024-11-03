@@ -7,6 +7,7 @@ import uuid
 from datetime import datetime , timedelta
 import frappe.utils
 import jwt
+import json
 
 from frappe.utils.password import update_password
 
@@ -79,6 +80,7 @@ def generate_najiz_transaction(national_id):
                 "status" : False,
                 "message": _("المستخدم موجود بالفعل , يرجى تسجيل الدخول") 
             }
+        # TODO : Create NAJIZ Request
         request_id = generate_request_id()
         request_doc = create_new_najiz_request(national_id , request_id)
         nafath_settings = frappe.get_single('NADJIZ Settings')
@@ -121,10 +123,9 @@ def najiz_callback(token , transId , requestId , national_id = None):
         if decoded_token.get("status") == "REJECTED":
             update_request_status(transId , requestId ,"REJECTED")
             return
+
         
-        user_doc = insert_user_data(decoded_token)
-        
-        insert_deed_data(user_doc , decoded_token)
+        deed_doc = insert_deed_data( decoded_token)
         update_request_status(transId , requestId , "COMPLETED")
         request_doc = frappe.get_doc("NAFATH Request" , {"transaction_id" : transId })
         request_doc.nafath_callback = callback_id
@@ -299,12 +300,140 @@ def insert_deed_data(user_name , wajiz_data):
     except Exception as e:
         frappe.throw(str(e))
 
-@frappe.whitelist(allow_guest=True)
-def get_deed_data(national_id,deed_id , random , transaction_id):
-    deed_data = frappe.get_doc("Deed Data" , {"deed_id" : deed_id})
-    if not frappe.db.exists("NAJIZ Request" , {"deed_id" : deed_id , "transaction_id" : transaction_id , "random" : random}):
-        frappe.throw("Request not found")
+@frappe.whitelist(allow_guest=False)
+def get_deed_data(deedNumber):
+    if(frappe.session.user):
+        user = frappe.db.get_value("User", {"name": frappe.session.user}, "name")
+        ## TODO : We should check if the user has the right to see this deed
+        deed_data = frappe.get_doc("Deed Najiz" , {"deednumber" : deedNumber})
+    else:
+        frappe.throw("Session expired")  
+
+    
+
+    # if not frappe.db.exists("NAJIZ Request" , {"deedNumber" : deedNumber , "transaction_id" : transaction_id , "random" : random}):
+    #     frappe.throw("Request not found")
     return deed_data
+
+
+@frappe.whitelist(allow_guest=True)
+def insert_deed():
+
+    file_path = frappe.get_app_path('fikak_app', 'data', 'najiz_deed.json')
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+
+    # Create the parent Deed document
+    try:
+        if not frappe.db.exists("Deed Najiz" , {"deednumber" : data["deedDetails"]["deedNumber"]}):
+            deed_data = frappe.new_doc("Deed Najiz")
+        else :
+            deed_data = frappe.get_doc("Deed Najiz" , {"deednumber" : data["deedDetails"]["deedNumber"]})
+        deed_data.deednumber = data["deedDetails"]["deedNumber"]
+        deed_data.deedserial = data["deedDetails"]["deedSerial"]
+        deed_data.deeddate = data["deedDetails"]["deedDate"]      
+        deed_data.deedtext = data["deedDetails"]["deedText"]
+        # courtdetails_section
+        deed_data.deedsource = data["courtDetails"]["deedSource"]
+        deed_data.deedcity = data["courtDetails"]["deedCity"]
+        # informations_tab
+        deed_data.deedstatus = data["deedStatus"]      
+        deed_data.deedarea = data["deedInfo"]["deedArea"]   
+        deed_data.deedareatext = data["deedInfo"]["deedAreaText"] 
+        # informations_tab
+        deed_data.isrealestateconstrained = data["deedInfo"]["isRealEstateConstrained"]      
+        deed_data.isrealestatehalted = data["deedInfo"]["isRealEstateHalted"]   
+        deed_data.isrealestatemortgaged = data["deedInfo"]["isRealEstateMortgaged"] 
+        deed_data.isrealestatetestamented = data["deedInfo"]["isRealEstateTestamented"] 
+
+        # # deedlimitsdetails__n_s__section
+        deed_data.northlimitname = data["deedDetails"]["deedNumber"]      
+        deed_data.northlimitdescription = data["deedDetails"]["deedNumber"]   
+        deed_data.northlimitlength = data["deedDetails"]["deedNumber"] 
+        deed_data.northlimitlengthchar = data["deedDetails"]["deedNumber"]
+
+        deed_data.southlimitname = data["deedDetails"]["deedNumber"]      
+        deed_data.southlimitdescription = data["deedDetails"]["deedNumber"]   
+        deed_data.southlimitlength = data["deedDetails"]["deedNumber"] 
+        deed_data.southlimitlengthchar = data["deedDetails"]["deedNumber"]
+
+        # # informations_tab
+        deed_data.eastlimitname = data["deedDetails"]["deedNumber"]      
+        deed_data.eastlimitdescription = data["deedDetails"]["deedNumber"]   
+        deed_data.eastlimitlength = data["deedDetails"]["deedNumber"] 
+        deed_data.eastlimitlengthchar = data["deedDetails"]["deedNumber"]
+
+        deed_data.westlimitname = data["deedDetails"]["deedNumber"]      
+        deed_data.westlimitdescription = data["deedDetails"]["deedNumber"]   
+        deed_data.westlimitlength = data["deedDetails"]["deedNumber"] 
+        deed_data.westlimitlengthchar = data["deedDetails"]["deedNumber"]
+
+
+        # Add Owner Details to the Deed (assuming each owner is a row in deedOwners)
+        for owner in data.get("ownerDetails", []):
+            deed_data.append("table_fmbl", {
+                "doctype": "Deed Owner",
+                "idnumber": owner["idNumber"],
+                "ownername": owner["ownerName"],
+                "birthdate": owner["birthDate"],
+                "idtype":owner["idType"],
+                "idtypetext":owner["idTypeText"],
+                "ownertype":owner["ownerType"],
+                "nationality":owner["nationality"],
+                "owningarea":owner["owningArea"],
+                "owningamount":owner["owningAmount"],
+                "constrained":owner["constrained"],
+                "halt":owner["halt"],
+                "pawned":owner["pawned"],
+                "testament":owner["testament"],
+            })
+
+        # Add Real Estate Details to the Deed (assuming each property is a row in realEstateDetails)
+        for property in data.get("realEstateDetails", []):
+            deed_data.append("table_bepd", {
+                "doctype": "realEstateDetails",
+                "deedserial": property["deedserial"],
+                "regioncode": property["regioncode"],
+                "regionname": property["regionName"],
+                "citycode": property["cityCode"],
+                "cityname": property["cityName"],
+                "realestatetypename": property["realEstateTypeName"],
+                "landnumber": property["landNumber"],
+                "plannumber": property["planNumber"],
+                "area": property["area"],
+                "areatext": property["areaText"],
+                "districtcode": property["districtCode"],
+                "districtname": property["districtName"],
+                "locationdescription": property["locationDescription"],
+                "constrained": property["constrained"],
+                "halt": property["halt"],
+                "pawned": property["pawned"],
+                "testament": property["testament"],
+                "isnorthriyadhexceptioned": property["isNorthRiyadhExceptioned"],
+                "northlimitcode": property["northlimitcode"],
+                "northlimitcescription": property["northLimitDescription"],
+                "northlimitlength": property["northLimitLength"],
+                "northlimitlLengthchar": property["northLimitlLengthChar"],
+                "southlimitcode": property["southLimitCode"],
+                "southlimitdescription": property["southLimitDescription"],
+                "southlimitlength": property["southLimitLength"],
+                "southlimitlengthchar": property["southLimitLengthChar"],
+                "eastlimitcode": property["eastLimitCode"],
+                "eastlimitdescription": property["eastLimitDescription"],
+                "eastlimitlength": property["eastLimitLength"],
+                "eastlimitlengthchar": property["eastLimitLengthChar"],
+                "westlimitcode": property["westLimitCode"],
+                "westlimitdescription": property["westLimitDescription"],
+                "westlimitlength": property["westLimitLength"],
+                "westlimitlengthchar": property["westLimitLengthChar"],
+            })
+        deed_data.save(ignore_permissions=True)
+        frappe.db.commit()
+        return deed_data
+    except Exception as e:
+        frappe.throw(str(e))
+
+
 
 @frappe.whitelist(allow_guest=True)
 def upate_deed_data(random , transaction_id , national_id , user_data ):

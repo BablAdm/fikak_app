@@ -1,0 +1,110 @@
+{
+ "actions": [],
+ "autoname": "field:idnumber",
+ "creation": "2024-11-01 19:04:37.855048",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "ownername",
+  "birthdate",
+  "idnumber",
+  "idtype",
+  "idtypetext",
+  "ownertype",
+  "nationality",
+  "column_break_pzuu",
+  "owningarea",
+  "owningamount",
+  "constrained",
+  "halt",
+  "pawned",
+  "testament"
+ ],
+ "fields": [
+  {
+   "fieldname": "ownername",
+   "fieldtype": "Data",
+   "label": "ownerName"
+  },
+  {
+   "fieldname": "birthdate",
+   "fieldtype": "Data",
+   "label": "birthDate"
+  },
+  {
+   "fieldname": "idnumber",
+   "fieldtype": "Data",
+   "label": "idNumber",
+   "search_index": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "idtype",
+   "fieldtype": "Data",
+   "label": "idType"
+  },
+  {
+   "fieldname": "idtypetext",
+   "fieldtype": "Data",
+   "label": "idTypeText"
+  },
+  {
+   "fieldname": "ownertype",
+   "fieldtype": "Data",
+   "label": "ownerType"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "nationality"
+  },
+  {
+   "fieldname": "owningarea",
+   "fieldtype": "Data",
+   "label": "owningArea"
+  },
+  {
+   "fieldname": "owningamount",
+   "fieldtype": "Data",
+   "label": "owningAmount"
+  },
+  {
+   "fieldname": "constrained",
+   "fieldtype": "Data",
+   "label": "constrained"
+  },
+  {
+   "fieldname": "halt",
+   "fieldtype": "Data",
+   "label": "halt"
+  },
+  {
+   "fieldname": "pawned",
+   "fieldtype": "Data",
+   "label": "pawned"
+  },
+  {
+   "fieldname": "testament",
+   "fieldtype": "Data",
+   "label": "testament"
+  },
+  {
+   "fieldname": "column_break_pzuu",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-01 19:52:45.814570",
+ "modified_by": "Administrator",
+ "module": "Deeds Management",
+ "name": "Deed Owner",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

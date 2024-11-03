@@ -1,0 +1,341 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:deednumber",
+ "creation": "2024-11-01 12:52:17.888495",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "deeddetails_section",
+  "deednumber",
+  "deedserial",
+  "deeddate",
+  "column_break_tmey",
+  "deedtext",
+  "courtdetails_section",
+  "deedsource",
+  "column_break_cgqw",
+  "deedcity",
+  "informations_tab",
+  "status_section",
+  "deedstatus",
+  "deedinfo_section",
+  "deedarea",
+  "deedareatext",
+  "column_break_algm",
+  "isrealestateconstrained",
+  "isrealestatehalted",
+  "isrealestatemortgaged",
+  "isrealestatetestamented",
+  "owners_tab",
+  "table_fmbl",
+  "limitsdetails_tab",
+  "deedlimitsdetails__n_s__section",
+  "northlimitname",
+  "northlimitdescription",
+  "northlimitlength",
+  "northlimitlengthchar",
+  "column_break_jytu",
+  "southlimitname",
+  "southlimitdescription",
+  "southlimitlength",
+  "southlimitlengthchar",
+  "section_break_halc",
+  "eastlimitname",
+  "eastlimitdescription",
+  "eastlimitlength",
+  "eastlimitlengthchar",
+  "column_break_hebv",
+  "westlimitname",
+  "westlimitdescription",
+  "westlimitlength",
+  "westlimitlengthchar",
+  "realestatedetails_tab",
+  "table_bepd",
+  "eligibilitystats_tab",
+  "eligibile",
+  "remark",
+  "service"
+ ],
+ "fields": [
+  {
+   "fieldname": "deeddetails_section",
+   "fieldtype": "Section Break",
+   "label": "deedDetails"
+  },
+  {
+   "fieldname": "deednumber",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "deedNumber",
+   "not_nullable": 1,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "deedserial",
+   "fieldtype": "Data",
+   "label": "deedSerial"
+  },
+  {
+   "fieldname": "deeddate",
+   "fieldtype": "Data",
+   "label": "deedDate"
+  },
+  {
+   "fieldname": "column_break_tmey",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deedtext",
+   "fieldtype": "Small Text",
+   "label": "deedText"
+  },
+  {
+   "fieldname": "courtdetails_section",
+   "fieldtype": "Section Break",
+   "label": "courtDetails"
+  },
+  {
+   "fieldname": "deedsource",
+   "fieldtype": "Data",
+   "label": "deedSource"
+  },
+  {
+   "fieldname": "column_break_cgqw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deedcity",
+   "fieldtype": "Data",
+   "label": "deedCity"
+  },
+  {
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Status"
+  },
+  {
+   "fieldname": "deedstatus",
+   "fieldtype": "Data",
+   "label": "deedStatus"
+  },
+  {
+   "fieldname": "deedinfo_section",
+   "fieldtype": "Section Break",
+   "label": "deedInfo"
+  },
+  {
+   "fieldname": "deedarea",
+   "fieldtype": "Data",
+   "label": "deedArea"
+  },
+  {
+   "fieldname": "deedareatext",
+   "fieldtype": "Data",
+   "label": "deedAreaText"
+  },
+  {
+   "fieldname": "column_break_algm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "isrealestateconstrained",
+   "fieldtype": "Check",
+   "label": "isRealEstateConstrained"
+  },
+  {
+   "default": "0",
+   "fieldname": "isrealestatehalted",
+   "fieldtype": "Check",
+   "label": "isRealEstateHalted"
+  },
+  {
+   "default": "0",
+   "fieldname": "isrealestatemortgaged",
+   "fieldtype": "Check",
+   "label": "isRealEstateMortgaged"
+  },
+  {
+   "default": "0",
+   "fieldname": "isrealestatetestamented",
+   "fieldtype": "Check",
+   "label": "isRealEstateTestamented"
+  },
+  {
+   "fieldname": "informations_tab",
+   "fieldtype": "Tab Break",
+   "label": "Informations"
+  },
+  {
+   "fieldname": "owners_tab",
+   "fieldtype": "Tab Break",
+   "label": "Owners"
+  },
+  {
+   "fieldname": "limitsdetails_tab",
+   "fieldtype": "Tab Break",
+   "label": "LimitsDetails"
+  },
+  {
+   "fieldname": "realestatedetails_tab",
+   "fieldtype": "Tab Break",
+   "label": "realEstateDetails"
+  },
+  {
+   "fieldname": "eligibilitystats_tab",
+   "fieldtype": "Tab Break",
+   "label": "WaseeraStatus"
+  },
+  {
+   "fieldname": "northlimitname",
+   "fieldtype": "Data",
+   "label": "northLimitName"
+  },
+  {
+   "fieldname": "northlimitdescription",
+   "fieldtype": "Data",
+   "label": "northLimitDescription"
+  },
+  {
+   "fieldname": "northlimitlength",
+   "fieldtype": "Data",
+   "label": "northLimitLength"
+  },
+  {
+   "fieldname": "northlimitlengthchar",
+   "fieldtype": "Data",
+   "label": "northLimitLengthChar"
+  },
+  {
+   "fieldname": "southlimitname",
+   "fieldtype": "Data",
+   "label": "southLimitName"
+  },
+  {
+   "fieldname": "southlimitdescription",
+   "fieldtype": "Data",
+   "label": "southLimitDescription"
+  },
+  {
+   "fieldname": "southlimitlength",
+   "fieldtype": "Data",
+   "label": "southLimitLength"
+  },
+  {
+   "fieldname": "southlimitlengthchar",
+   "fieldtype": "Data",
+   "label": "southLimitLengthChar"
+  },
+  {
+   "fieldname": "eastlimitname",
+   "fieldtype": "Data",
+   "label": "eastLimitName"
+  },
+  {
+   "fieldname": "eastlimitdescription",
+   "fieldtype": "Data",
+   "label": "eastLimitDescription"
+  },
+  {
+   "fieldname": "eastlimitlength",
+   "fieldtype": "Data",
+   "label": "eastLimitLength"
+  },
+  {
+   "fieldname": "eastlimitlengthchar",
+   "fieldtype": "Data",
+   "label": "eastLimitLengthChar"
+  },
+  {
+   "fieldname": "westlimitname",
+   "fieldtype": "Data",
+   "label": "westLimitName"
+  },
+  {
+   "fieldname": "westlimitdescription",
+   "fieldtype": "Data",
+   "label": "westLimitDescription"
+  },
+  {
+   "fieldname": "westlimitlength",
+   "fieldtype": "Data",
+   "label": "westLimitLength"
+  },
+  {
+   "fieldname": "westlimitlengthchar",
+   "fieldtype": "Data",
+   "label": "westLimitLengthChar"
+  },
+  {
+   "fieldname": "column_break_jytu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_halc",
+   "fieldtype": "Section Break",
+   "label": "deedLimitsDetails ( E / W )"
+  },
+  {
+   "fieldname": "column_break_hebv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "table_fmbl",
+   "fieldtype": "Table",
+   "options": "Deed Owner"
+  },
+  {
+   "default": "0",
+   "fieldname": "eligibile",
+   "fieldtype": "Check",
+   "label": "Eligibile"
+  },
+  {
+   "fieldname": "remark",
+   "fieldtype": "Data",
+   "label": "Remark"
+  },
+  {
+   "fieldname": "service",
+   "fieldtype": "Data",
+   "label": "Service"
+  },
+  {
+   "fieldname": "deedlimitsdetails__n_s__section",
+   "fieldtype": "Section Break",
+   "label": "deedLimitsDetails ( N /S )"
+  },
+  {
+   "fieldname": "table_bepd",
+   "fieldtype": "Table",
+   "options": "realEstateDetails"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-01 20:43:06.728211",
+ "modified_by": "Administrator",
+ "module": "Deeds Management",
+ "name": "Deed Najiz",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

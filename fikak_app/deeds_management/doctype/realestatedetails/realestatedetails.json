@@ -1,0 +1,261 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:deedserial",
+ "creation": "2024-11-01 20:24:10.792986",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "deedserial",
+  "regioncode",
+  "regionname",
+  "citycode",
+  "cityname",
+  "realestatetypename",
+  "landnumber",
+  "plannumber",
+  "area",
+  "areatext",
+  "column_break_wtld",
+  "districtcode",
+  "districtname",
+  "locationdescription",
+  "constrained",
+  "halt",
+  "pawned",
+  "testament",
+  "isnorthriyadhexceptioned",
+  "realestateborderdetails__n_s__section",
+  "northlimitcode",
+  "northlimitdescription",
+  "northlimitlength",
+  "northlimitlengthchar",
+  "column_break_denf",
+  "southlimitcode",
+  "southlimitdescription",
+  "southlimitlength",
+  "southlimitlengthchar",
+  "realestateborderdetails__e__w__section",
+  "eastlimitcode",
+  "eastlimitdescription",
+  "eastlimitlength",
+  "eastlimitlengthchar",
+  "column_break_pvum",
+  "westlimitcode",
+  "westlimitdescription",
+  "westlimitlength",
+  "westlimitlengthchar"
+ ],
+ "fields": [
+  {
+   "fieldname": "deedserial",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "deedSerial",
+   "not_nullable": 1,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "regioncode",
+   "fieldtype": "Data",
+   "label": "regionCode"
+  },
+  {
+   "fieldname": "regionname",
+   "fieldtype": "Data",
+   "label": "regionName"
+  },
+  {
+   "fieldname": "citycode",
+   "fieldtype": "Data",
+   "label": "cityCode"
+  },
+  {
+   "fieldname": "cityname",
+   "fieldtype": "Data",
+   "label": "cityName"
+  },
+  {
+   "fieldname": "realestatetypename",
+   "fieldtype": "Data",
+   "label": "realEstateTypeName"
+  },
+  {
+   "fieldname": "landnumber",
+   "fieldtype": "Data",
+   "label": "landNumber"
+  },
+  {
+   "fieldname": "plannumber",
+   "fieldtype": "Data",
+   "label": "planNumber"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Data",
+   "label": "area"
+  },
+  {
+   "fieldname": "areatext",
+   "fieldtype": "Data",
+   "label": "areaText"
+  },
+  {
+   "fieldname": "column_break_wtld",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "districtcode",
+   "fieldtype": "Data",
+   "label": "districtCode"
+  },
+  {
+   "fieldname": "districtname",
+   "fieldtype": "Data",
+   "label": "districtName"
+  },
+  {
+   "fieldname": "locationdescription",
+   "fieldtype": "Data",
+   "label": "locationDescription"
+  },
+  {
+   "fieldname": "constrained",
+   "fieldtype": "Data",
+   "label": "constrained"
+  },
+  {
+   "fieldname": "halt",
+   "fieldtype": "Data",
+   "label": "halt"
+  },
+  {
+   "fieldname": "pawned",
+   "fieldtype": "Data",
+   "label": "pawned"
+  },
+  {
+   "fieldname": "testament",
+   "fieldtype": "Data",
+   "label": "testament"
+  },
+  {
+   "fieldname": "isnorthriyadhexceptioned",
+   "fieldtype": "Data",
+   "label": "isNorthRiyadhExceptioned"
+  },
+  {
+   "fieldname": "realestateborderdetails__n_s__section",
+   "fieldtype": "Section Break",
+   "label": "realEstateBorderDetails ( N /S )"
+  },
+  {
+   "fieldname": "northlimitcode",
+   "fieldtype": "Data",
+   "label": "northLimitCode"
+  },
+  {
+   "fieldname": "northlimitdescription",
+   "fieldtype": "Data",
+   "label": "northLimitDescription"
+  },
+  {
+   "fieldname": "northlimitlength",
+   "fieldtype": "Data",
+   "label": "northLimitLength"
+  },
+  {
+   "fieldname": "northlimitlengthchar",
+   "fieldtype": "Data",
+   "label": "northLimitLengthChar"
+  },
+  {
+   "fieldname": "column_break_denf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "southlimitcode",
+   "fieldtype": "Data",
+   "label": "southLimitCode"
+  },
+  {
+   "fieldname": "southlimitdescription",
+   "fieldtype": "Data",
+   "label": "southLimitDescription"
+  },
+  {
+   "fieldname": "southlimitlength",
+   "fieldtype": "Data",
+   "label": "southLimitLength"
+  },
+  {
+   "fieldname": "southlimitlengthchar",
+   "fieldtype": "Data",
+   "label": "southLimitLengthChar"
+  },
+  {
+   "fieldname": "realestateborderdetails__e__w__section",
+   "fieldtype": "Section Break",
+   "label": "realEstateBorderDetails ( E / W )"
+  },
+  {
+   "fieldname": "eastlimitcode",
+   "fieldtype": "Data",
+   "label": "eastLimitCode"
+  },
+  {
+   "fieldname": "eastlimitdescription",
+   "fieldtype": "Data",
+   "label": "eastLimitDescription"
+  },
+  {
+   "fieldname": "eastlimitlength",
+   "fieldtype": "Data",
+   "label": "eastLimitLength"
+  },
+  {
+   "fieldname": "eastlimitlengthchar",
+   "fieldtype": "Data",
+   "label": "eastLimitLengthChar"
+  },
+  {
+   "fieldname": "column_break_pvum",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "westlimitcode",
+   "fieldtype": "Data",
+   "label": "westLimitCode"
+  },
+  {
+   "fieldname": "westlimitdescription",
+   "fieldtype": "Data",
+   "label": "westLimitDescription"
+  },
+  {
+   "fieldname": "westlimitlength",
+   "fieldtype": "Data",
+   "label": "westLimitLength"
+  },
+  {
+   "fieldname": "westlimitlengthchar",
+   "fieldtype": "Data",
+   "label": "westLimitLengthChar"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-01 20:43:30.245023",
+ "modified_by": "Administrator",
+ "module": "Deeds Management",
+ "name": "realEstateDetails",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

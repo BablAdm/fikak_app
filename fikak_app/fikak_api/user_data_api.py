@@ -5,13 +5,14 @@ import jwt
 
 @frappe.whitelist(allow_guest=True)
 def get_user_data():
-    # Fetch the Authorization token from the request headers
-    token = frappe.get_request_header("Authorization", "").split(" ")[-1]
 
-
-    userData = decode_jwt_token(token)
-    
-    user = frappe.db.get_value("User", {"name": userData.get("email")}, "name")
+    if(frappe.session.user):
+        user = frappe.db.get_value("User", {"name": frappe.session.user}, "name")
+    else:
+        # Fetch the Authorization token from the request headers
+        token = frappe.get_request_header("Authorization", "").split(" ")[-1]
+        userData = decode_jwt_token(token)
+        user = frappe.db.get_value("User", {"name": userData.get("email")}, "name")
     
     # Retrieve user data
     user_data = frappe.get_doc("User", user)
