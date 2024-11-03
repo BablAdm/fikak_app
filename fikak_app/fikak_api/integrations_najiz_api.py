@@ -347,86 +347,105 @@ def insert_deed():
         deed_data.isrealestatetestamented = data["deedInfo"]["isRealEstateTestamented"] 
 
         # # deedlimitsdetails__n_s__section
-        deed_data.northlimitname = data["deedDetails"]["deedNumber"]      
-        deed_data.northlimitdescription = data["deedDetails"]["deedNumber"]   
-        deed_data.northlimitlength = data["deedDetails"]["deedNumber"] 
-        deed_data.northlimitlengthchar = data["deedDetails"]["deedNumber"]
+        deed_data.northlimitname = data["deedLimitsDetails"]["northLimitName"]      
+        deed_data.northlimitdescription = data["deedLimitsDetails"]["northLimitDescription"]   
+        deed_data.northlimitlength = data["deedLimitsDetails"]["northLimitLength"] 
+        deed_data.northlimitlengthchar = data["deedLimitsDetails"]["northLimitLengthChar"]
 
-        deed_data.southlimitname = data["deedDetails"]["deedNumber"]      
-        deed_data.southlimitdescription = data["deedDetails"]["deedNumber"]   
-        deed_data.southlimitlength = data["deedDetails"]["deedNumber"] 
-        deed_data.southlimitlengthchar = data["deedDetails"]["deedNumber"]
+        deed_data.southlimitname = data["deedLimitsDetails"]["southLimitName"]      
+        deed_data.southlimitdescription = data["deedLimitsDetails"]["southLimitDescription"]   
+        deed_data.southlimitlength = data["deedLimitsDetails"]["southLimitLength"] 
+        deed_data.southlimitlengthchar = data["deedLimitsDetails"]["southLimitLengthChar"]
 
         # # informations_tab
-        deed_data.eastlimitname = data["deedDetails"]["deedNumber"]      
-        deed_data.eastlimitdescription = data["deedDetails"]["deedNumber"]   
-        deed_data.eastlimitlength = data["deedDetails"]["deedNumber"] 
-        deed_data.eastlimitlengthchar = data["deedDetails"]["deedNumber"]
+        deed_data.eastlimitname = data["deedLimitsDetails"]["eastLimitName"]      
+        deed_data.eastlimitdescription = data["deedLimitsDetails"]["eastLimitDescription"]   
+        deed_data.eastlimitlength = data["deedLimitsDetails"]["eastLimitLength"] 
+        deed_data.eastlimitlengthchar = data["deedLimitsDetails"]["eastLimitLengthChar"]
 
-        deed_data.westlimitname = data["deedDetails"]["deedNumber"]      
-        deed_data.westlimitdescription = data["deedDetails"]["deedNumber"]   
-        deed_data.westlimitlength = data["deedDetails"]["deedNumber"] 
-        deed_data.westlimitlengthchar = data["deedDetails"]["deedNumber"]
+        deed_data.westlimitname = data["deedLimitsDetails"]["westLimitName"]      
+        deed_data.westlimitdescription = data["deedLimitsDetails"]["westLimitDescription"]   
+        deed_data.westlimitlength = data["deedLimitsDetails"]["westLimitLength"] 
+        deed_data.westlimitlengthchar = data["deedLimitsDetails"]["westLimitLengthChar"]
 
 
         # Add Owner Details to the Deed (assuming each owner is a row in deedOwners)
         for owner in data.get("ownerDetails", []):
-            deed_data.append("table_fmbl", {
-                "doctype": "Deed Owner",
-                "idnumber": owner["idNumber"],
-                "ownername": owner["ownerName"],
-                "birthdate": owner["birthDate"],
-                "idtype":owner["idType"],
-                "idtypetext":owner["idTypeText"],
-                "ownertype":owner["ownerType"],
-                "nationality":owner["nationality"],
-                "owningarea":owner["owningArea"],
-                "owningamount":owner["owningAmount"],
-                "constrained":owner["constrained"],
-                "halt":owner["halt"],
-                "pawned":owner["pawned"],
-                "testament":owner["testament"],
-            })
+            existing_owner = frappe.db.exists("Deed Owner", {"ownername": owner["ownerName"]})
+
+            if existing_owner:
+                # If owner exists, add the existing reference
+                deed_data.append("table_fmbl", {
+                    "doctype": "Deed Owner",
+                    "name": existing_owner  # Reference the existing owner's name (ID)
+                })
+            else:
+                # Now append this newly created owner to the deed
+                deed_data.append("table_fmbl", {
+                    "doctype": "Deed Owner",
+                    "idnumber": owner["idNumber"],
+                    "ownername": owner["ownerName"],
+                    "birthdate": owner["birthDate"],
+                    "idtype":owner["idType"],
+                    "idtypetext":owner["idTypeText"],
+                    "ownertype":owner["ownerType"],
+                    "nationality":owner["nationality"],
+                    "owningarea":owner["owningArea"],
+                    "owningamount":owner["owningAmount"],
+                    "constrained":owner["constrained"],
+                    "halt":owner["halt"],
+                    "pawned":owner["pawned"],
+                    "testament":owner["testament"],
+                })
 
         # Add Real Estate Details to the Deed (assuming each property is a row in realEstateDetails)
         for property in data.get("realEstateDetails", []):
-            deed_data.append("table_bepd", {
-                "doctype": "realEstateDetails",
-                "deedserial": property["deedserial"],
-                "regioncode": property["regioncode"],
-                "regionname": property["regionName"],
-                "citycode": property["cityCode"],
-                "cityname": property["cityName"],
-                "realestatetypename": property["realEstateTypeName"],
-                "landnumber": property["landNumber"],
-                "plannumber": property["planNumber"],
-                "area": property["area"],
-                "areatext": property["areaText"],
-                "districtcode": property["districtCode"],
-                "districtname": property["districtName"],
-                "locationdescription": property["locationDescription"],
-                "constrained": property["constrained"],
-                "halt": property["halt"],
-                "pawned": property["pawned"],
-                "testament": property["testament"],
-                "isnorthriyadhexceptioned": property["isNorthRiyadhExceptioned"],
-                "northlimitcode": property["northlimitcode"],
-                "northlimitcescription": property["northLimitDescription"],
-                "northlimitlength": property["northLimitLength"],
-                "northlimitlLengthchar": property["northLimitlLengthChar"],
-                "southlimitcode": property["southLimitCode"],
-                "southlimitdescription": property["southLimitDescription"],
-                "southlimitlength": property["southLimitLength"],
-                "southlimitlengthchar": property["southLimitLengthChar"],
-                "eastlimitcode": property["eastLimitCode"],
-                "eastlimitdescription": property["eastLimitDescription"],
-                "eastlimitlength": property["eastLimitLength"],
-                "eastlimitlengthchar": property["eastLimitLengthChar"],
-                "westlimitcode": property["westLimitCode"],
-                "westlimitdescription": property["westLimitDescription"],
-                "westlimitlength": property["westLimitLength"],
-                "westlimitlengthchar": property["westLimitLengthChar"],
-            })
+            existing_realEstate = frappe.db.exists("realEstateDetails", {"deedserial": property["deedSerial"]})
+            if existing_realEstate:
+                # If RealEstate exists, add the existing reference
+                deed_data.append("table_bepd", {
+                    "doctype": "realEstateDetails",
+                    "name": existing_realEstate  # Reference the existing owner's name (ID)
+                })
+            else:
+                # Now append this newly created RealEstate to the deed
+                deed_data.append("table_bepd", {
+                    "doctype": "realEstateDetails",
+                    "deedserial": property["deedSerial"],
+                    "regioncode": property["regionCode"],
+                    "regionname": property["regionName"],
+                    "citycode": property["cityCode"],
+                    "cityname": property["cityName"],
+                    "realestatetypename": property["realEstateTypeName"],
+                    "landnumber": property["landNumber"],
+                    "plannumber": property["planNumber"],
+                    "area": property["area"],
+                    "areatext": property["areaText"],
+                    "districtcode": property["districtCode"],
+                    "districtname": property["districtName"],
+                    "locationdescription": property["locationDescription"],
+                    "constrained": property["constrained"],
+                    "halt": property["halt"],
+                    "pawned": property["pawned"],
+                    "testament": property["testament"],
+                    "isnorthriyadhexceptioned": property["isNorthRiyadhExceptioned"],
+                    "northlimitcode": property["realEstateBorderDetails"]["northLimitCode"],
+                    "northlimitcescription": property["realEstateBorderDetails"]["northLimitDescription"],
+                    "northlimitlength": property["realEstateBorderDetails"]["northLimitLength"],
+                    "northlimitlLengthchar": property["realEstateBorderDetails"]["northLimitLengthChar"],
+                    "southlimitcode": property["realEstateBorderDetails"]["southLimitCode"],
+                    "southlimitdescription": property["realEstateBorderDetails"]["southLimitDescription"],
+                    "southlimitlength": property["realEstateBorderDetails"]["southLimitLength"],
+                    "southlimitlengthchar": property["realEstateBorderDetails"]["southLimitLengthChar"],
+                    "eastlimitcode": property["realEstateBorderDetails"]["eastLimitCode"],
+                    "eastlimitdescription": property["realEstateBorderDetails"]["eastLimitDescription"],
+                    "eastlimitlength": property["realEstateBorderDetails"]["eastLimitLength"],
+                    "eastlimitlengthchar": property["realEstateBorderDetails"]["eastLimitLengthChar"],
+                    "westlimitcode": property["realEstateBorderDetails"]["westLimitCode"],
+                    "westlimitdescription": property["realEstateBorderDetails"]["westLimitDescription"],
+                    "westlimitlength": property["realEstateBorderDetails"]["westLimitLength"],
+                    "westlimitlengthchar": property["realEstateBorderDetails"]["westLimitLengthChar"],
+                })
         deed_data.save(ignore_permissions=True)
         frappe.db.commit()
         return deed_data
