@@ -148,8 +148,8 @@ def insert_deed(data):
             deed_data = frappe.get_doc("Deed Wathiq" , {"deednumber" : data["deedDetails"]["deedNumber"]})            
         else :
             deed_data = frappe.new_doc("Deed Wathiq")
-            deed_data.deednumber = data["deedDetails"]["deedNumber"]
-            deed_data.deedserial = data["deedDetails"]["deedSerial"]
+            deed_data.deed_number = data["deedDetails"]["deedNumber"]
+            deed_data.deed_serial = data["deedDetails"]["deedSerial"]
             deed_data.deeddate = data["deedDetails"]["deedDate"]      
             deed_data.deedtext = data["deedDetails"]["deedText"]
             # courtdetails_section
