@@ -319,7 +319,7 @@ def upate_customer_data(random , transaction_id , national_id , user_data ):
         person_data = frappe.get_doc("Person Data" , {"nin" : national_id})
         person_data.income_range = user_data.get("income_range")
         person_data.income_source = user_data.get("income_source")
-        person_data.martial_status = user_data.get("martial_status")
+        person_data.marital_status = user_data.get("marital_status")
         person_data.phone_number = user_data.get("phone_number")
         person_data.save(ignore_permissions=True)
         
