@@ -12,18 +12,18 @@ EXTRA_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
-class TestWATHIQCallback(UnitTestCase):
+class TestDEVMODPROPS(UnitTestCase):
 	"""
-	Unit tests for WATHIQCallback.
+	Unit tests for DEVMODPROPS.
 	Use this class for testing individual functions and methods.
 	"""
 
 	pass
 
 
-class TestWATHIQCallback(IntegrationTestCase):
+class TestDEVMODPROPS(IntegrationTestCase):
 	"""
-	Integration tests for WATHIQCallback.
+	Integration tests for DEVMODPROPS.
 	Use this class for testing interactions between multiple components.
 	"""
 

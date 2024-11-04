@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "field:deed_number",
- "creation": "2024-11-01 12:52:17.888495",
+ "creation": "2024-11-04 08:30:49.588161",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -61,88 +61,7 @@
   {
    "fieldname": "deeddetails_section",
    "fieldtype": "Section Break",
-   "label": "deedDetails"
-  },
-  {
-   "fieldname": "column_break_tmey",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "courtdetails_section",
-   "fieldtype": "Section Break",
-   "label": "courtDetails"
-  },
-  {
-   "fieldname": "column_break_cgqw",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "status_section",
-   "fieldtype": "Section Break",
-   "label": "Status"
-  },
-  {
-   "fieldname": "deedinfo_section",
-   "fieldtype": "Section Break",
-   "label": "deedInfo"
-  },
-  {
-   "fieldname": "column_break_algm",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "informations_tab",
-   "fieldtype": "Tab Break",
-   "label": "Informations"
-  },
-  {
-   "fieldname": "owners_tab",
-   "fieldtype": "Tab Break",
-   "label": "Owners"
-  },
-  {
-   "fieldname": "realestatedetails_tab",
-   "fieldtype": "Tab Break",
-   "label": "Real Estate Details"
-  },
-  {
-   "fieldname": "eligibilitystats_tab",
-   "fieldtype": "Tab Break",
-   "label": "Eligibility Status"
-  },
-  {
-   "fieldname": "column_break_jytu",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_halc",
-   "fieldtype": "Section Break",
-   "label": "Deed Limits Details ( E / W )"
-  },
-  {
-   "fieldname": "column_break_hebv",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "eligibile",
-   "fieldtype": "Check",
-   "label": "Eligibile"
-  },
-  {
-   "fieldname": "remark",
-   "fieldtype": "Data",
-   "label": "Remark"
-  },
-  {
-   "fieldname": "service",
-   "fieldtype": "Data",
-   "label": "Service"
-  },
-  {
-   "fieldname": "deedlimitsdetails__n_s__section",
-   "fieldtype": "Section Break",
-   "label": "Deed Limits Details ( N /S )"
+   "label": "Deed Details"
   },
   {
    "fieldname": "deed_number",
@@ -164,9 +83,18 @@
    "label": "Deed Date"
   },
   {
+   "fieldname": "column_break_tmey",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "deed_text",
    "fieldtype": "Small Text",
    "label": "Deed Text"
+  },
+  {
+   "fieldname": "courtdetails_section",
+   "fieldtype": "Section Break",
+   "label": "Court Details"
   },
   {
    "fieldname": "deed_source",
@@ -174,31 +102,33 @@
    "label": "Deed Source"
   },
   {
+   "fieldname": "column_break_cgqw",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "deed_city",
    "fieldtype": "Data",
    "label": "Deed City"
   },
   {
-   "fieldname": "owner_details",
-   "fieldtype": "Table",
-   "label": "Owner Details",
-   "options": "Deed Owner"
-  },
-  {
-   "fieldname": "real_estate_details",
-   "fieldtype": "Table",
-   "label": "Real Estate Details",
-   "options": "Real Estate Details"
-  },
-  {
-   "fieldname": "limits_details_tab",
+   "fieldname": "informations_tab",
    "fieldtype": "Tab Break",
-   "label": "Limits Details"
+   "label": "Informations"
+  },
+  {
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Status"
   },
   {
    "fieldname": "deed_status",
    "fieldtype": "Data",
    "label": "Deed Status"
+  },
+  {
+   "fieldname": "deedinfo_section",
+   "fieldtype": "Section Break",
+   "label": "Deed Info"
   },
   {
    "fieldname": "deed_area",
@@ -209,6 +139,10 @@
    "fieldname": "deed_area_text",
    "fieldtype": "Data",
    "label": "Deed Area Text"
+  },
+  {
+   "fieldname": "column_break_algm",
+   "fieldtype": "Column Break"
   },
   {
    "default": "0",
@@ -235,6 +169,27 @@
    "label": "Is Real Estate Testamented"
   },
   {
+   "fieldname": "owners_tab",
+   "fieldtype": "Tab Break",
+   "label": "Owners"
+  },
+  {
+   "fieldname": "owner_details",
+   "fieldtype": "Table",
+   "label": "Owner Details",
+   "options": "WATHEQ Deed Owner"
+  },
+  {
+   "fieldname": "limits_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Limits Details"
+  },
+  {
+   "fieldname": "deedlimitsdetails__n_s__section",
+   "fieldtype": "Section Break",
+   "label": "Deed Limits Details ( N /S )"
+  },
+  {
    "fieldname": "north_limit_name",
    "fieldtype": "Data",
    "label": "North Limit Name"
@@ -253,6 +208,10 @@
    "fieldname": "north_limit_length_char",
    "fieldtype": "Data",
    "label": "North Limit Length Char"
+  },
+  {
+   "fieldname": "column_break_jytu",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "south_limit_name",
@@ -275,6 +234,11 @@
    "label": "South Limit Length Char"
   },
   {
+   "fieldname": "section_break_halc",
+   "fieldtype": "Section Break",
+   "label": "Deed Limits Details ( E / W )"
+  },
+  {
    "fieldname": "east_limit_name",
    "fieldtype": "Data",
    "label": "East Limit Name"
@@ -295,6 +259,10 @@
    "label": "East Limit LengthChar"
   },
   {
+   "fieldname": "column_break_hebv",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "west_limit_name",
    "fieldtype": "Data",
    "label": "West Limit Name"
@@ -313,14 +281,46 @@
    "fieldname": "west_limit_length_char",
    "fieldtype": "Data",
    "label": "West Limit Length Char"
+  },
+  {
+   "fieldname": "realestatedetails_tab",
+   "fieldtype": "Tab Break",
+   "label": "Real Estate Details"
+  },
+  {
+   "fieldname": "real_estate_details",
+   "fieldtype": "Table",
+   "label": "Real Estate Details",
+   "options": "WATHEQ Real Estate Details"
+  },
+  {
+   "fieldname": "eligibilitystats_tab",
+   "fieldtype": "Tab Break",
+   "label": "Eligibility Status"
+  },
+  {
+   "default": "0",
+   "fieldname": "eligibile",
+   "fieldtype": "Check",
+   "label": "Eligibile"
+  },
+  {
+   "fieldname": "remark",
+   "fieldtype": "Data",
+   "label": "Remark"
+  },
+  {
+   "fieldname": "service",
+   "fieldtype": "Data",
+   "label": "Service"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-03 15:21:07.740622",
+ "modified": "2024-11-04 08:55:41.649768",
  "modified_by": "Administrator",
  "module": "Deeds Management",
- "name": "WATHIQ Deed",
+ "name": "WATHEQ Deed",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

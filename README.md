@@ -11,6 +11,9 @@ MIT
 
 bench --site fikak.localhost migrate
 
+bench --site fikak.localhost migrate
+
+
 #  Clear Web site cache
 bench --site fikak.localhost clear-cache
 

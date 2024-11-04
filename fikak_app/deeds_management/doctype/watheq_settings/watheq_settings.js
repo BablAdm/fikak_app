@@ -1,7 +1,7 @@
 // Copyright (c) 2024, Waseera and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on("WATHIQ Settings", {
+// frappe.ui.form.on("WATHEQ Settings", {
 // 	refresh(frm) {
 
 // 	},

@@ -12,18 +12,18 @@ EXTRA_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
-class TestWATHIQDeed(UnitTestCase):
+class TestWATHEQResponse(UnitTestCase):
 	"""
-	Unit tests for WATHIQDeed.
+	Unit tests for WATHEQResponse.
 	Use this class for testing individual functions and methods.
 	"""
 
 	pass
 
 
-class TestWATHIQDeed(IntegrationTestCase):
+class TestWATHEQResponse(IntegrationTestCase):
 	"""
-	Integration tests for WATHIQDeed.
+	Integration tests for WATHEQResponse.
 	Use this class for testing interactions between multiple components.
 	"""
 

@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class WATHIQRequest(Document):
+class WATHEQSettings(Document):
 	pass

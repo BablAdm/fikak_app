@@ -2,12 +2,10 @@
 import frappe
 from frappe import _
 import requests
-import uuid
-
-from datetime import datetime , timedelta
-import frappe.utils
-import jwt
 import json
+
+from . import global_utils
+from . import fake_api
 
 
 REQUEST_ERRORS = {
@@ -17,28 +15,27 @@ REQUEST_ERRORS = {
     "400-034-051" : "المعاملة منتهية. لقد حاولت الحصول على حالة الطلب باستخدام رقم معاملة منتهي الصلاحية."
 } 
 
-def creat_new_wathiq_request_deed(national_id ,deed_id , request_id , endpoint , app_id , app_key):
+# TODO The type ID should be as param
+def creat_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , app_key):
     try:
-        params = {
-            "local": "en",  # replace with actual 'local' param value
-            "requestId": request_id
-        }
 
-        # Define the JSON body
-        payload = {
-            "nationalId":national_id,
-            "service": "RequestDigitalServicesEnrollment"
-        }
+        dev_mod_props = global_utils.get_dev_mod_propos()
+
+        if(dev_mod_props != ""):
+            national_id = dev_mod_props.get("user_id_watheq")
 
         # Define headers if required (e.g., authentication headers)
         headers = {
             "Content-Type": "application/json",
-            "APP-ID": app_id,  # Replace with the actual token
-            "APP-KEY" : app_key
+           # "APP-ID": app_id,  # Replace with the actual token
+            "apiKey" : app_key
         }
 
-        # Make the POST request
-        response = requests.post(endpoint +"/api/v1/mfa/request", params=params, json=payload, headers=headers)
+        endpointURL = endpoint + '/deed/' + deed_id + '/'+national_id+'/National_ID'
+        response = requests.get(endpointURL,  headers=headers)
+        # TODO remove this fake api 
+        #endpointURL = 'http://fikak.localhost:8000/api/method/fikak_app.fikak_api.fake_api.get_deed_data'
+        #response = requests.get(endpointURL)
         
         if response.status_code in (200 , 201):
             return 200 , {
@@ -46,7 +43,7 @@ def creat_new_wathiq_request_deed(national_id ,deed_id , request_id , endpoint ,
                 "data" : response.json(),
             }
         else:
-            frappe.log_error(frappe.get_traceback(), " Nafath request error : " + response.text)
+            frappe.log_error(frappe.get_traceback(), " Watheq request error : " + response.text)
             try:
                 error =  _(REQUEST_ERRORS[response.json()['code']])
             except :
@@ -56,98 +53,93 @@ def creat_new_wathiq_request_deed(national_id ,deed_id , request_id , endpoint ,
                 "message": error
             }
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(),"Nafath exception : " + str(e))
+        frappe.log_error(frappe.get_traceback(),"WATHEQ exception : " + str(e))
         return 500 , {
             "status" : False,
             "message": str(e)
         }
     
-def create_new_wathiq_request(national_id ,deed_id , request_id):
-    request = frappe.new_doc("WATHIQ Request")
+def create_new_watheq_request(national_id ,deed_id , request_id):
+    request = frappe.new_doc("WATHEQ Request")
     request.national_id = national_id
+    request.deed_id = deed_id
     request.request_id = request_id
     request.insert(ignore_permissions=True)
     frappe.db.commit()
     return request
 
 @frappe.whitelist(allow_guest=True)
-def generate_wathiq_transaction(national_id):
+def get_deed_data(deed_id):
     try:
-        if frappe.db.exists("User" , {'username' : national_id}):
-            frappe.local.response.http_status_code = 400
-            return {
-                "status" : False,
-                "message": _("المستخدم موجود بالفعل , يرجى تسجيل الدخول") 
-            }
-        # TODO : Create Wathiq Request
-        request_id = generate_request_id()
-        request_doc = create_new_wathiq_request(national_id , request_id)
-        nafath_settings = frappe.get_single('WATHIQ Settings')
-        response = creat_new_wathiq_request_deed(national_id , request_id , nafath_settings.api_url , nafath_settings.get_password('app_id') ,nafath_settings.get_password('app_key'))
-        if response[1]['status']:
-            request_doc.transaction_id = response[1]['data']['transId']
-            request_doc.random = response[1]['data']['random']
-            request_doc.save()
-        frappe.local.response.http_status_code = response[0]
-        return response[1]
+        user_data = frappe.get_doc("User" , {"name": frappe.session.user})
+        if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id}):
+            deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id})
+            ## TODO : We should check if the user has the right to see this deed
+            # check if user_data["owner_details"].contains ( user_data["national_id"])
+            return deed_data
+
+
+        # TODO : see why the national id is not getten
+        national_id = user_data.get("username")
+        watheq_settings = frappe.get_single('WATHEQ Settings')
+        # Check if we are using api or fake date
+        if(watheq_settings.get("is_enabled")):
+            # Create watheq request
+            response = creat_new_watheq_request_deed(deed_id, national_id , watheq_settings.api_url , watheq_settings.get_password('app_id') ,watheq_settings.get_password('app_key'))
+            responseData = response[1].get("data")
+        else :     
+            # save global result for traking 
+            responseData = fake_api.get_deed_data()
+
+        #  Create watheq Request/Response obj
+        insert_watheq_request_callback(national_id,deed_id, responseData)
+        deed_data = insert_deed(responseData)
+        # retrun response to UI 
+        return deed_data
+        # if response[1]['status']:
+        #     request_doc.transaction_id = response[1]['data']['transId']
+        #     request_doc.random = response[1]['data']['random']
+        #     request_doc.save()
+        # frappe.local.response.http_status_code = response[0]
+        # return response[1]
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(),"Nafath exception : " + str(e))
+        frappe.log_error(frappe.get_traceback(),"WATHEQ exception : " + str(e))
         return {
             "status" : False,
             "message": str(e)
         }
 
-def generate_request_id():
-    # Generate a UUID
-    uuid_part = str(uuid.uuid4())
-    
-    # Get the current date-time as a formatted string (year, month, day, hour, minute, second, microsecond)
-    datetime_part = datetime.now().strftime('%Y%m%d%H%M%S%f')
-    
-    # Combine UUID with the formatted date-time string
-    request_id = f"{uuid_part}{datetime_part}"
-    
-    return request_id
+ 
 
+def insert_watheq_request_callback(national_id,deed_id,response_data):
+    request_id = global_utils.generate_request_id()
+    # Convert the JSON dictionary to a JSON string
+    json_string = json.dumps(response_data)
+    doc = frappe.get_doc({
+        "doctype": "WATHEQ Response",
+        "request_id": request_id ,
+        "deed_id": deed_id ,
+        "national_id": national_id ,
+        "response": json_string  # Assuming "text_field" is where you want to store it
+    })
 
-def insert_callback(jwt , decoded_json):
-    doc = frappe.new_doc("Wathiq Callback")
-    doc.jwt_token = jwt
-    doc.decoded_json = decoded_json
-    doc.save(ignore_permissions=True)
-    frappe.db.commit()
-    return doc.name
-
-
-@frappe.whitelist(allow_guest=False)
-def get_deed_data(deedNumber):
-    if(frappe.session.user):
-        user = frappe.db.get_value("User", {"name": frappe.session.user}, "name")
-        ## TODO : We should check if the user has the right to see this deed
-        deed_data = frappe.get_doc("Deed Wathiq" , {"deednumber" : deedNumber})
-    else:
-        frappe.throw("Session expired")  
-
-    
-
-    # if not frappe.db.exists("Wathiq Request" , {"deedNumber" : deedNumber , "transaction_id" : transaction_id , "random" : random}):
-    #     frappe.throw("Request not found")
-    return deed_data
-
+    # Insert or update the document
+    try:
+        doc.insert()
+        frappe.db.commit()  # Save changes to the database
+    except Exception as e:
+        frappe.db.rollback()  # Rollback if there's an error
+        frappe.log_error(str(e), "Error Saving JSON Data")
+        print("Error saving document:", e)
 
 @frappe.whitelist(allow_guest=True)
 def insert_deed(data):
-
-    # file_path = frappe.get_app_path('fikak_app', 'data', 'Wathiq_deed.json')
-    # with open(file_path, 'r') as file:
-    #     data = json.load(file)
-
     # Create the parent Deed document
     try:
-        if frappe.db.exists("Deed Wathiq" , {"deednumber" : data["deedDetails"]["deedNumber"]}):
-            deed_data = frappe.get_doc("Deed Wathiq" , {"deednumber" : data["deedDetails"]["deedNumber"]})            
+        if frappe.db.exists("WATHEQ Deed" , {"deed_number" : data["deedDetails"]["deedNumber"]}):
+            deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : data["deedDetails"]["deedNumber"]})            
         else :
-            deed_data = frappe.new_doc("Deed Wathiq")
+            deed_data = frappe.new_doc("WATHEQ Deed")
             deed_data.deed_number = data["deedDetails"]["deedNumber"]
             deed_data.deed_serial = data["deedDetails"]["deedSerial"]
             deed_data.deed_date = data["deedDetails"]["deedDate"]      
@@ -185,7 +177,7 @@ def insert_deed(data):
             deed_data.west_limit_name = data["deedLimitsDetails"]["westLimitName"]      
             deed_data.west_limit_description = data["deedLimitsDetails"]["westLimitDescription"]   
             deed_data.west_limit_length = data["deedLimitsDetails"]["westLimitLength"] 
-            deed_data.west_limit_lengthchar = data["deedLimitsDetails"]["westLimitLengthChar"]
+            deed_data.west_limit_length_char = data["deedLimitsDetails"]["westLimitLengthChar"]
 
 
             # Add Owner Details to the Deed (assuming each owner is a row in deedOwners)
@@ -202,7 +194,7 @@ def insert_deed(data):
                 # else:
                 # Now append this newly created owner to the deed
                 deed_data.append("owner_details", {
-                    "doctype": "Deed Owner",
+                    "doctype": "WATHEQ Deed Owner",
                     "id_number": owner["idNumber"],
                     "owner_name": owner["ownerName"],
                     "birth_date": owner["birthDate"],
@@ -231,7 +223,7 @@ def insert_deed(data):
                 # else:
                 # Now append this newly created RealEstate to the deed
                 deed_data.append("real_estate_details", {
-                    "doctype": "Real Estate Details",
+                    "doctype": "WATHEQ Real Estate Details",
                     "deed_serial": property["deedSerial"],
                     "region_code": property["regionCode"],
                     "region_name": property["regionName"],
@@ -272,35 +264,3 @@ def insert_deed(data):
         return deed_data
     except Exception as e:
         frappe.throw(str(e))
-
-
-
-@frappe.whitelist(allow_guest=True)
-def upate_deed_data(random , transaction_id , national_id , user_data ):
-    if not frappe.db.exists("Wathiq Request" , {"national_id" : national_id , "transaction_id" : transaction_id , "random" : random}):
-        frappe.throw("Request not found")
-    try:
-        
-        # user = frappe.get_doc("User" , {"username" : national_id})
-        # update_password(user.name , user_data.get("password"))
-        # user.email = user_data.get("email")
-        # user.save(ignore_permissions=True)
-        # person_data = frappe.get_doc("Person Data" , {"nin" : national_id})
-        # person_data.income_range = user_data.get("income_range")
-        # person_data.income_source = user_data.get("income_source")
-        # person_data.martial_status = user_data.get("martial_status")
-        # person_data.phone_number = user_data.get("phone_number")
-        # person_data.save(ignore_permissions=True)
-        
-        # frappe.db.commit()
-        # login_manager = frappe.auth.LoginManager()
-        # login_manager.authenticate(user=user.name, pwd=user_data.get("password"))
-        # login_manager.post_login()
-
-        return user_data
-    except Exception as e:
-        frappe.local.response.http_status_code = 500
-        return {
-            "status" : False,
-            "message" : str(e)
-        }

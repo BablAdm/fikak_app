@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class WATHIQCallback(Document):
+class DEVMODPROPS(Document):
 	pass

@@ -1,7 +1,7 @@
 {
  "actions": [],
  "autoname": "autoincrement",
- "creation": "2024-11-01 20:24:10.792986",
+ "creation": "2024-11-04 08:45:13.931380",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -49,46 +49,9 @@
  ],
  "fields": [
   {
-   "fieldname": "area",
-   "fieldtype": "Data",
-   "label": "Area"
-  },
-  {
-   "fieldname": "column_break_wtld",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "constrained",
-   "fieldtype": "Data",
-   "label": "Constrained"
-  },
-  {
-   "fieldname": "halt",
-   "fieldtype": "Data",
-   "label": "Halt"
-  },
-  {
-   "fieldname": "pawned",
-   "fieldtype": "Data",
-   "label": "Pawned"
-  },
-  {
-   "fieldname": "testament",
-   "fieldtype": "Data",
-   "label": "Testament"
-  },
-  {
-   "fieldname": "column_break_denf",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "eastlimitcode",
-   "fieldtype": "Data",
-   "label": "East Limit Code"
-  },
-  {
-   "fieldname": "column_break_pvum",
-   "fieldtype": "Column Break"
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
   },
   {
    "fieldname": "deed_serial",
@@ -137,9 +100,18 @@
    "label": "Plan Number"
   },
   {
+   "fieldname": "area",
+   "fieldtype": "Data",
+   "label": "Area"
+  },
+  {
    "fieldname": "area_text",
    "fieldtype": "Data",
    "label": "Area Text"
+  },
+  {
+   "fieldname": "column_break_wtld",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "dstrict_code",
@@ -157,9 +129,34 @@
    "label": "Location Description"
   },
   {
+   "fieldname": "constrained",
+   "fieldtype": "Data",
+   "label": "Constrained"
+  },
+  {
+   "fieldname": "halt",
+   "fieldtype": "Data",
+   "label": "Halt"
+  },
+  {
+   "fieldname": "pawned",
+   "fieldtype": "Data",
+   "label": "Pawned"
+  },
+  {
+   "fieldname": "testament",
+   "fieldtype": "Data",
+   "label": "Testament"
+  },
+  {
    "fieldname": "is_north_riyadh_exceptioned",
    "fieldtype": "Data",
    "label": "Is North Riyadh Exceptioned"
+  },
+  {
+   "fieldname": "real_estate_border_details__n_s__section",
+   "fieldtype": "Section Break",
+   "label": "Real Estate Border Details ( N /S )"
   },
   {
    "fieldname": "north_limit_code",
@@ -182,6 +179,10 @@
    "label": "North Limit Length Char"
   },
   {
+   "fieldname": "column_break_denf",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "south_limit_code",
    "fieldtype": "Data",
    "label": "South Limit Code"
@@ -202,6 +203,16 @@
    "label": "South Limit Length Char"
   },
   {
+   "fieldname": "real_estate_border_details__e__w__section",
+   "fieldtype": "Section Break",
+   "label": "Real Estate Border Details ( E / W )"
+  },
+  {
+   "fieldname": "eastlimitcode",
+   "fieldtype": "Data",
+   "label": "East Limit Code"
+  },
+  {
    "fieldname": "east_limit_description",
    "fieldtype": "Data",
    "label": "East Limit Description"
@@ -215,6 +226,10 @@
    "fieldname": "east_limit_length_char",
    "fieldtype": "Data",
    "label": "East Limit Length Char"
+  },
+  {
+   "fieldname": "column_break_pvum",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "west_limit_code",
@@ -235,30 +250,15 @@
    "fieldname": "west_limit_length_char",
    "fieldtype": "Data",
    "label": "West Limit Length Char"
-  },
-  {
-   "fieldname": "real_estate_border_details__n_s__section",
-   "fieldtype": "Section Break",
-   "label": "Real Estate Border Details ( N /S )"
-  },
-  {
-   "fieldname": "real_estate_border_details__e__w__section",
-   "fieldtype": "Section Break",
-   "label": "Real Estate Border Details ( E / W )"
-  },
-  {
-   "fieldname": "details_section",
-   "fieldtype": "Section Break",
-   "label": "Details"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-03 15:54:35.067656",
+ "modified": "2024-11-04 08:45:13.931380",
  "modified_by": "Administrator",
  "module": "Deeds Management",
- "name": "Real Estate Details",
+ "name": "WATHEQ Real Estate Details",
  "naming_rule": "Autoincrement",
  "owner": "Administrator",
  "permissions": [],
