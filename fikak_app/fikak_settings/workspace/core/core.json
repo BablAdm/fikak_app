@@ -35,7 +35,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Integrations Settings",
-   "link_count": 1,
+   "link_count": 2,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -49,9 +49,19 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "TARABUT Settings",
+   "link_count": 0,
+   "link_to": "TARABUT Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-10-28 12:15:38.496922",
+ "modified": "2024-11-05 15:52:05.298748",
  "modified_by": "Administrator",
  "module": "Fikak Settings",
  "name": "Core",
