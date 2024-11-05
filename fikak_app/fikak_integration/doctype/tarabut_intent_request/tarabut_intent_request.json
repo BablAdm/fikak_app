@@ -9,7 +9,8 @@
   "intent_id",
   "connect_url",
   "expiry",
-  "status"
+  "status",
+  "tarabut_callback"
  ],
  "fields": [
   {
@@ -29,12 +30,12 @@
   },
   {
    "fieldname": "connect_url",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Connect URL"
   },
   {
    "fieldname": "expiry",
-   "fieldtype": "Date",
+   "fieldtype": "Datetime",
    "label": "Expiry"
   },
   {
@@ -42,15 +43,21 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nREJECTED\nAPPROVED\nWAITING"
+   "options": "\nSUCCESSFUL\nFAILED\nWAITING"
+  },
+  {
+   "fieldname": "tarabut_callback",
+   "fieldtype": "Link",
+   "label": "TARABUT Callback",
+   "options": "TARABUT Callback"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-05 15:51:18.327405",
+ "modified": "2024-11-05 19:39:02.822170",
  "modified_by": "Administrator",
  "module": "Fikak Integration",
- "name": "TARABUT Consent Request",
+ "name": "TARABUT Intent Request",
  "owner": "Administrator",
  "permissions": [
   {

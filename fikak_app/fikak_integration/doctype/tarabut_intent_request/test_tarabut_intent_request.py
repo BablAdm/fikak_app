@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestTARABUTConsentRequest(FrappeTestCase):
+class TestTARABUTIntentRequest(FrappeTestCase):
 	pass

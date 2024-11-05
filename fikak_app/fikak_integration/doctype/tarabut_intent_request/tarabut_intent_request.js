@@ -1,7 +1,7 @@
 // Copyright (c) 2024, Waseera and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on("TARABUT Consent Request", {
+// frappe.ui.form.on("TARABUT Intent Request", {
 // 	refresh(frm) {
 
 // 	},

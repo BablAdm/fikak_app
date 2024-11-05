@@ -2,6 +2,8 @@
 
 import frappe
 import requests
+from frappe import _
+
 
 def generate_access_token(endpoint, client_id, client_secret, customer_id):
     """
@@ -83,9 +85,11 @@ def create_intent():
         try:
             response = requests.post(f"{endpoint}/accountInformation/v1/intent", headers=headers, json=data)
             if response.status_code in (201 , 200):
+                result = response.json()
+                insert_intent_request(result.get("intentId") , result.get("connectUrl") , result.get("expiry"))
                 return {
                     "message": "Intent created successfully",
-                    "data": response.json(),
+                    "data": result,
                     "status": True
                 }
             else:
@@ -105,3 +109,72 @@ def create_intent():
             "message": "Access token not generated",
             "status": False
         }
+
+
+def insert_intent_request(intent_id , connect_url , Expiry):
+    """
+    Insert the intent request in the database.
+
+    This function inserts the intent request in the database.
+
+    Args:
+        user (str): The user who created the intent.
+        intent_id (str): The intent ID.
+        connect_url (str): The connect URL.
+        Expiry (str): The expiry date of the intent.
+    """
+
+    doc = frappe.get_doc({
+        "doctype": "TARABUT Intent Request",
+        "user": frappe.session.user,
+        "intent_id": intent_id,
+        "connect_url": connect_url,
+        "expiry": Expiry
+    })
+
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+
+def update_intent_request(intent_id , tarabut_callback, status):
+    """
+    Update the intent request in the database.
+
+    This function updates the intent request in the database.
+
+    Args:
+        intent_id (str): The intent ID.
+        status (str): The status of the intent.
+    """
+
+    doc = frappe.get_doc("TARABUT Intent Request", {"intent_id": intent_id})
+    doc.status = status
+    doc.tarabut_callback = tarabut_callback
+    doc.save(ignore_permissions=True)
+    frappe.db.commit()
+
+@frappe.whitelist(allow_guest=True)
+def handle_tarabut_webhook(intentId, status):
+    """
+    Endpoint to handle the TARABUT webhook by capturing intentId and status, and
+    saving them in the TARABUT Callback Doctype.
+
+    Args:
+        intentId (str): The unique intent identifier from the webhook URL.
+        status (str): The status of the intent, such as "SUCCESSFUL" or other values.
+    """
+    try:
+        # Insert a new document in TARABUT Callback
+        doc = frappe.get_doc({
+            "doctype": "TARABUT Callback",
+            "intent_id": intentId,
+            "status": status
+        })
+        
+        doc.insert(ignore_permissions=True)  # Ignore permissions if necessary
+        update_intent_request(intentId, doc.name, status)  # Update the intent request
+        frappe.db.commit()  # Commit the transaction
+
+        return {"message": _("Data inserted successfully in TARABUT Callback"), "status": True}
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), _("Error in TARABUT Webhook"))
+        return {"message": _("Failed to insert data"), "error": str(e), "status": False}

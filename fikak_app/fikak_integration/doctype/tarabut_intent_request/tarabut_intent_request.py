@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class TARABUTConsentRequest(Document):
+class TARABUTIntentRequest(Document):
 	pass
