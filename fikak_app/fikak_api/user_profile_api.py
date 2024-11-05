@@ -13,16 +13,24 @@ def update_user_photo():
         dict: Success message with file URL.
     """
     # Check if user exists
+    try:
+        user = frappe.get_doc('User', frappe.session.user)
+    except frappe.DoesNotExistError:
+        frappe.local.response["http_status_code"] = 404
+        return {
+            "message": _("User not found"),
+            "status": False
+        }
     
-    user = frappe.get_doc('User', frappe.session.user)
-    if not user:
-        frappe.throw("User not found")
-
     # Get binary file from request
     file = frappe.request.files.get('user_photo')
     
     if not file:
-        frappe.throw("No file uploaded")
+        frappe.local.response["http_status_code"] = 400
+        return {
+            "message": _("No file found in request"),
+            "status": False
+        }
     
     # Save the file
     file_doc = save_file(
@@ -52,9 +60,14 @@ def get_user_profile_data():
         Returns:
         dict: User profile data.
     """
-    user = frappe.get_doc('User', frappe.session.user)
-    if not user:
-        frappe.throw("User not found")
+    try:
+        user = frappe.get_doc('User', frappe.session.user)
+    except frappe.DoesNotExistError:
+        frappe.local.response["http_status_code"] = 404
+        return {
+            "message": _("User not found"),
+            "status": False
+        }
 
     try:
         person_data = frappe.get_doc('Person Data', {'user': user.name})
@@ -92,7 +105,7 @@ def get_user_profile_data():
     return {
         "status" : True,
         "data" : data,
-        "message" : "User profile data retrieved successfully"
+        "message" : _("User profile data retrieved successfully")
     }
 
 @frappe.whitelist(methods=['POST'])
@@ -108,7 +121,10 @@ def update_user_profile_data(user_data):
     """
     user = frappe.get_doc('User', frappe.session.user)
     if not user:
-        frappe.throw("User not found")
+        return {
+            "message" : _("User Not Found"),
+            "status" : False
+        }
     if user.email != user_data.get("email"): user.email = user_data.get("email")
     if user.time_zone != user_data.get("time_zone"): user.time_zone = user_data.get("time_zone")
 
@@ -210,6 +226,5 @@ def deactivate_user_account(methods=['POST']):
         return {"status":True,  "message": _("User account deactivated request created successfully")}
     
     except Exception as e:
-        frappe.throw(str(e))
         frappe.local.response["http_status_code"] = 500
         return {"message":_("An error occurred while deactivating the account: {0}").format(str(e)) , "status" : False}
