@@ -1,0 +1,126 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-05 15:54:06.762521",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "account_id",
+  "account_product_type",
+  "last_updated_date_time",
+  "last_balances_update_datetime",
+  "column_break_nkyd",
+  "account_holder_name",
+  "bank_provider",
+  "account_description",
+  "section_break_udfr",
+  "consents",
+  "balances",
+  "links",
+  "identifiers"
+ ],
+ "fields": [
+  {
+   "fieldname": "account_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Id",
+   "reqd": 1
+  },
+  {
+   "fieldname": "account_holder_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Holder Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "account_product_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Product Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "account_description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Account Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bank_provider",
+   "fieldtype": "Link",
+   "label": "Bank Provider",
+   "options": "Bank Provider",
+   "reqd": 1
+  },
+  {
+   "fieldname": "last_updated_date_time",
+   "fieldtype": "Datetime",
+   "label": "Last Updated Date Time"
+  },
+  {
+   "fieldname": "consents",
+   "fieldtype": "Table",
+   "label": "Consents",
+   "options": "Bank Account Details Consent Item"
+  },
+  {
+   "fieldname": "links",
+   "fieldtype": "Table",
+   "label": "Links",
+   "options": "Bank Account Details Link Item"
+  },
+  {
+   "fieldname": "identifiers",
+   "fieldtype": "Table",
+   "label": "Identifiers",
+   "options": "Bank Account Details Identifier Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "balances",
+   "fieldtype": "Table",
+   "label": "Balances",
+   "options": "Bank Account Details Balance Item"
+  },
+  {
+   "fieldname": "column_break_nkyd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_udfr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "last_balances_update_datetime",
+   "fieldtype": "Datetime",
+   "label": "Last Balances Update Datetime"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-05 16:50:42.019834",
+ "modified_by": "Administrator",
+ "module": "Banking Management",
+ "name": "Bank Account Details",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
