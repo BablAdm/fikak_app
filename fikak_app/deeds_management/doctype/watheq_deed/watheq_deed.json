@@ -53,9 +53,9 @@
   "realestatedetails_tab",
   "real_estate_details",
   "eligibilitystats_tab",
-  "eligibile",
-  "remark",
-  "service"
+  "wizard_step",
+  "workflow_state",
+  "selected_services"
  ],
  "fields": [
   {
@@ -296,28 +296,32 @@
   {
    "fieldname": "eligibilitystats_tab",
    "fieldtype": "Tab Break",
-   "label": "Eligibility Status"
+   "label": "Waseera Workflow"
   },
   {
-   "default": "0",
-   "fieldname": "eligibile",
-   "fieldtype": "Check",
-   "label": "Eligibile"
+   "default": "2",
+   "fieldname": "wizard_step",
+   "fieldtype": "Int",
+   "label": "Wizard Step",
+   "options": "0\n1\n2\n3\n4"
   },
   {
-   "fieldname": "remark",
-   "fieldtype": "Data",
-   "label": "Remark"
+   "default": "NEW",
+   "fieldname": "workflow_state",
+   "fieldtype": "Select",
+   "label": "Workflow State",
+   "options": "NEW\nPENDING\nELIGIBLE\nNOT-ELIGIBLE"
   },
   {
-   "fieldname": "service",
-   "fieldtype": "Data",
-   "label": "Service"
+   "fieldname": "selected_services",
+   "fieldtype": "Select",
+   "label": "Selected Services",
+   "options": "Mortgage split\nAsset-Backed Loan\nInvestments"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-04 08:55:41.649768",
+ "modified": "2024-11-05 09:41:46.946586",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Deed",

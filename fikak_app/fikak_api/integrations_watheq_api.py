@@ -132,7 +132,7 @@ def insert_watheq_request_callback(national_id,deed_id,response_data):
         frappe.log_error(str(e), "Error Saving JSON Data")
         print("Error saving document:", e)
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=False)
 def insert_deed(data):
     # Create the parent Deed document
     try:
@@ -264,3 +264,93 @@ def insert_deed(data):
         return deed_data
     except Exception as e:
         frappe.throw(str(e))
+
+
+# Fetch the first deed created by the current user with status 
+@frappe.whitelist(allow_guest=False)
+def get_user_last_deed(status):
+    # Get the current logged-in user
+    current_user = frappe.session.user
+
+    document = frappe.get_all(
+        "WATHEQ Deed",  
+        filters={
+            "owner": current_user,  # Filter by current user
+            "workflow_state": status         # Filter by status
+        },
+        #fields=["name", "status", "creation", "modified"],  # Specify fields you need
+        order_by="modified desc",  # Sort by modification date in descending order
+        limit=1                    # Get only the first document
+    )
+
+    # Return the full document if it exists
+    if document:
+        return frappe.get_doc("WATHEQ Deed", document[0])
+    else:
+        return None
+
+
+
+# Fetch all Deeds Eligibility Request created by the current user with status
+@frappe.whitelist(allow_guest=False)
+def get_user_deeds(status):
+    # Get the current logged-in user
+    current_user = frappe.session.user
+
+    if(status != ""):
+        documents = frappe.get_all(
+            "WATHEQ Deed",  
+            filters={
+                "owner": current_user,  # Filter by current user
+                "workflow_state": status         # Filter by status
+            },
+            fields=["deed_number", "deed_serial", "deed_city", "workflow_state"],  # Specify fields you need
+            order_by="modified desc"
+        )
+    else:
+         documents = frappe.get_all(
+            "WATHEQ Deed",  
+            filters={
+                "owner": current_user
+            },
+            fields=["deed_number", "deed_serial", "deed_city", "workflow_state"],  # Specify fields you need
+            order_by="modified desc"
+        )       
+
+    return documents
+
+
+
+
+# Update deed eligibility request state
+@frappe.whitelist(allow_guest=False)
+def update_deed_doc(deed_id,updates):
+    try:
+        current_user = frappe.get_doc("User" , {"name": frappe.session.user})
+        if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id}):
+            deedDoc = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id})
+            # Check if the current user is the owner
+            current_user = frappe.session.user
+            if deedDoc.owner != current_user:
+                frappe.throw("You are not authorized to modify this document.")
+
+            # Update each field in the dictionary
+            for field, value in updates.items():
+                if hasattr(deedDoc, field):  # Check if the field exists on the DocType
+                    setattr(deedDoc, field, value)
+                else:
+                    print(f"Warning: '{field}' does not exist on '{deedDoc.doctype}' and will be ignored")
+
+
+            # Save the changes
+            deedDoc.save()
+            frappe.db.commit()  # Commit to ensure changes are saved to the database
+
+            print(f"Updated wizard_setup for document {deedDoc} to {wizard_step}")
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(),"WATHEQ exception : " + str(e))
+        return {
+            "status" : False,
+            "message": str(e)
+        }
