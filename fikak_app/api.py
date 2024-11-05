@@ -104,3 +104,8 @@ def get_country_list():
     return frappe.get_all("Country" , fields=["name" , "country_name"])
 
 
+@frappe.whitelist()
+def get_timezones():
+	import pytz
+
+	return {"timezones": pytz.all_timezones}

@@ -12,6 +12,7 @@
   "submission_date",
   "column_break_ub4ht",
   "user",
+  "total_weight",
   "section_break_kn4ww",
   "answers"
  ],
@@ -19,13 +20,17 @@
   {
    "fieldname": "kyc",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "KYC",
-   "options": "KYC"
+   "options": "KYC",
+   "reqd": 1
   },
   {
    "fieldname": "submission_date",
    "fieldtype": "Datetime",
-   "label": "Submission Date"
+   "in_list_view": 1,
+   "label": "Submission Date",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_ub4ht",
@@ -34,8 +39,10 @@
   {
    "fieldname": "user",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "User",
-   "options": "User"
+   "options": "User",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_kn4ww",
@@ -46,11 +53,18 @@
    "fieldtype": "Table",
    "label": "Answers",
    "options": "KYC Submission Answer Item"
+  },
+  {
+   "fieldname": "total_weight",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Total Weight",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-30 23:39:01.270072",
+ "modified": "2024-11-02 14:06:13.418117",
  "modified_by": "Administrator",
  "module": "KYC Management",
  "name": "KYC Submission",

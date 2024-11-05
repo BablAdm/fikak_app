@@ -10,8 +10,10 @@
  "field_order": [
   "question_title",
   "question_type",
+  "weight",
   "column_break_2v7i3",
   "question_code",
+  "included_in_scoring",
   "section_break_bukoh",
   "answers"
  ],
@@ -54,11 +56,24 @@
   {
    "fieldname": "section_break_bukoh",
    "fieldtype": "Section Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "included_in_scoring",
+   "fieldtype": "Check",
+   "label": "Included In Scoring?"
+  },
+  {
+   "depends_on": "eval:(doc.question_type == 'Short Answer') &&  (doc.included_in_scoring ==1)",
+   "fieldname": "weight",
+   "fieldtype": "Percent",
+   "label": "Weight",
+   "mandatory_depends_on": "eval:(doc.question_type == 'Short Answer') &&  (doc.included_in_scoring ==1)"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-31 12:10:58.130137",
+ "modified": "2024-11-02 14:00:36.026607",
  "modified_by": "Administrator",
  "module": "KYC Management",
  "name": "KYC Question",

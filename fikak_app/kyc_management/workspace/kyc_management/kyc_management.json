@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"Z-4obDjePI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KYC Management</span>\",\"col\":12}},{\"id\":\"XzdtGAU6Wy\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}}]",
+ "content": "[{\"id\":\"Z-4obDjePI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">KYC Management</span>\",\"col\":12}},{\"id\":\"Oz_v8vu-5j\",\"type\":\"card\",\"data\":{\"card_name\":\"Submissions\",\"col\":4}},{\"id\":\"XzdtGAU6Wy\",\"type\":\"card\",\"data\":{\"card_name\":\"Master Data\",\"col\":4}}]",
  "creation": "2024-10-28 12:00:26.613339",
  "custom_blocks": [],
  "docstatus": 0,
@@ -40,9 +40,28 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Submissions",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Submissions",
+   "link_count": 0,
+   "link_to": "KYC Submission",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-10-28 12:15:51.258798",
+ "modified": "2024-11-02 13:29:34.101772",
  "modified_by": "Administrator",
  "module": "KYC Management",
  "name": "KYC Management",

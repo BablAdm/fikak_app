@@ -4,3 +4,4 @@ Users Management
 KYC Management
 Fikak Settings
 Deeds Management
+Banking Management
