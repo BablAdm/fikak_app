@@ -136,7 +136,6 @@ def get_answers(user):
     kyc_doc = frappe.qb.DocType("KYC")
     kyc_submission_doc = frappe.qb.DocType("KYC Submission")
     question_doc = frappe.qb.DocType("KYC Question")
-    question_answer_item_doc = frappe.qb.DocType("KYC Question Answer Item")
     kyc_submission_answer_doc = frappe.qb.DocType("KYC Submission Answer Item")
 
     answers_query = (
