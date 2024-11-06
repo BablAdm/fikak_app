@@ -1,0 +1,96 @@
+{
+    "deedDetails": {
+      "deedNumber": 660650001109,
+      "deedSerial": 17383331,
+      "deedDate": "1446-4-3",
+      "deedText": ""
+    },
+    "courtDetails": {
+      "deedSource": "مركز تحديث الصكوك",
+      "deedCity": "الرياض"
+    },
+    "deedStatus": "Active",
+    "deedInfo": {
+      "deedArea": 900,
+      "deedAreaText": "900 متر مربع",
+      "isRealEstateConstrained": false,
+      "isRealEstateHalted": false,
+      "isRealEstateMortgaged": false,
+      "isRealEstateTestamented": false
+    },
+    "ownerDetails": [
+      {
+        "ownerName": "عبدالله محمد ابن علي القحطاني",
+        "birthDate": "1404-02-10",
+        "idNumber": "1047281157",
+        "idType": "1",
+        "idTypeText": "سجل مدني",
+        "ownerType": "Personal",
+        "nationality": "سعودي",
+        "owningArea": 900,
+        "owningAmount": 100,
+        "constrained": 0,
+        "halt": 0,
+        "pawned": 0,
+        "testament": 0
+      }
+    ],
+    "deedLimitsDetails": {
+      "northLimitName": "يحده",
+      "northLimitDescription": "جزء من القطعة رقم 1652",
+      "northLimitLength": "22.5",
+      "northLimitLengthChar": "اثنين و عشرون متر و خمسون سنتمتر",
+      "southLimitName": "يحده",
+      "southLimitDescription": "شارع عرض 25م",
+      "southLimitLength": "22.5",
+      "southLimitLengthChar": "اثنين و عشرون متر و خمسون سنتمتر",
+      "eastLimitName": "يحده",
+      "eastLimitDescription": "قطعة رقم 1656",
+      "eastLimitLength": "40",
+      "eastLimitLengthChar": "أربعون متر",
+      "westLimitName": "يحده",
+      "westLimitDescription": "قطعة رقم 1654",
+      "westLimitLength": "40",
+      "westLimitLengthChar": "أربعون متر"
+    },
+    "realEstateDetails": [
+      {
+        "deedSerial": 6750487,
+        "regionCode": "4",
+        "regionName": "القصيم",
+        "cityCode": 37528,
+        "cityName": "جدة",
+        "realEstateTypeName": "قطعة الارض",
+        "landNumber": "1655 / أ",
+        "planNumber": "169 / ج / س",
+        "area": 900,
+        "areaText": "تسعمائة متر مربعاً",
+        "districtCode": 36655,
+        "districtName": "الوفاء",
+        "locationDescription": "حي  الوفاء  بمدينة جدة .",
+        "constrained": 0,
+        "halt": 0,
+        "pawned": 0,
+        "testament": 0,
+        "isNorthRiyadhExceptioned": 0,
+        "realEstateBorderDetails": {
+          "northLimitCode": "361",
+          "northLimitDescription": "جزء من القطعة رقم 1652",
+          "northLimitLength": 22.5,
+          "northLimitLengthChar": "اثنين و عشرون متر و خمسون سنتمتر",
+          "southLimitCode": "361",
+          "southLimitDescription": "شارع عرض 25م",
+          "southLimitLength": 22.5,
+          "southLimitLengthChar": "اثنين و عشرون متر و خمسون سنتمتر",
+          "eastLimitCode": "361",
+          "eastLimitDescription": "قطعة رقم 1656",
+          "eastLimitLength": 40,
+          "eastLimitLengthChar": "أربعون متر",
+          "westLimitCode": "361",
+          "westLimitDescription": "قطعة رقم 1654",
+          "westLimitLength": 40,
+          "westLimitLengthChar": "أربعون متر"
+        }
+      }
+    ]
+  }

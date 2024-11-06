@@ -35,6 +35,12 @@ function onFrappeLoad(callback) {
 }
 
 onFrappeLoad(function() {
+    debugger;
     console.log("Frappe boot data is fully loaded.");
     // Your code here
+});
+$(document).on("page:load", function() {
+    debugger;
+    console.log("A new Frappe page has loaded.");
+    // Your code for page load
 });

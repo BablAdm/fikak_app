@@ -1,0 +1,268 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2024-11-04 08:45:13.931380",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "details_section",
+  "deed_serial",
+  "region_code",
+  "region_name",
+  "city_code",
+  "city_name",
+  "real_estate_type_name",
+  "land_number",
+  "plan_number",
+  "area",
+  "area_text",
+  "column_break_wtld",
+  "dstrict_code",
+  "district_name",
+  "location_description",
+  "constrained",
+  "halt",
+  "pawned",
+  "testament",
+  "is_north_riyadh_exceptioned",
+  "real_estate_border_details__n_s__section",
+  "north_limit_code",
+  "north_limit_description",
+  "north_limit_length",
+  "north_limit_length_char",
+  "column_break_denf",
+  "south_limit_code",
+  "south_limit_description",
+  "south_limit_length",
+  "south_limit_length_char",
+  "real_estate_border_details__e__w__section",
+  "eastlimitcode",
+  "east_limit_description",
+  "east_limit_length",
+  "east_limit_length_char",
+  "column_break_pvum",
+  "west_limit_code",
+  "west_limit_description",
+  "west_limit_length",
+  "west_limit_length_char"
+ ],
+ "fields": [
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "deed_serial",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Deed Serial",
+   "not_nullable": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "region_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Region Code"
+  },
+  {
+   "fieldname": "region_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Region Name"
+  },
+  {
+   "fieldname": "city_code",
+   "fieldtype": "Data",
+   "label": "City Code"
+  },
+  {
+   "fieldname": "city_name",
+   "fieldtype": "Data",
+   "label": "City Name"
+  },
+  {
+   "fieldname": "real_estate_type_name",
+   "fieldtype": "Data",
+   "label": "Real Estate Type Name"
+  },
+  {
+   "fieldname": "land_number",
+   "fieldtype": "Data",
+   "label": "Land Number"
+  },
+  {
+   "fieldname": "plan_number",
+   "fieldtype": "Data",
+   "label": "Plan Number"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Data",
+   "label": "Area"
+  },
+  {
+   "fieldname": "area_text",
+   "fieldtype": "Data",
+   "label": "Area Text"
+  },
+  {
+   "fieldname": "column_break_wtld",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dstrict_code",
+   "fieldtype": "Data",
+   "label": "Dstrict Code"
+  },
+  {
+   "fieldname": "district_name",
+   "fieldtype": "Data",
+   "label": "District Name"
+  },
+  {
+   "fieldname": "location_description",
+   "fieldtype": "Data",
+   "label": "Location Description"
+  },
+  {
+   "fieldname": "constrained",
+   "fieldtype": "Data",
+   "label": "Constrained"
+  },
+  {
+   "fieldname": "halt",
+   "fieldtype": "Data",
+   "label": "Halt"
+  },
+  {
+   "fieldname": "pawned",
+   "fieldtype": "Data",
+   "label": "Pawned"
+  },
+  {
+   "fieldname": "testament",
+   "fieldtype": "Data",
+   "label": "Testament"
+  },
+  {
+   "fieldname": "is_north_riyadh_exceptioned",
+   "fieldtype": "Data",
+   "label": "Is North Riyadh Exceptioned"
+  },
+  {
+   "fieldname": "real_estate_border_details__n_s__section",
+   "fieldtype": "Section Break",
+   "label": "Real Estate Border Details ( N /S )"
+  },
+  {
+   "fieldname": "north_limit_code",
+   "fieldtype": "Data",
+   "label": "North Limit Code"
+  },
+  {
+   "fieldname": "north_limit_description",
+   "fieldtype": "Data",
+   "label": "North Limit Description"
+  },
+  {
+   "fieldname": "north_limit_length",
+   "fieldtype": "Data",
+   "label": "North Limit Length"
+  },
+  {
+   "fieldname": "north_limit_length_char",
+   "fieldtype": "Data",
+   "label": "North Limit Length Char"
+  },
+  {
+   "fieldname": "column_break_denf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "south_limit_code",
+   "fieldtype": "Data",
+   "label": "South Limit Code"
+  },
+  {
+   "fieldname": "south_limit_description",
+   "fieldtype": "Data",
+   "label": "South Limit Description"
+  },
+  {
+   "fieldname": "south_limit_length",
+   "fieldtype": "Data",
+   "label": "South Limit Length"
+  },
+  {
+   "fieldname": "south_limit_length_char",
+   "fieldtype": "Data",
+   "label": "South Limit Length Char"
+  },
+  {
+   "fieldname": "real_estate_border_details__e__w__section",
+   "fieldtype": "Section Break",
+   "label": "Real Estate Border Details ( E / W )"
+  },
+  {
+   "fieldname": "eastlimitcode",
+   "fieldtype": "Data",
+   "label": "East Limit Code"
+  },
+  {
+   "fieldname": "east_limit_description",
+   "fieldtype": "Data",
+   "label": "East Limit Description"
+  },
+  {
+   "fieldname": "east_limit_length",
+   "fieldtype": "Data",
+   "label": "East Limit Length"
+  },
+  {
+   "fieldname": "east_limit_length_char",
+   "fieldtype": "Data",
+   "label": "East Limit Length Char"
+  },
+  {
+   "fieldname": "column_break_pvum",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "west_limit_code",
+   "fieldtype": "Data",
+   "label": "West Limit Code"
+  },
+  {
+   "fieldname": "west_limit_description",
+   "fieldtype": "Data",
+   "label": "West Limit Description"
+  },
+  {
+   "fieldname": "west_limit_length",
+   "fieldtype": "Data",
+   "label": "West Limit Length"
+  },
+  {
+   "fieldname": "west_limit_length_char",
+   "fieldtype": "Data",
+   "label": "West Limit Length Char"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-04 08:45:13.931380",
+ "modified_by": "Administrator",
+ "module": "Deeds Management",
+ "name": "WATHEQ Real Estate Details",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

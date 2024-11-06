@@ -11,6 +11,9 @@ MIT
 
 bench --site fikak.localhost migrate
 
+bench --site fikak.localhost migrate
+
+
 #  Clear Web site cache
 bench --site fikak.localhost clear-cache
 
@@ -21,6 +24,10 @@ bench --site fikak.localhost set-config app fikak_app
 # show the site config
 bench --site fikak.localhost show-config --format text
 
+
+# Clear Redis cache
+bench clear-redis
+=======
 
 # Naming Format
 fields naming format : 
