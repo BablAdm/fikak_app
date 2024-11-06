@@ -5,10 +5,12 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "user",
   "account_id",
   "account_product_type",
   "last_updated_date_time",
   "last_balances_update_datetime",
+  "last_account_update_date_time",
   "column_break_nkyd",
   "account_holder_name",
   "bank_provider",
@@ -97,11 +99,22 @@
    "fieldname": "last_balances_update_datetime",
    "fieldtype": "Datetime",
    "label": "Last Balances Update Datetime"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "fieldname": "last_account_update_date_time",
+   "fieldtype": "Datetime",
+   "label": "Last Account Update Date Time"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-05 16:50:42.019834",
+ "modified": "2024-11-06 13:39:02.169506",
  "modified_by": "Administrator",
  "module": "Banking Management",
  "name": "Bank Account Details",

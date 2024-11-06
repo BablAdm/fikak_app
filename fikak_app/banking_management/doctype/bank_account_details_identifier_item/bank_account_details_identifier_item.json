@@ -7,28 +7,28 @@
  "engine": "InnoDB",
  "field_order": [
   "type",
-  "link"
+  "value"
  ],
  "fields": [
-  {
-   "fieldname": "link",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Link",
-   "reqd": 1
-  },
   {
    "fieldname": "type",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Type",
    "reqd": 1
+  },
+  {
+   "fieldname": "value",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Value",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-05 16:28:35.105305",
+ "modified": "2024-11-06 13:42:07.035471",
  "modified_by": "Administrator",
  "module": "Banking Management",
  "name": "Bank Account Details Identifier Item",

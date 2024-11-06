@@ -1,34 +1,40 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:provider_name",
+ "autoname": "field:bank_name",
  "creation": "2024-11-05 16:19:42.337034",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "provider_code",
-  "provider_name"
+  "bank_code",
+  "bank_name",
+  "logo"
  ],
  "fields": [
   {
-   "fieldname": "provider_code",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Provider Code",
-   "reqd": 1
+   "fieldname": "logo",
+   "fieldtype": "Attach Image",
+   "label": "Logo"
   },
   {
-   "fieldname": "provider_name",
+   "fieldname": "bank_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Provider Name",
+   "label": "Bank Name",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "bank_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bank Code",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-05 16:20:34.658531",
+ "modified": "2024-11-06 11:52:36.752173",
  "modified_by": "Administrator",
  "module": "Banking Management",
  "name": "Bank Provider",
