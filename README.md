@@ -39,3 +39,6 @@ realEstateDetails  --> Real Estate Details
 childtable doctypes naming :
 Deed Owner -- > Deed Owner Item
 
+
+# to migrate site
+ bench --site pre-eservices.waseera.sa migrate
