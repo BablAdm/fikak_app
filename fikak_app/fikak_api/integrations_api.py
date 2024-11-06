@@ -91,6 +91,7 @@ def generate_nafath_transaction(national_id):
         return response[1]
     except Exception as e:
         frappe.log_error(frappe.get_traceback(),"Nafath exception : " + str(e))
+        frappe.local.response.http_status_code = 500
         return {
             "status" : False,
             "message": str(e)
@@ -156,13 +157,19 @@ def check_request_status(national_id , tansaction_id , random ):
         # return response[1]
         request_record = frappe.get_doc("NAFATH Request" , {  "transaction_id" : tansaction_id , "random" : random})
         status = request_record.status
-        if is_request_older_than_3_minutes(request_record):
-            update_request_status(tansaction_id , request_record.request_id , "EXPIRED")
-            status = "EXPIRED"
+        has_more_than_3_min , passing_time = is_request_older_than_3_minutes(request_record)
+        if has_more_than_3_min:
+            request_status = check_request(national_id , tansaction_id, random)
+            print("more than 3 minutes")
+            print(request_status)
+            if request_status[1]['status'] and request_status[1]['data']['status'] == "EXPIRED":
+                update_request_status(tansaction_id , request_record.request_id , "EXPIRED")
+                status = "EXPIRED"
         return {
             "status" : True,
             "data" : {
-                "status" : status
+                "status" : status,
+                "passing_time" : passing_time.total_seconds()
             }
         }
         
@@ -186,7 +193,7 @@ def is_request_older_than_3_minutes(request_record):
     current_time = datetime.strptime(frappe.utils.now(), "%Y-%m-%d %H:%M:%S.%f")
 
     # Check if the current time has passed the time limit
-    return current_time > time_limit  # True if more than 3 minutes have passed, False otherwise
+    return current_time > time_limit  ,time_limit -  current_time
 
 def update_request_status(tansaction_id ,request_id , status):
     request_record = frappe.get_doc("NAFATH Request" , {"request_id" : request_id , "transaction_id" : tansaction_id})
@@ -195,7 +202,11 @@ def update_request_status(tansaction_id ,request_id , status):
         request_record.save(ignore_permissions=True)
     
 
-def check_request(national_id , tansaction_id , random , endpoint, app_id , app_key):
+def check_request(national_id , tansaction_id , random):
+    nafath_settings = frappe.get_single('NAFATH Settings')
+    endpoint = nafath_settings.api_url
+    app_id = nafath_settings.get_password('app_id')
+    app_key = nafath_settings.get_password('app_key')
     try:
         # Define the JSON body
         payload = {
