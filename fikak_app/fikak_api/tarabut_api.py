@@ -180,7 +180,6 @@ def handle_tarabut_webhook(intentId, status):
         frappe.local.response["http_status_code"] = 500
         return {"message": _("Failed to insert data error" + str(e) ), "status": False}
 
-@frappe.whitelist()
 def get_user_bank_accounts_from_tarabut(intent_id):
     """
     Get the user's bank accounts from the GO1 platform.
