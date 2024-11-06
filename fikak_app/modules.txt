@@ -5,3 +5,4 @@ KYC Management
 Fikak Settings
 Deeds Management
 Banking Management
+Terms And Conditions
