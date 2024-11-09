@@ -1,3 +1,9 @@
+// import { io } from "socket.io-client";
+
+// const socket = io();
+
+// console.log(socket)
+
 function updateLogo() {
     debugger;
  
@@ -35,12 +41,29 @@ function onFrappeLoad(callback) {
 }
 
 onFrappeLoad(function() {
-    debugger;
+ 
     console.log("Frappe boot data is fully loaded.");
     // Your code here
+
+    frappe.realtime.on('doc_bank_update', (data) => {
+        debugger
+        console.log(data)
+    })
 });
-$(document).on("page:load", function() {
-    debugger;
-    console.log("A new Frappe page has loaded.");
-    // Your code for page load
-});
+
+/*
+socket = io('http://fikak.localhost:9000', {
+    path: '/socket.io'
+  })
+
+socket.on('connect', () => {
+console.log('Connected to Frappe WebSocket')
+})
+
+// Listen for events broadcast from Frappe
+socket.on('doc_bank_update', data => {
+debugger
+const event = JSON.parse(data)
+console.log('Document update received:', event)
+})
+*/
