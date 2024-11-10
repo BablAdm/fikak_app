@@ -7,7 +7,16 @@
  "field_order": [
   "development",
   "user_id_watheq",
-  "user_id_bank"
+  "user_id_bank",
+  "payment_simulation_section",
+  "deed_price",
+  "interest_amount",
+  "down_price",
+  "purchase_date",
+  "is_first_home",
+  "current_market_deed_price",
+  "total_interest_payment",
+  "total_principal_payment"
  ],
  "fields": [
   {
@@ -25,12 +34,58 @@
    "fieldname": "user_id_bank",
    "fieldtype": "Data",
    "label": "User ID BANK"
+  },
+  {
+   "fieldname": "payment_simulation_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Simulation"
+  },
+  {
+   "fieldname": "deed_price",
+   "fieldtype": "Currency",
+   "label": "Deed Price"
+  },
+  {
+   "fieldname": "current_market_deed_price",
+   "fieldtype": "Currency",
+   "label": "Current Market Deed Price"
+  },
+  {
+   "fieldname": "total_interest_payment",
+   "fieldtype": "Currency",
+   "label": "Total Interest Payment"
+  },
+  {
+   "fieldname": "total_principal_payment",
+   "fieldtype": "Currency",
+   "label": "Total Principal Payment"
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Date",
+   "label": "Purchase Date"
+  },
+  {
+   "fieldname": "down_price",
+   "fieldtype": "Currency",
+   "label": "Down Price"
+  },
+  {
+   "fieldname": "interest_amount",
+   "fieldtype": "Currency",
+   "label": "Interest Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_first_home",
+   "fieldtype": "Check",
+   "label": "Is First Home?"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-03 20:34:03.898200",
+ "modified": "2024-11-10 19:00:57.667203",
  "modified_by": "Administrator",
  "module": "Fikak App",
  "name": "DEV MOD PROPS",

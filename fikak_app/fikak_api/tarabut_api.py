@@ -547,3 +547,48 @@ def insert_bank_account_transactions(bank_account , transactions, user):
         })
         doc.insert(ignore_permissions=True)
     frappe.db.commit()
+
+@frappe.whitelist(methods="GET")
+def check_elgibility_status(deed_id = None):
+    
+    deed_object = get_deed_details_info()
+    fikak_settings = frappe.get_single("Fikak Settings")
+    eligibity_check = fikak_settings.eligibity_check
+    max_new_loan = fikak_settings.max_new_loan
+    #Compute customer total paid amount
+    customer_total_deed_payment = deed_object.get("down_price") + deed_object.get("total_principal_payment")
+    
+    #Compute total amount due to bank
+    total_due_to_bank = deed_object.get("deed_price") + deed_object.get("interest_amount") - deed_object.get("down_price")\
+                            - (deed_object.get("total_interest_payment") + deed_object.get("total_principal_payment"))
+    #Compute bank equity from new market price
+    bank_equity_from_new_price = total_due_to_bank / deed_object.get("current_market_deed_price")
+    
+    #Compute customer equity from new market price
+    customer_equity_new_price = 1 - bank_equity_from_new_price
+    
+    split_eligibility = True if customer_equity_new_price > eligibity_check / 100 else False
+    loan_eligibility = True if total_due_to_bank == 0 else False
+
+    return {
+        "message" : "Success",
+        "data" : {
+            "split_eligibility" : split_eligibility,
+            "loan_eligibility" : loan_eligibility,
+        }
+    }
+
+
+def get_deed_details_info():
+    dev_mod_props = frappe.get_single("DEV MOD PROPS")
+    return {
+        "deed_price" : dev_mod_props.deed_price,
+        "interest_amount" : dev_mod_props.interest_amount,
+        "down_price" : dev_mod_props.down_price,
+        "purchase_date" : dev_mod_props.purchase_date,
+        "is_first_home" : dev_mod_props.is_first_home,
+        "current_market_deed_price" : dev_mod_props.current_market_deed_price,
+        "total_interest_payment" : dev_mod_props.total_interest_payment,
+        "total_principal_payment" : dev_mod_props.total_principal_payment
+
+    }
