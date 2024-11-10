@@ -3,7 +3,7 @@
 import frappe
 
 @frappe.whitelist(methods="GET")
-def get_terms_and_conditions(type = "Signup"):
+def get_terms_and_conditions(type = "General"):
     conditions = frappe.get_all("Terms And Conditions" , fields=["name", "title", "conditions" , "type"] , filters={"enabled": 1 , "type" : type})
     if conditions:
         return {

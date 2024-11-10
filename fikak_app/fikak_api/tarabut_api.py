@@ -401,34 +401,6 @@ def get_accounts(user):
         "message": _("Bank accounts retrieved successfully")
     }
 
-#https://{{saudiEnvironmentUrl}}/accountInformation/v2/accounts/{{accountId}}/transactions
-"""
-[{
-                    "transactionId": "596a99ff-fc23-46b5-ad88-c9027c0b96d4",
-                    "accountId": "5053cbd4-a32b-301d-b17f-aeb7ebc637aa",
-                    "accountProductType": "CreditCard",
-                    "providerId": "BLUE",
-                    "transactionDescription": "TFR-Fawri+ Transfer-BP0000000000AAAA BH00AAAA00000000000000 BBKUBHBM",
-                    "category": {
-                        "group": "Income",
-                        "name": "Other Income",
-                        "icon": "https://tg-merchants-prod.tarabut.com/category/INCOME_OTHER_INCOME.svg"
-                    },
-                    "merchant": {
-                        "name": "",
-                        "logo": "",
-                        "merchantCategoryCode": "5999"
-                    },
-                    "creditDebitIndicator": "Credit",
-                    "amount": {
-                        "value": 18.0,
-                        "currency": "SAR"
-                    },
-                    "bookingDateTime": "2024-10-26T08:31:02.895+00:00"
-                }
-]
-                """
-
 @frappe.whitelist(methods="GET")
 def get_tarabut_account_transactions(bank_account_id , user):
     """
