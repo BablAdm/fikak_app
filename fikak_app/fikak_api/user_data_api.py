@@ -5,36 +5,29 @@ import jwt
 
 @frappe.whitelist(allow_guest=True)
 def get_user_data():
+    try:
+        # Retrieve user data
+        user_data = frappe.get_doc("User", frappe.session.user)
 
-    if(frappe.session.user):
-        user = frappe.db.get_value("User", {"name": frappe.session.user}, "name")
-    else:
-        # Fetch the Authorization token from the request headers
-        token = frappe.get_request_header("Authorization", "").split(" ")[-1]
-        userData = decode_jwt_token(token)
-        user = frappe.db.get_value("User", {"name": userData.get("email")}, "name")
-    
-    # Retrieve user data
-    user_data = frappe.get_doc("User", user)
+        # TODO : Check if not exist return false
 
-    # TODO : Check if not exist return false
+        user_person_data = frappe.get_doc("Person Data" , {"user" : user_data.name})
+        # Convert document to a dictionary
+        person_data_dict = user_person_data.as_dict()
 
-    # Get Person Data From NAFATH Request
-    if not frappe.db.exists("Person Data" , {"user" : user}):
-        frappe.throw("Request not found")
-    
-    user_person_data = frappe.get_doc("Person Data" , {"user" : user})
-    
-    # Convert document to a dictionary
-    person_data_dict = user_person_data.as_dict()
-
-    # Format the response
-    return {
-            "name": user_data.name,
-            "email": user_data.email,
-            "full_name": user_data.full_name,
-            # Add data from NAFATH
-            "person_data" : person_data_dict,
+        # Format the response
+        return {
+                "name": user_data.name,
+                "email": user_data.email,
+                "full_name": user_data.full_name,
+                # Add data from NAFATH
+                "person_data" : person_data_dict,
+            }
+    except frappe.DoesNotExistError as e:
+        frappe.local.response.http_status_code = 404
+        return {
+            "status": False,
+            "message": "User not found" + str(e)
         }
 
 
