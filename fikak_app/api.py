@@ -60,24 +60,25 @@ def check_user_terms_and_conditions(user):
     return frappe.db.exists("Terms And Conditions Submission", {"user": user , "terms_and_conditions" : enabled_terms_and_conditions}) != None
 
 @frappe.whitelist(allow_guest=True)
-def custom_login(email, password):
+def custom_login(email, password , is_dev = "0"):
     try:
         # Attempt to authenticate the user using Frappe's login manager
         login_manager = frappe.auth.LoginManager()
         login_manager.authenticate(user=email, pwd=password)
 
         login_manager.post_login()
-        bearer_token = get_or_create_token(email)
-        
-        # If login is successful, return a success response
-        return {
+        data = {
             "status": "success",
             "message": _("Logged In Successfully"),
             "user": frappe.session.user,
-            "token" : bearer_token,
             "csrf_token" : frappe.sessions.get_csrf_token(),
             "session_id": frappe.session.sid  # Return the session ID
         }
+        if int(is_dev) == 1:
+            data['token'] = get_or_create_token(email)
+            
+        # If login is successful, return a success response
+        return data
     except frappe.exceptions.AuthenticationError:
         # If authentication fails, return an error
         frappe.clear_messages()

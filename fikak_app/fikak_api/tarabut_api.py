@@ -419,8 +419,6 @@ def get_intent_status(intent_id):
             "status": False
         }
     
-
-
 @frappe.whitelist(methods="GET")
 def get_tarabut_account_transactions(bank_account_id , user):
     """
