@@ -14,6 +14,7 @@
   "column_break_2v7i3",
   "question_code",
   "included_in_scoring",
+  "required",
   "section_break_bukoh",
   "answers"
  ],
@@ -69,11 +70,17 @@
    "fieldtype": "Percent",
    "label": "Weight",
    "mandatory_depends_on": "eval:(doc.question_type == 'Short Answer') &&  (doc.included_in_scoring ==1)"
+  },
+  {
+   "default": "0",
+   "fieldname": "required",
+   "fieldtype": "Check",
+   "label": "Required?"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-02 14:00:36.026607",
+ "modified": "2024-11-07 12:10:33.373269",
  "modified_by": "Administrator",
  "module": "KYC Management",
  "name": "KYC Question",

@@ -26,6 +26,7 @@
    "fieldname": "account_id",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Account Id",
    "reqd": 1
   },
@@ -53,6 +54,7 @@
   {
    "fieldname": "bank_provider",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Bank Provider",
    "options": "Bank Provider",
    "reqd": 1
@@ -103,8 +105,11 @@
   {
    "fieldname": "user",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "User",
-   "options": "User"
+   "options": "User",
+   "reqd": 1
   },
   {
    "fieldname": "last_account_update_date_time",
@@ -113,8 +118,13 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-11-06 13:39:02.169506",
+ "links": [
+  {
+   "link_doctype": "Account Transaction",
+   "link_fieldname": "account_id"
+  }
+ ],
+ "modified": "2024-11-07 12:07:32.230357",
  "modified_by": "Administrator",
  "module": "Banking Management",
  "name": "Bank Account Details",

@@ -163,16 +163,17 @@ def handle_tarabut_webhook(intentId, status):
         status (str): The status of the intent, such as "SUCCESSFUL" or other values.
     """
     try:
+        #Get  intent request
+        intent_request = frappe.get_doc("TARABUT Intent Request", {"intent_id": intentId})
         # Insert a new document in TARABUT Callback
         doc = frappe.get_doc({
             "doctype": "TARABUT Callback",
             "intent_id": intentId,
             "status": status
         })
-        
         doc.insert(ignore_permissions=True)  # Ignore permissions if necessary
         update_intent_request(intentId, doc.name, status)  # Update the intent request
-        get_user_bank_accounts_from_tarabut(intentId)
+        get_user_bank_accounts_from_tarabut(intentId , intent_request.user)
         frappe.db.commit()  # Commit the transaction
         return {"message": _("Data inserted successfully in TARABUT Callback"), "status": True}
     except Exception as e:
@@ -180,7 +181,7 @@ def handle_tarabut_webhook(intentId, status):
         frappe.local.response["http_status_code"] = 500
         return {"message": _("Failed to insert data error" + str(e) ), "status": False}
 
-def get_user_bank_accounts_from_tarabut(intent_id):
+def get_user_bank_accounts_from_tarabut(intent_id , user):
     """
     Get the user's bank accounts from the GO1 platform.
 
@@ -214,7 +215,7 @@ def get_user_bank_accounts_from_tarabut(intent_id):
             if response.status_code == 200:
                 intent =  get_consent_by_intent_id(endpoint , access_token , intent_id)
                 bank_accounts = get_bank_accounts_by_intent(intent.get("consentId") , response.json().get("accounts"))
-                insert_bank_accounts(bank_accounts)
+                frappe.enqueue(insert_bank_accounts , bank_accounts = bank_accounts , user = user ,queue="long")
                 return {
                     "message": "User bank accounts retrieved successfully",
                     "data": bank_accounts
@@ -302,7 +303,7 @@ def get_bank_accounts_by_intent(consent_id , bank_accounts):
 
     return filtered_accounts
 
-def insert_bank_accounts(bank_accounts):
+def insert_bank_accounts(bank_accounts , user):
     """
     Insert the bank accounts.
 
@@ -313,6 +314,8 @@ def insert_bank_accounts(bank_accounts):
     """
     
     for account in bank_accounts:
+        if frappe.db.exists("Bank Account Details", {"account_id": account.get("accountId") , "user": frappe.session.user}):
+            continue
         bank_provider = frappe.db.exists("Bank Provider", {"bank_code": account.get("providerId")})
         if not bank_provider:
             bank_provider_doc = frappe.get_doc({
@@ -325,7 +328,7 @@ def insert_bank_accounts(bank_accounts):
             frappe.db.commit()
         doc = frappe.get_doc({
             "doctype": "Bank Account Details",
-            "user": frappe.session.user,
+            "user": user,
             "account_id": account.get("accountId"),
             "account_holder_name": account.get("accountHolderName"),
             "account_product_type": account.get("accountProductType"),
@@ -341,6 +344,7 @@ def insert_bank_accounts(bank_accounts):
             
         })
         doc.insert(ignore_permissions=True)
+        frappe.enqueue(get_tarabut_account_transactions , bank_account_id = account.get("accountId") , user = user ,queue="long")
         frappe.db.commit()
 
 
@@ -396,3 +400,132 @@ def get_accounts(user):
         "status": True,
         "message": _("Bank accounts retrieved successfully")
     }
+
+@frappe.whitelist(methods="GET")
+def get_tarabut_account_transactions(bank_account_id , user):
+    """
+    Get the user's account transactions.
+
+    This function retrieves the user's account transactions from the GO1 platform.
+
+    Args:
+        bank_account_id (str): The bank account ID.
+
+    Returns:
+        dict: The response from the GO1 platform.
+
+    Raises:
+        Exception: If an error occurs during the GET request.
+    """
+
+    # Get the client ID and client secret from the Integration setup
+    tarabut_settings = frappe.get_single('TARABUT Settings')
+    endpoint = tarabut_settings.api_url
+    api_token = tarabut_settings.api_token
+    client_id = tarabut_settings.get_password('client_id')
+    client_secret = tarabut_settings.get_password('client_secret')
+    customer_user_id = tarabut_settings.customer_user_id
+
+    access_token = generate_access_token(api_token, client_id, client_secret , customer_user_id)
+
+    if access_token:
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json'
+        }
+
+        try:
+            response = requests.get(f"{endpoint}/accountInformation/v2/accounts/{bank_account_id}/transactions", headers=headers)
+            if response.status_code == 200:
+                frappe.enqueue(insert_bank_account_transactions , bank_account = bank_account_id \
+                             , transactions = response.json().get("transactions") , user = user ,queue="long")
+                return {
+                    "message": "User account transactions retrieved successfully",
+                    "data": response.json()
+                }
+            else:
+                frappe.logger().error(f"An error occurred on get user account transactions: {response.text}")
+                frappe.local.response["http_status_code"] = response.status_code
+                return {
+                    "message": response.text,
+                    "status": False
+                }
+
+        except Exception as e:
+            frappe.logger().error(f"An error occurred on get user account transactions: {response.text}")
+            frappe.local.response["http_status_code"] = 500
+            return {
+                "message": str(e),
+                "status": False
+            }
+    else:
+        frappe.logger().error(f"An error occurred on get user account transactions: Access token not generated")
+        frappe.local.response["http_status_code"] = 404
+        return {
+            "message": "Access token not generated",
+            "status": False
+        }
+
+
+def insert_bank_account_transactions(bank_account , transactions, user):
+    """
+    Insert the bank account transactions.
+
+    This function inserts the bank account transactions in the database.
+
+    Args:
+        bank_account (str): The bank account.
+        transactions (list): The bank account transactions list.
+    """
+
+    for transaction in transactions:
+        bank_account_id = frappe.get_doc("Bank Account Details", {"account_id" : bank_account}).name
+        if frappe.db.exists("Account Transaction", {"transaction_id": transaction.get("transactionId") , "account_id": bank_account_id}):
+            continue
+
+        bank_provider = frappe.db.exists("Bank Provider", {"bank_code": transaction.get("providerId")})
+        if not bank_provider:
+            bank_provider_doc = frappe.get_doc({
+                "doctype": "Bank Provider",
+                "bank_name": transaction.get("providerId"),
+                "bank_code": transaction.get("providerId"),
+            })
+            bank_provider_doc.insert(ignore_permissions=True)
+            bank_provider = bank_provider_doc.name
+        category = frappe.db.exists("Transaction Category", {"category_name": transaction.get("category").get("name")})
+        if not category:
+            category_doc = frappe.get_doc({
+                "doctype": "Transaction Category",
+                "category_name": transaction.get("category").get("name"),
+                "category_group": transaction.get("category").get("group"),
+                "icon": transaction.get("category").get("icon")
+            })
+            category_doc.insert(ignore_permissions=True)
+            category = category_doc.name
+        merchant = frappe.db.exists("Transaction Merchant", {"merchant_category_code": transaction.get("merchant").get("merchantCategoryCode")})
+        if not merchant:
+            merchant_doc = frappe.get_doc({
+                "doctype": "Transaction Merchant",
+                "merchant_name": transaction.get("merchant").get("name"),
+                "merchant_category_code": transaction.get("merchant").get("merchantCategoryCode"),
+                "logo": transaction.get("merchant").get("logo")
+            })
+            merchant_doc.insert(ignore_permissions=True)
+            merchant = merchant_doc.name
+        doc = frappe.get_doc({
+            "doctype": "Account Transaction",
+            "account_id": bank_account_id,
+            "user" : user,
+            "transaction_id": transaction.get("transactionId"),
+            "account_product_type": transaction.get("accountProductType"),
+            "bank_provider": bank_provider,
+            "transaction_description": transaction.get("transactionDescription"),
+            "transaction_category": category,
+            "merchant": merchant,
+            "credit_debit_indicator": transaction.get("creditDebitIndicator"),
+            "amount": transaction.get("amount"),
+            "currency": transaction.get("amount").get("currency"),
+            "booking_date_time": transaction.get("bookingDateTime")
+        })
+        doc.insert(ignore_permissions=True)
+    frappe.db.commit()
