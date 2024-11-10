@@ -402,6 +402,26 @@ def get_accounts(user):
     }
 
 @frappe.whitelist(methods="GET")
+def get_intent_status(intent_id):
+    try:
+        intent_request = frappe.get_doc("TARABUT Intent Request", {"intent_id": intent_id , "user" : frappe.session.user})
+        return {
+            "message" : "Intent status retrieved successfully",
+            "data" : {
+                "status" : intent_request.status
+            },
+            "status": True
+        }
+    except frappe.DoesNotExistError:
+        frappe.local.response["http_status_code"] = 404
+        return {
+            "message": _("Intent not found"),
+            "status": False
+        }
+    
+
+
+@frappe.whitelist(methods="GET")
 def get_tarabut_account_transactions(bank_account_id , user):
     """
     Get the user's account transactions.
