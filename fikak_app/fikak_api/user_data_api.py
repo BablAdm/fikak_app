@@ -1,9 +1,8 @@
 import frappe
-from frappe.utils.response import build_response
 import frappe.utils
 import jwt
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods="GET")
 def get_user_data():
     try:
         # Retrieve user data
