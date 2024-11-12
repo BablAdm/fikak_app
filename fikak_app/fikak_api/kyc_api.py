@@ -5,7 +5,8 @@ from pypika import Order
 from operator import itemgetter
 from itertools import groupby
 import ast
-
+from frappe import _
+from fikak_app.fikak_api.global_utils import translate
 
 @frappe.whitelist(methods=['GET'])
 def get_kyc_questions(kyc_id = None):
@@ -101,7 +102,7 @@ def get_kyc_answers():
         kyc_questions['data']['answers'] = extract_kyc_answers(kyc_submission, kyc_questions['data']['questions'])
     
     return {
-        "data": kyc_questions['data'],
+        "data": translate(kyc_questions['data']),
         "success": bool(kyc_id)
     }
 

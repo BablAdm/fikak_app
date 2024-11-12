@@ -13,7 +13,7 @@
     "deedInfo": {
       "deedArea": 900,
       "deedAreaText": "900 متر مربع",
-      "isRealEstateConstrained": false,
+      "isRealEstateConstrained": true,
       "isRealEstateHalted": false,
       "isRealEstateMortgaged": false,
       "isRealEstateTestamented": false

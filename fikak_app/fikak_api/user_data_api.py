@@ -1,6 +1,8 @@
 import frappe
 import frappe.utils
 import jwt
+from frappe import _
+
 
 @frappe.whitelist(methods="GET")
 def get_user_data():
