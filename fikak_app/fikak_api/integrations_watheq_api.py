@@ -59,8 +59,8 @@ def get_deed_data(deed_id):
         user_data = frappe.get_doc("User" , frappe.session.user)
         national_id = user_data.get("username")
 
-        if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id}):
-            deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id})
+        if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id , "deed_owner" : frappe.session.user}):
+            deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id , "deed_owner" : frappe.session.user})
             ## TODO : We should check if the user has the right to see this deed
             # check if user_data["owner_details"].contains ( user_data["national_id"])
             return deed_data
@@ -114,7 +114,7 @@ def insert_watheq_request_callback(national_id,deed_id,response_data):
 def insert_deed(data):
     # Create the parent Deed document
     try:
-        if frappe.db.exists("WATHEQ Deed" , {"deed_number" : data["deedDetails"]["deedNumber"]}):
+        if frappe.db.exists("WATHEQ Deed" , {"deed_number" : data["deedDetails"]["deedNumber"] , "deed_owner" : frappe.session.user}):
             deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : data["deedDetails"]["deedNumber"]})            
         else :
             deed_data = frappe.new_doc("WATHEQ Deed")
@@ -264,8 +264,8 @@ def get_user_deeds(status):
 @frappe.whitelist(methods=['POST'])
 def update_deed_doc(deed_id,updates):
     try:
-        if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id}):
-            deedDoc = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id})
+        if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id , "deed_owner" : frappe.session.user}):
+            deedDoc = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id , "deed_owner" : frappe.session.user})
             # Check if the current user is the owner
             if deedDoc.deed_owner != frappe.session.user:
                 frappe.local.response.http_status_code = 403
