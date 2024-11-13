@@ -7,13 +7,12 @@ import json
 from . import global_utils
 from . import fake_api
 
-# TODO The type ID should be as param
-def creat_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , app_key):
+def create_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , app_key):
     try:
 
-        dev_mod_props = global_utils.get_dev_mod_propos()
+        dev_mod_props = dev_mod_props = frappe.get_single('DEV MOD PROPS')
 
-        if(dev_mod_props != ""):
+        if dev_mod_props.user_id_watheq:
             national_id = dev_mod_props.get("user_id_watheq")
 
         # Define headers if required (e.g., authentication headers)
@@ -58,32 +57,32 @@ def create_new_watheq_request(national_id ,deed_id , request_id):
 def get_deed_data(deed_id):
     try:
         user_data = frappe.get_doc("User" , frappe.session.user)
+        national_id = user_data.get("username")
+        
         if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id}):
             deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id})
             ## TODO : We should check if the user has the right to see this deed
             # check if user_data["owner_details"].contains ( user_data["national_id"])
             return deed_data
 
-        # TODO : see why the national id is not getten
-        national_id = user_data.get("username")
         watheq_settings = frappe.get_single('WATHEQ Settings')
         # Check if we are using api or fake date
-        if(watheq_settings.get("is_enabled")):
+        if watheq_settings.is_enabled:
             # Create watheq request
-            response = creat_new_watheq_request_deed(deed_id, national_id , watheq_settings.api_url , watheq_settings.get_password('app_id') ,watheq_settings.get_password('app_key'))
+            response = create_new_watheq_request_deed(deed_id, national_id , watheq_settings.api_url , watheq_settings.get_password('app_id') ,watheq_settings.get_password('app_key'))
             responseData = response[1].get("data")
-        else :     
+        else :
             # save global result for traking 
             responseData = fake_api.get_deed_data()
 
         #  Create watheq Request/Response obj
         insert_watheq_request_callback(national_id,deed_id, responseData)
         deed_data = insert_deed(responseData)
-        # retrun response to UI 
+
         return deed_data
         
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(),"WATHEQ exception : " + str(e))
+        frappe.local.response.http_status_code = 500
         return {
             "status" : False,
             "message": str(e)

@@ -10,8 +10,6 @@ def get_user_data():
         # Retrieve user data
         user_data = frappe.get_doc("User", frappe.session.user)
 
-        # TODO : Check if not exist return false
-
         user_person_data = frappe.get_doc("Person Data" , {"user" : user_data.name})
         # Convert document to a dictionary
         person_data_dict = user_person_data.as_dict()

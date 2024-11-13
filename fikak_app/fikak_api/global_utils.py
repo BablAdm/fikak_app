@@ -17,19 +17,6 @@ def generate_request_id():
     return request_id
 
 
-# Function to check if we are in dev mod in order to get the concerned user for each services
-def get_dev_mod_propos():
-
-    try:
-        # get dev mod props
-        dev_mod_props = frappe.get_single('DEV MOD PROPS')
-            
-        return dev_mod_props
-    except Exception as e:
-        
-        return ""
-    
-
 def translate(data, skiped_keys=[]):
     """
     Recursively translates the given data using the specified language.
