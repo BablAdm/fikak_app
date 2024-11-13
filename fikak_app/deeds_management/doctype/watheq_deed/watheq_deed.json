@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "deeddetails_section",
+  "deed_owner",
   "deed_number",
   "deed_serial",
   "deed_date",
@@ -68,7 +69,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Deed Number",
-   "not_nullable": 1,
    "reqd": 1,
    "unique": 1
   },
@@ -99,7 +99,7 @@
   {
    "fieldname": "deed_source",
    "fieldtype": "Data",
-   "label": "Deed Source"
+   "label": "Deed Court Source"
   },
   {
    "fieldname": "column_break_cgqw",
@@ -108,7 +108,7 @@
   {
    "fieldname": "deed_city",
    "fieldtype": "Data",
-   "label": "Deed City"
+   "label": "Deed Court City"
   },
   {
    "fieldname": "informations_tab",
@@ -177,7 +177,7 @@
    "fieldname": "owner_details",
    "fieldtype": "Table",
    "label": "Owner Details",
-   "options": "WATHEQ Deed Owner"
+   "options": "WATHEQ Deed Owner Item"
   },
   {
    "fieldname": "limits_details_tab",
@@ -291,7 +291,7 @@
    "fieldname": "real_estate_details",
    "fieldtype": "Table",
    "label": "Real Estate Details",
-   "options": "WATHEQ Real Estate Details"
+   "options": "WATHEQ Real Estate Details Item"
   },
   {
    "fieldname": "eligibilitystats_tab",
@@ -317,11 +317,17 @@
    "fieldtype": "Select",
    "label": "Selected Services",
    "options": "Mortgage split\nAsset-Backed Loan\nInvestments"
+  },
+  {
+   "fieldname": "deed_owner",
+   "fieldtype": "Link",
+   "label": "Deed Owner",
+   "options": "User"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-05 09:41:46.946586",
+ "modified": "2024-11-13 15:13:04.859723",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Deed",

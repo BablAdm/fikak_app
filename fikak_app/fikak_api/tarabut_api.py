@@ -567,8 +567,13 @@ def check_elgibility_status(deed_id = None):
     #Compute customer equity from new market price
     customer_equity_new_price = 1 - bank_equity_from_new_price
     
+    loan_eligibility = False
+    
     split_eligibility = True if customer_equity_new_price > eligibity_check / 100 else False
-    loan_eligibility = True if total_due_to_bank == 0 else False
+    if total_due_to_bank == 0 :
+        loan_eligibility = True
+        split_eligibility = False
+
 
     return {
         "message" : "Success",

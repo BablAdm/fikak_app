@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class WATHEQDeedOwner(Document):
+class WATHEQDeedOwnerItem(Document):
 	pass

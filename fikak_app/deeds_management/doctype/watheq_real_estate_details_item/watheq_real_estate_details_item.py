@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class WATHEQRealEstateDetails(Document):
+class WATHEQRealEstateDetailsItem(Document):
 	pass

@@ -140,6 +140,7 @@ def insert_deed(data):
             deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : data["deedDetails"]["deedNumber"]})            
         else :
             deed_data = frappe.new_doc("WATHEQ Deed")
+            deed_data.deed_owner = frappe.session.user
             deed_data.deed_number = data["deedDetails"]["deedNumber"]
             deed_data.deed_serial = data["deedDetails"]["deedSerial"]
             deed_data.deed_date = data["deedDetails"]["deedDate"]      
@@ -194,7 +195,7 @@ def insert_deed(data):
                 # else:
                 # Now append this newly created owner to the deed
                 deed_data.append("owner_details", {
-                    "doctype": "WATHEQ Deed Owner",
+                    "doctype": "WATHEQ Deed Owner Item",
                     "id_number": owner["idNumber"],
                     "owner_name": owner["ownerName"],
                     "birth_date": owner["birthDate"],
@@ -223,7 +224,7 @@ def insert_deed(data):
                 # else:
                 # Now append this newly created RealEstate to the deed
                 deed_data.append("real_estate_details", {
-                    "doctype": "WATHEQ Real Estate Details",
+                    "doctype": "WATHEQ Real Estate Details Item",
                     "deed_serial": property["deedSerial"],
                     "region_code": property["regionCode"],
                     "region_name": property["regionName"],
@@ -267,72 +268,56 @@ def insert_deed(data):
 
 
 # Fetch the first deed created by the current user with status 
-@frappe.whitelist(allow_guest=False)
+@frappe.whitelist(methods=['GET'])
 def get_user_last_deed(status):
-    # Get the current logged-in user
-    current_user = frappe.session.user
-
+    
     document = frappe.get_all(
         "WATHEQ Deed",  
         filters={
-            "owner": current_user,  # Filter by current user
+            "deed_owner": frappe.session.user,  # Filter by current user
             "workflow_state": status         # Filter by status
         },
-        #fields=["name", "status", "creation", "modified"],  # Specify fields you need
+        fields=["*"],
         order_by="modified desc",  # Sort by modification date in descending order
         limit=1                    # Get only the first document
     )
 
     # Return the full document if it exists
     if document:
-        return frappe.get_doc("WATHEQ Deed", document[0])
+        return document[0]
     else:
         return None
 
 
 
 # Fetch all Deeds Eligibility Request created by the current user with status
-@frappe.whitelist(allow_guest=False)
+@frappe.whitelist(methods=['GET'])
 def get_user_deeds(status):
     # Get the current logged-in user
-    current_user = frappe.session.user
-
+    filters = {"deed_owner": frappe.session.user}
     if(status != ""):
-        documents = frappe.get_all(
+        filters["workflow_state"] = status
+        
+    return frappe.get_all(
             "WATHEQ Deed",  
-            filters={
-                "owner": current_user,  # Filter by current user
-                "workflow_state": status         # Filter by status
-            },
+            filters=filters,
             fields=["deed_number", "deed_serial", "deed_city", "workflow_state"],  # Specify fields you need
             order_by="modified desc"
         )
-    else:
-         documents = frappe.get_all(
-            "WATHEQ Deed",  
-            filters={
-                "owner": current_user
-            },
-            fields=["deed_number", "deed_serial", "deed_city", "workflow_state"],  # Specify fields you need
-            order_by="modified desc"
-        )       
-
-    return documents
-
-
-
 
 # Update deed eligibility request state
-@frappe.whitelist(allow_guest=False)
+@frappe.whitelist(methods=['POST'])
 def update_deed_doc(deed_id,updates):
     try:
-        current_user = frappe.get_doc("User" , {"name": frappe.session.user})
         if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id}):
             deedDoc = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id})
             # Check if the current user is the owner
-            current_user = frappe.session.user
-            if deedDoc.owner != current_user:
-                frappe.throw("You are not authorized to modify this document.")
+            if deedDoc.deed_owner != frappe.session.user:
+                frappe.local.response.http_status_code = 403
+                return {
+                    "status": False,
+                    "message": _("You are not the owner of this deed")
+                }
 
             # Update each field in the dictionary
             for field, value in updates.items():
