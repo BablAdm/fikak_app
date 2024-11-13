@@ -58,7 +58,7 @@ def get_deed_data(deed_id):
     try:
         user_data = frappe.get_doc("User" , frappe.session.user)
         national_id = user_data.get("username")
-        
+
         if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id}):
             deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id})
             ## TODO : We should check if the user has the right to see this deed
@@ -162,7 +162,6 @@ def insert_deed(data):
             # Add Owner Details to the Deed (assuming each owner is a row in deedOwners)
             for owner in data.get("ownerDetails", []):
                 deed_data.append("owner_details", {
-                    "doctype": "WATHEQ Deed Owner Item",
                     "id_number": owner["idNumber"],
                     "owner_name": owner["ownerName"],
                     "birth_date": owner["birthDate"],
@@ -181,7 +180,6 @@ def insert_deed(data):
             # Add Real Estate Details to the Deed (assuming each property is a row in realEstateDetails)
             for property in data.get("realEstateDetails", []):
                 deed_data.append("real_estate_details", {
-                    "doctype": "WATHEQ Real Estate Details Item",
                     "deed_serial": property["deedSerial"],
                     "region_code": property["regionCode"],
                     "region_name": property["regionName"],

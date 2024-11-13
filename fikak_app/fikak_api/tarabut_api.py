@@ -174,6 +174,7 @@ def handle_tarabut_webhook(intentId, status):
         doc.insert(ignore_permissions=True)  # Ignore permissions if necessary
         update_intent_request(intentId, doc.name, status)  # Update the intent request
         get_user_bank_accounts_from_tarabut(intentId , intent_request.user)
+        update_deed_workflow_step(3)
         frappe.db.commit()  # Commit the transaction
         return {"message": _("Data inserted successfully in TARABUT Callback"), "status": True}
     except Exception as e:
@@ -181,6 +182,24 @@ def handle_tarabut_webhook(intentId, status):
         frappe.local.response["http_status_code"] = 500
         return {"message": _("Failed to insert data error" + str(e) ), "status": False}
 
+
+def update_deed_workflow_step(step):
+    """
+    Update the deed workflow status.
+
+    This function updates the deed workflow status in the database.
+
+    Args:
+        deed_id (str): The deed ID.
+        status (str): The status of the deed.
+    """
+    try:
+        doc = frappe.get_doc("WATHEQ Deed", {"workflow_state": "NEW" , "deed_owner" : frappe.session.user})
+        doc.wizard_step = step
+        doc.save(ignore_permissions=True)
+    except Exception as e:
+        return None
+    
 def get_user_bank_accounts_from_tarabut(intent_id , user):
     """
     Get the user's bank accounts from the GO1 platform.
@@ -344,7 +363,8 @@ def insert_bank_accounts(bank_accounts , user):
             
         })
         doc.insert(ignore_permissions=True)
-        frappe.enqueue(get_tarabut_account_transactions , bank_account_id = account.get("accountId") , user = user ,queue="long")
+        
+        # frappe.enqueue(get_tarabut_account_transactions , bank_account_id = account.get("accountId") , user = user ,queue="long")
         frappe.db.commit()
 
 
