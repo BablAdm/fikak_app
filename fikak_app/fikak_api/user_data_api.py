@@ -30,15 +30,3 @@ def get_user_data():
             "status": False,
             "message": "User not found" + str(e)
         }
-
-
-def decode_jwt_token(token):
-    try:
-        # Decode the JWT token without verifying the signature
-        decoded_token = jwt.decode(token, options={"verify_signature": False})
-        
-        # Return the decoded JSON object (payload)
-        return decoded_token
-    
-    except jwt.InvalidTokenError as e:
-        frappe.throw(f"Invalid token: {str(e)}")

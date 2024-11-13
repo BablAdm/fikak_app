@@ -1,11 +1,7 @@
 
 import frappe
 from frappe import _
-import requests
-import uuid
 import json
-
-from datetime import datetime , timedelta
 
 @frappe.whitelist(allow_guest=True)
 def get_deed_data():

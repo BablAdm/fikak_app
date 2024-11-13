@@ -7,14 +7,6 @@ import json
 from . import global_utils
 from . import fake_api
 
-
-REQUEST_ERRORS = {
-    "422-031-046" : "طلب غير صالح: تم إرسال بيانات غير صالحة",
-    "400-034-050" : "هناك طلب نشط. لقد حاولت إنشاء طلب جديد بينما لا يزال هناك طلب نشط موجود لنفس الهوية",
-    "400-034-053" : "المعاملة غير موجودة. لقد حاولت الحصول على حالة الطلب باستخدام رقم معاملة غير صحيح.",
-    "400-034-051" : "المعاملة منتهية. لقد حاولت الحصول على حالة الطلب باستخدام رقم معاملة منتهي الصلاحية."
-} 
-
 # TODO The type ID should be as param
 def creat_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , app_key):
     try:
@@ -34,8 +26,6 @@ def creat_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , a
         endpointURL = endpoint + '/deed/' + deed_id + '/'+national_id+'/National_ID'
         response = requests.get(endpointURL,  headers=headers)
         # TODO remove this fake api 
-        #endpointURL = 'http://fikak.localhost:8000/api/method/fikak_app.fikak_api.fake_api.get_deed_data'
-        #response = requests.get(endpointURL)
         
         if response.status_code in (200 , 201):
             return 200 , {
@@ -44,13 +34,9 @@ def creat_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , a
             }
         else:
             frappe.log_error(frappe.get_traceback(), " Watheq request error : " + response.text)
-            try:
-                error =  _(REQUEST_ERRORS[response.json()['code']])
-            except :
-                error = response.text
             return 500 , {
                 "status" : False,
-                "message": error
+                "message": response.text
             }
     except Exception as e:
         frappe.log_error(frappe.get_traceback(),"WATHEQ exception : " + str(e))
@@ -68,16 +54,15 @@ def create_new_watheq_request(national_id ,deed_id , request_id):
     frappe.db.commit()
     return request
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"])
 def get_deed_data(deed_id):
     try:
-        user_data = frappe.get_doc("User" , {"name": frappe.session.user})
+        user_data = frappe.get_doc("User" , frappe.session.user)
         if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id}):
             deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id})
             ## TODO : We should check if the user has the right to see this deed
             # check if user_data["owner_details"].contains ( user_data["national_id"])
             return deed_data
-
 
         # TODO : see why the national id is not getten
         national_id = user_data.get("username")
@@ -96,12 +81,7 @@ def get_deed_data(deed_id):
         deed_data = insert_deed(responseData)
         # retrun response to UI 
         return deed_data
-        # if response[1]['status']:
-        #     request_doc.transaction_id = response[1]['data']['transId']
-        #     request_doc.random = response[1]['data']['random']
-        #     request_doc.save()
-        # frappe.local.response.http_status_code = response[0]
-        # return response[1]
+        
     except Exception as e:
         frappe.log_error(frappe.get_traceback(),"WATHEQ exception : " + str(e))
         return {
@@ -132,7 +112,6 @@ def insert_watheq_request_callback(national_id,deed_id,response_data):
         frappe.log_error(str(e), "Error Saving JSON Data")
         print("Error saving document:", e)
 
-@frappe.whitelist(allow_guest=False)
 def insert_deed(data):
     # Create the parent Deed document
     try:
@@ -183,17 +162,6 @@ def insert_deed(data):
 
             # Add Owner Details to the Deed (assuming each owner is a row in deedOwners)
             for owner in data.get("ownerDetails", []):
-                # existing_owner = frappe.db.exists("Deed Owner", {"idnumber": owner["idNumber"]})
-
-                # if existing_owner:
-                #     owner_data = frappe.get_doc("Deed Owner" , {"idnumber" : existing_owner})
-                #     # If owner exists, add the existing reference
-                #     deed_data.append("table_fmbl", {
-                #         "doctype": "Deed Owner",
-                #         "idnumber": existing_owner  # Reference the existing owner's name (ID)
-                #     })
-                # else:
-                # Now append this newly created owner to the deed
                 deed_data.append("owner_details", {
                     "doctype": "WATHEQ Deed Owner Item",
                     "id_number": owner["idNumber"],
@@ -213,16 +181,6 @@ def insert_deed(data):
 
             # Add Real Estate Details to the Deed (assuming each property is a row in realEstateDetails)
             for property in data.get("realEstateDetails", []):
-                # existing_realEstate = frappe.db.exists("realEstateDetails", {"deedserial": property["deedSerial"]})
-                # if existing_realEstate:
-                #     realEstate_data = frappe.get_doc("realEstateDetails" , {"deedserial" : existing_realEstate})
-                #     # If RealEstate exists, add the existing reference
-                #     deed_data.append("table_bepd", {
-                #         "doctype": "realEstateDetails",
-                #         "deedserial": existing_realEstate  # Reference the existing owner's name (ID)
-                #     })
-                # else:
-                # Now append this newly created RealEstate to the deed
                 deed_data.append("real_estate_details", {
                     "doctype": "WATHEQ Real Estate Details Item",
                     "deed_serial": property["deedSerial"],
@@ -330,8 +288,10 @@ def update_deed_doc(deed_id,updates):
             # Save the changes
             deedDoc.save()
             frappe.db.commit()  # Commit to ensure changes are saved to the database
-
-            print(f"Updated wizard_setup for document {deedDoc} to {wizard_step}")
+            return {
+                "status": True,
+                "message": _("Deed updated successfully")
+            }
 
     except Exception as e:
         frappe.log_error(frappe.get_traceback(),"WATHEQ exception : " + str(e))
