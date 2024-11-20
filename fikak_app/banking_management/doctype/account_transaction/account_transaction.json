@@ -1,0 +1,125 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-07 10:58:33.312929",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "transaction_id",
+  "user",
+  "account_product_type",
+  "merchant",
+  "amount",
+  "booking_date_time",
+  "credit_debit_indicator",
+  "column_break_ywae",
+  "account_id",
+  "bank_provider",
+  "transaction_category",
+  "currency",
+  "transaction_description"
+ ],
+ "fields": [
+  {
+   "fieldname": "transaction_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Transaction Id"
+  },
+  {
+   "fieldname": "account_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account Id",
+   "options": "Bank Account Details"
+  },
+  {
+   "fieldname": "account_product_type",
+   "fieldtype": "Data",
+   "label": "Account Product Type"
+  },
+  {
+   "fieldname": "bank_provider",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Bank Provider",
+   "options": "Bank Provider"
+  },
+  {
+   "fieldname": "transaction_description",
+   "fieldtype": "Small Text",
+   "label": "Transaction Description"
+  },
+  {
+   "fieldname": "transaction_category",
+   "fieldtype": "Link",
+   "label": "Transaction Category",
+   "options": "Transaction Category"
+  },
+  {
+   "fieldname": "merchant",
+   "fieldtype": "Link",
+   "label": "Merchant",
+   "options": "Transaction Merchant"
+  },
+  {
+   "fieldname": "credit_debit_indicator",
+   "fieldtype": "Data",
+   "label": "Credit Debit Indicator"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Currency",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "booking_date_time",
+   "fieldtype": "Datetime",
+   "label": "Booking Date Time"
+  },
+  {
+   "fieldname": "column_break_ywae",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-07 12:04:37.818609",
+ "modified_by": "Administrator",
+ "module": "Banking Management",
+ "name": "Account Transaction",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

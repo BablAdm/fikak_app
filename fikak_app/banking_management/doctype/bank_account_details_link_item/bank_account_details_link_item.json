@@ -1,0 +1,40 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-05 16:25:55.031933",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "rel",
+  "link"
+ ],
+ "fields": [
+  {
+   "fieldname": "rel",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Rel",
+   "reqd": 1
+  },
+  {
+   "fieldname": "link",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Link",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-05 16:27:11.905567",
+ "modified_by": "Administrator",
+ "module": "Banking Management",
+ "name": "Bank Account Details Link Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

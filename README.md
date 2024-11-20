@@ -11,6 +11,9 @@ MIT
 
 bench --site fikak.localhost migrate
 
+bench --site fikak.localhost migrate
+
+
 #  Clear Web site cache
 bench --site fikak.localhost clear-cache
 
@@ -20,3 +23,29 @@ bench --site fikak.localhost set-config app fikak_app
 
 # show the site config
 bench --site fikak.localhost show-config --format text
+
+
+# Clear Redis cache
+bench clear-redis
+=======
+
+# Naming Format
+fields naming format : 
+eastlimitlength   -->   East Limit Length
+
+doctype naming format : 
+realEstateDetails  --> Real Estate Details
+
+childtable doctypes naming :
+Deed Owner -- > Deed Owner Item
+
+
+# to migrate site
+ bench --site pre-eservices.waseera.sa migrate
+
+
+# to forcely delete doctype and fields deleted from db
+bench --site fikak_product.localhost trim-tables
+ 
+
+ 

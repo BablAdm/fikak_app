@@ -1,6 +1,4 @@
 
-
-
 import frappe
 from frappe import _
 import jwt
@@ -10,25 +8,77 @@ from frappe.utils import now_datetime
 EXPIRATION_TIME = 360000  # Token expiration time in seconds
 SECRET_KEY = "FIKAK_LOGIN_SECRET_KEY"
 
+@frappe.whitelist(methods=['GET'])
+def get_user_info():
+    try:
+        user = frappe.get_doc("User", frappe.session.user)
+        data = {
+            "email": user.email,
+            "full_name": user.full_name,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "user_image": user.user_image,
+            "terms_submitted" : check_user_terms_and_conditions(frappe.session.user),
+            "kyc_submitted" : check_kyc_submitted(frappe.session.user)
+        }
+        
+
+        return {
+            "status": True,
+            "data": data,
+            "message": _("User profile data retrieved successfully")
+        }
+    except frappe.DoesNotExistError:
+        return {
+            "status": False,
+            "message": _("User not found")
+        }
+
+def check_kyc_submitted(user):
+    enabled_kyc = frappe.db.exists("KYC", {"enabled": 1})
+    if not enabled_kyc:
+        return True
+    return frappe.db.exists("KYC Submission", {"user": user, "kyc": enabled_kyc}) != None
+
+
+
+def check_user_terms_and_conditions(user):
+    """
+    Check if the user has accepted the terms and conditions.
+
+    Args:
+    user (str): The name of the user.
+
+    Returns:
+    bool: True if the user has accepted the terms and conditions, False otherwise.
+    """
+    # Check if the user has accepted the terms and conditions
+    enabled_terms_and_conditions = frappe.db.exists("Terms And Conditions", {"enabled": 1 , "type" : "General"})
+    if not enabled_terms_and_conditions:
+        return True
+    
+    return frappe.db.exists("Terms And Conditions Submission", {"user": user , "terms_and_conditions" : enabled_terms_and_conditions}) != None
+
 @frappe.whitelist(allow_guest=True)
-def custom_login(email, password):
+def custom_login(email, password , is_dev = "0"):
     try:
         # Attempt to authenticate the user using Frappe's login manager
         login_manager = frappe.auth.LoginManager()
         login_manager.authenticate(user=email, pwd=password)
 
         login_manager.post_login()
-        bearer_token = get_or_create_token(email)
-        
-        # If login is successful, return a success response
-        return {
+        data = {
             "status": "success",
             "message": _("Logged In Successfully"),
             "user": frappe.session.user,
-            "token" : bearer_token,
             "csrf_token" : frappe.sessions.get_csrf_token(),
             "session_id": frappe.session.sid  # Return the session ID
         }
+        if int(is_dev) == 1:
+            data['token'] = get_or_create_token(email)
+            
+        # If login is successful, return a success response
+        return data
     except frappe.exceptions.AuthenticationError:
         # If authentication fails, return an error
         frappe.clear_messages()
@@ -106,3 +156,8 @@ def get_country_list():
     return frappe.get_all("Country" , fields=["name" , "country_name"])
 
 
+@frappe.whitelist()
+def get_timezones():
+	import pytz
+
+	return {"timezones": pytz.all_timezones}
