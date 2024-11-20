@@ -43,7 +43,13 @@ Deed Owner -- > Deed Owner Item
 # to migrate site
  bench --site pre-eservices.waseera.sa migrate
 
-#listing api params
+
+# to forcely delete doctype and fields deleted from db
+bench --site fikak_product.localhost trim-tables
+ 
+
+ 
+#listing params template
 {
   "offset": 0,
   "page_size": 10,
@@ -56,7 +62,7 @@ Deed Owner -- > Deed Owner Item
   }
 }
 
-#listing return data
+#listing response template
 
 {
     "meta" : {
