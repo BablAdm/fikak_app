@@ -1,0 +1,90 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{kyc}-{user}",
+ "creation": "2024-10-30 17:39:45.749130",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "kyc",
+  "submission_date",
+  "column_break_ub4ht",
+  "user",
+  "total_weight",
+  "section_break_kn4ww",
+  "answers"
+ ],
+ "fields": [
+  {
+   "fieldname": "kyc",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "KYC",
+   "options": "KYC",
+   "reqd": 1
+  },
+  {
+   "fieldname": "submission_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Submission Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ub4ht",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_kn4ww",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "answers",
+   "fieldtype": "Table",
+   "label": "Answers",
+   "options": "KYC Submission Answer Item"
+  },
+  {
+   "fieldname": "total_weight",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Total Weight",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-02 14:06:13.418117",
+ "modified_by": "Administrator",
+ "module": "KYC Management",
+ "name": "KYC Submission",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

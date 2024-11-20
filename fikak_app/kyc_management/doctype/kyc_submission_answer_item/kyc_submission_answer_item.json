@@ -1,0 +1,50 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-10-30 17:39:09.740884",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "question",
+  "user_answer",
+  "question_weight"
+ ],
+ "fields": [
+  {
+   "fieldname": "question",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Question",
+   "options": "KYC Question",
+   "reqd": 1
+  },
+  {
+   "fieldname": "user_answer",
+   "fieldtype": "Long Text",
+   "in_list_view": 1,
+   "label": "User Answer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "question_weight",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Question Weight",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-02 14:10:03.401117",
+ "modified_by": "Administrator",
+ "module": "KYC Management",
+ "name": "KYC Submission Answer Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

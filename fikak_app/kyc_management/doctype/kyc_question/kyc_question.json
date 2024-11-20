@@ -9,7 +9,13 @@
  "engine": "InnoDB",
  "field_order": [
   "question_title",
+  "question_type",
+  "weight",
+  "column_break_2v7i3",
   "question_code",
+  "included_in_scoring",
+  "required",
+  "section_break_bukoh",
   "answers"
  ],
  "fields": [
@@ -19,14 +25,16 @@
    "in_list_view": 1,
    "label": "Question Title",
    "reqd": 1,
+   "translatable": 1,
    "unique": 1
   },
   {
+   "depends_on": "eval:doc.question_type != 'Short Answer'",
    "fieldname": "answers",
    "fieldtype": "Table",
    "label": "Answers",
-   "options": "KYC Question Answer Item",
-   "reqd": 1
+   "mandatory_depends_on": "eval:doc.question_type != 'Short Answer'",
+   "options": "KYC Question Answer Item"
   },
   {
    "fieldname": "question_code",
@@ -34,11 +42,45 @@
    "label": "Question Code",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "question_type",
+   "fieldtype": "Select",
+   "label": "Question Type",
+   "options": "\nSingle Choice\nMultiple Choice\nShort Answer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2v7i3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_bukoh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "included_in_scoring",
+   "fieldtype": "Check",
+   "label": "Included In Scoring?"
+  },
+  {
+   "depends_on": "eval:(doc.question_type == 'Short Answer') &&  (doc.included_in_scoring ==1)",
+   "fieldname": "weight",
+   "fieldtype": "Percent",
+   "label": "Weight",
+   "mandatory_depends_on": "eval:(doc.question_type == 'Short Answer') &&  (doc.included_in_scoring ==1)"
+  },
+  {
+   "default": "0",
+   "fieldname": "required",
+   "fieldtype": "Check",
+   "label": "Required?"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-28 11:52:49.718680",
+ "modified": "2024-11-07 12:10:33.373269",
  "modified_by": "Administrator",
  "module": "KYC Management",
  "name": "KYC Question",

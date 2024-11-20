@@ -1,5 +1,4 @@
 function updateLogo() {
-    debugger;
  
     // Change the logo by selecting the logo element
     const logo = document.querySelector("img.app-logo"); // Update selector if needed
@@ -33,8 +32,3 @@ function onFrappeLoad(callback) {
         setTimeout(() => onFrappeLoad(callback), 100);
     }
 }
-
-onFrappeLoad(function() {
-    console.log("Frappe boot data is fully loaded.");
-    // Your code here
-});

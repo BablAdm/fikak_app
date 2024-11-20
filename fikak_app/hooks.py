@@ -226,3 +226,9 @@ app_include_css = "assets/fikak_app/css/fikak-app.css"
 
 # hooks.py in your app
 app_include_js = "assets/fikak_app/js/fikak-app.js"
+
+fixtures = [
+    "KYC Question",
+    "KYC",
+    "Translation"
+]

@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2024-11-13 16:02:13.747999",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "owner_name",
+  "birth_date",
+  "id_number",
+  "id_type",
+  "id_type_text",
+  "owner_type",
+  "nationality",
+  "column_break_pzuu",
+  "owning_area",
+  "owning_amount",
+  "constrained",
+  "halt",
+  "pawned",
+  "testament"
+ ],
+ "fields": [
+  {
+   "fieldname": "owner_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Owner Name"
+  },
+  {
+   "fieldname": "birth_date",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Birth Date"
+  },
+  {
+   "fieldname": "id_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Id Number",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "id_type",
+   "fieldtype": "Data",
+   "label": "Id Type"
+  },
+  {
+   "fieldname": "id_type_text",
+   "fieldtype": "Data",
+   "label": "Id Type Text"
+  },
+  {
+   "fieldname": "owner_type",
+   "fieldtype": "Data",
+   "label": "Owner Type"
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "nationality"
+  },
+  {
+   "fieldname": "column_break_pzuu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "owning_area",
+   "fieldtype": "Data",
+   "label": "Owning Area"
+  },
+  {
+   "fieldname": "owning_amount",
+   "fieldtype": "Data",
+   "label": "Owning Amount"
+  },
+  {
+   "fieldname": "constrained",
+   "fieldtype": "Data",
+   "label": "constrained"
+  },
+  {
+   "fieldname": "halt",
+   "fieldtype": "Data",
+   "label": "halt"
+  },
+  {
+   "fieldname": "pawned",
+   "fieldtype": "Data",
+   "label": "pawned"
+  },
+  {
+   "fieldname": "testament",
+   "fieldtype": "Data",
+   "label": "testament"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-13 16:02:49.133946",
+ "modified_by": "Administrator",
+ "module": "Deeds Management",
+ "name": "WATHEQ Deed Owner Item",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

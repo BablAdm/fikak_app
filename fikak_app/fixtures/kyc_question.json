@@ -1,0 +1,369 @@
+[
+ {
+  "answers": [
+   {
+    "answer": "Full-time",
+    "answer_code": "Full-time",
+    "parent": "Employment Status",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 50.0
+   },
+   {
+    "answer": "Part-time",
+    "answer_code": "Part-time",
+    "parent": "Employment Status",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 20.0
+   },
+   {
+    "answer": "Self-employed",
+    "answer_code": "Self-employed",
+    "parent": "Employment Status",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 10.0
+   },
+   {
+    "answer": "Unemployed",
+    "answer_code": "Unemployed",
+    "parent": "Employment Status",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 5.0
+   },
+   {
+    "answer": "Retired",
+    "answer_code": "Retired",
+    "parent": "Employment Status",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 5.0
+   }
+  ],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 1,
+  "modified": "2024-11-12 15:15:14.577511",
+  "name": "Employment Status",
+  "question_code": "QST-001",
+  "question_title": "Employment Status",
+  "question_type": "Single Choice",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 0,
+  "modified": "2024-11-12 15:16:03.255182",
+  "name": "Annual Income",
+  "question_code": "QST-002",
+  "question_title": "Annual Income",
+  "question_type": "Short Answer",
+  "required": 0,
+  "weight": 20.0
+ },
+ {
+  "answers": [],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 0,
+  "modified": "2024-11-12 15:16:38.328099",
+  "name": "Years Of Working",
+  "question_code": "QST-003",
+  "question_title": "Years Of Working",
+  "question_type": "Short Answer",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 0,
+  "modified": "2024-11-12 15:16:52.845153",
+  "name": "Current Employer",
+  "question_code": "QST-004",
+  "question_title": "Current Employer",
+  "question_type": "Short Answer",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [
+   {
+    "answer": "Yes",
+    "answer_code": "Yes",
+    "parent": "Have you ever declared bankruptcy?",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 0.0
+   },
+   {
+    "answer": "No",
+    "answer_code": "No",
+    "parent": "Have you ever declared bankruptcy?",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 100.0
+   }
+  ],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 1,
+  "modified": "2024-11-12 15:18:58.164922",
+  "name": "Have you ever declared bankruptcy?",
+  "question_code": "QST-005",
+  "question_title": "Have you ever declared bankruptcy?",
+  "question_type": "Single Choice",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [
+   {
+    "answer": "Yes",
+    "answer_code": "Yes",
+    "parent": "Do you have any outstanding judgments or liens?",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 0.0
+   },
+   {
+    "answer": "No",
+    "answer_code": "No",
+    "parent": "Do you have any outstanding judgments or liens?",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 100.0
+   }
+  ],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 1,
+  "modified": "2024-11-12 15:19:44.582806",
+  "name": "Do you have any outstanding judgments or liens?",
+  "question_code": "QST-006",
+  "question_title": "Do you have any outstanding judgments or liens?",
+  "question_type": "Single Choice",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [
+   {
+    "answer": "Yes",
+    "answer_code": "Yes",
+    "parent": "Do you have any past due accounts?",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 0.0
+   },
+   {
+    "answer": "No",
+    "answer_code": "No",
+    "parent": "Do you have any past due accounts?",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 100.0
+   }
+  ],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 1,
+  "modified": "2024-11-12 15:20:16.301625",
+  "name": "Do you have any past due accounts?",
+  "question_code": "QST-007",
+  "question_title": "Do you have any past due accounts?",
+  "question_type": "Single Choice",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [
+   {
+    "answer": "Yes",
+    "answer_code": "Yes",
+    "parent": "Number of Credit Inquiries in the Last 6 Months:",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 0.0
+   },
+   {
+    "answer": "No",
+    "answer_code": "No",
+    "parent": "Number of Credit Inquiries in the Last 6 Months:",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 100.0
+   }
+  ],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 0,
+  "modified": "2024-11-12 15:20:41.842769",
+  "name": "Number of Credit Inquiries in the Last 6 Months:",
+  "question_code": "QST-008",
+  "question_title": "Number of Credit Inquiries in the Last 6 Months:",
+  "question_type": "Short Answer",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [
+   {
+    "answer": "Yes",
+    "answer_code": "Yes",
+    "parent": "Purpose of Credit Request:",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 0.0
+   },
+   {
+    "answer": "No",
+    "answer_code": "No",
+    "parent": "Purpose of Credit Request:",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 100.0
+   }
+  ],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 0,
+  "modified": "2024-11-12 15:21:03.485504",
+  "name": "Purpose of Credit Request:",
+  "question_code": "QST-009",
+  "question_title": "Purpose of Credit Request:",
+  "question_type": "Short Answer",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [
+   {
+    "answer": "Yes",
+    "answer_code": "Yes",
+    "parent": "Amount Requested:",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 0.0
+   },
+   {
+    "answer": "No",
+    "answer_code": "No",
+    "parent": "Amount Requested:",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 100.0
+   }
+  ],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 0,
+  "modified": "2024-11-12 15:21:23.416254",
+  "name": "Amount Requested:",
+  "question_code": "QST-010",
+  "question_title": "Amount Requested:",
+  "question_type": "Short Answer",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [
+   {
+    "answer": "Yes",
+    "answer_code": "Yes",
+    "parent": "Preferred Term of Loan (if applicable):",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 0.0
+   },
+   {
+    "answer": "No",
+    "answer_code": "No",
+    "parent": "Preferred Term of Loan (if applicable):",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 100.0
+   }
+  ],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 0,
+  "modified": "2024-11-12 15:21:40.744217",
+  "name": "Preferred Term of Loan (if applicable):",
+  "question_code": "QST-011",
+  "question_title": "Preferred Term of Loan (if applicable):",
+  "question_type": "Short Answer",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 0,
+  "modified": "2024-11-12 15:23:56.123896",
+  "name": "Your job",
+  "question_code": "QST-012",
+  "question_title": "Your job",
+  "question_type": "Short Answer",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [
+   {
+    "answer": "High",
+    "answer_code": "High",
+    "parent": "The client's ability to bear risks",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 60.0
+   },
+   {
+    "answer": "Medium",
+    "answer_code": "Medium",
+    "parent": "The client's ability to bear risks",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 30.0
+   },
+   {
+    "answer": "Low",
+    "answer_code": "Low",
+    "parent": "The client's ability to bear risks",
+    "parentfield": "answers",
+    "parenttype": "KYC Question",
+    "weight": 10.0
+   }
+  ],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 1,
+  "modified": "2024-11-12 15:26:31.713863",
+  "name": "The client's ability to bear risks",
+  "question_code": "QST-013",
+  "question_title": "The client's ability to bear risks",
+  "question_type": "Single Choice",
+  "required": 0,
+  "weight": 0.0
+ },
+ {
+  "answers": [],
+  "docstatus": 0,
+  "doctype": "KYC Question",
+  "included_in_scoring": 0,
+  "modified": "2024-11-12 15:27:49.550482",
+  "name": "General investment objectives",
+  "question_code": "QST-014",
+  "question_title": "General investment objectives",
+  "question_type": "Short Answer",
+  "required": 0,
+  "weight": 0.0
+ }
+]
