@@ -42,3 +42,10 @@ Deed Owner -- > Deed Owner Item
 
 # to migrate site
  bench --site pre-eservices.waseera.sa migrate
+
+
+# to forcely delete doctype and fields deleted from db
+bench --site fikak_product.localhost trim-tables
+ 
+
+ 
