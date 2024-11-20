@@ -54,9 +54,13 @@
   "realestatedetails_tab",
   "real_estate_details",
   "eligibilitystats_tab",
-  "wizard_step",
-  "workflow_state",
-  "selected_services"
+  "selected_services",
+  "pricing_tab",
+  "deed_price",
+  "interest_amount",
+  "down_price",
+  "purchase_date",
+  "is_first_home"
  ],
  "fields": [
   {
@@ -298,20 +302,6 @@
    "label": "Waseera Workflow"
   },
   {
-   "default": "2",
-   "fieldname": "wizard_step",
-   "fieldtype": "Int",
-   "label": "Wizard Step",
-   "options": "0\n1\n2\n3\n4"
-  },
-  {
-   "default": "NEW",
-   "fieldname": "workflow_state",
-   "fieldtype": "Select",
-   "label": "Workflow State",
-   "options": "NEW\nPENDING\nELIGIBLE\nNOT-ELIGIBLE"
-  },
-  {
    "fieldname": "selected_services",
    "fieldtype": "Select",
    "label": "Selected Services",
@@ -322,11 +312,42 @@
    "fieldtype": "Link",
    "label": "Deed Owner",
    "options": "User"
+  },
+  {
+   "fieldname": "pricing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "deed_price",
+   "fieldtype": "Currency",
+   "label": "Deed Price"
+  },
+  {
+   "fieldname": "interest_amount",
+   "fieldtype": "Currency",
+   "label": "Interest Amount"
+  },
+  {
+   "fieldname": "down_price",
+   "fieldtype": "Currency",
+   "label": "Down Price"
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Date",
+   "label": "Purchase Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_first_home",
+   "fieldtype": "Check",
+   "label": "Is First Home?"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-13 17:52:21.322660",
+ "modified": "2024-11-20 14:03:41.445317",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Deed",

@@ -42,3 +42,32 @@ Deed Owner -- > Deed Owner Item
 
 # to migrate site
  bench --site pre-eservices.waseera.sa migrate
+
+#listing api params
+{
+  "offset": 0,
+  "page_size": 10,
+  "order_direction": "", //1 or -1
+  "order_field" : ""
+  "global_filter": "Riadh",
+  "status_filter": {
+    "is_eligible": "not_eligible",
+    "is_split": "inactive"
+  }
+}
+
+#listing return data
+
+{
+    "meta" : {
+        "size" : 1994,
+        "current_page" : 1,
+        "total_pages" : 140,
+        "items_per_page" : 10,
+    }
+    "data" : [
+
+    ],
+    "status" : true,
+    "message" : "succes"
+}

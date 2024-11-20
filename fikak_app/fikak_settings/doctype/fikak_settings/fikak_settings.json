@@ -8,7 +8,8 @@
  "engine": "InnoDB",
  "field_order": [
   "eligibity_check",
-  "max_new_loan"
+  "max_new_loan",
+  "waseera_fees"
  ],
  "fields": [
   {
@@ -20,12 +21,17 @@
    "fieldname": "max_new_loan",
    "fieldtype": "Percent",
    "label": "Max New Loan"
+  },
+  {
+   "fieldname": "waseera_fees",
+   "fieldtype": "Percent",
+   "label": "Waseera Fees"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-10 18:43:51.591493",
+ "modified": "2024-11-20 20:47:42.504822",
  "modified_by": "Administrator",
  "module": "Fikak Settings",
  "name": "Fikak Settings",
