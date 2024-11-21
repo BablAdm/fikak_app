@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-21 19:33:23.248725",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "submission_date",
+  "description",
+  "column_break_gqdj",
+  "status",
+  "evaluation_source",
+  "request",
+  "evaluation_result_section",
+  "evaluation_price"
+ ],
+ "fields": [
+  {
+   "fieldname": "submission_date",
+   "fieldtype": "Datetime",
+   "label": "Submission Date"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nPaid\nNot paid\nDone"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "request",
+   "fieldtype": "Dynamic Link",
+   "label": "Request",
+   "options": "evaluation_source"
+  },
+  {
+   "fieldname": "evaluation_source",
+   "fieldtype": "Select",
+   "label": "Evaluation Source",
+   "options": "Split Service Request"
+  },
+  {
+   "fieldname": "column_break_gqdj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "evaluation_result_section",
+   "fieldtype": "Section Break",
+   "label": "Evaluation Result"
+  },
+  {
+   "fieldname": "evaluation_price",
+   "fieldtype": "Currency",
+   "label": "Evaluation Price"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-21 20:00:31.306447",
+ "modified_by": "Administrator",
+ "module": "Requests Management",
+ "name": "Evaluation Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
