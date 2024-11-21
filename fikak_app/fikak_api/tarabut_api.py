@@ -583,7 +583,7 @@ def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_dir
                                          filters = {"parent" : request_id} , 
                                          fields = ["name as deed_request_id" , "deed_source" , "deed" , "total_interest_payment"
                                                     , "current_market_deed_price" , "total_principal_payment"
-                                                    , "new_loan" , "loan_eligibility" , "split_eligibility" , "status"
+                                                    , "new_loan" , "loan_eligibility" , "split_eligibility" , "status" , "customer_equity"
                                                     ] 
                                          ,  start = offset , limit = page_size , order_by = "idx asc" )
         eligibility_results = []
@@ -627,6 +627,9 @@ def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_dir
                 if loan_eligibility: request_deed_item_doc.loan_eligibility = loan_eligibility
                 if split_eligibility: request_deed_item_doc.split_eligibility = split_eligibility
                 if loan_bba: request_deed_item_doc.new_loan = loan_bba
+                if customer_equity_new_price: request_deed_item_doc.customer_equity = customer_equity_new_price
+                if bank_equity_from_new_price: request_deed_item_doc.bank_equity = bank_equity_from_new_price
+                
                 request_deed_item_doc.save(ignore_permissions=True)
             else:
                 loan_eligibility = requested_deed.get("loan_eligibility")
@@ -641,6 +644,7 @@ def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_dir
                 "deed_status" : deed_object.deed_status,
                 "last_price_registred" : deed_object.deed_price,
                 "bursa_price" : requested_deed.get("current_market_deed_price"),
+                "equity_percent" : requested_deed.get("customer_equity") if requested_deed.status != "NEW" else customer_equity_new_price * 100,
                 "loan_bba" : loan_bba,
                 "loan_eligibility" : loan_eligibility,
                 "split_eligibility" : split_eligibility,

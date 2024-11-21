@@ -6,9 +6,8 @@ from pypika import functions as fn
 import json
 
 @frappe.whitelist(methods=["GET"])
-def get_deeds_list(global_filter = None, status_filter = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation"):
-    if isinstance(status_filter, str):
-        status_filter = json.loads(status_filter)
+def get_deeds_list(global_filter = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
+    
     
     if isinstance(offset, str):
         offset = int(offset)
@@ -32,9 +31,11 @@ def get_deeds_list(global_filter = None, status_filter = None , offset = 0 , pag
             watheq_deed_dt.deed_serial,
             watheq_deed_dt.deed_area,
             watheq_deed_dt.deed_status,
+            watheq_deed_dt.deed_price.as_("last_price_registred"),
             deed_real_estate_details_dt.city_name.as_("deed_city"),
             deed_item_dt.parent.as_("request_id"),
             deed_item_dt.status,
+            deed_item_dt.customer_equity.as_("equity_percent"),
             deed_item_dt.new_loan.as_("loan_bba"),
             deed_item_dt.current_market_deed_price.as_("bursa_price"),
             deed_item_dt.loan_eligibility,
@@ -54,19 +55,27 @@ def get_deeds_list(global_filter = None, status_filter = None , offset = 0 , pag
             (fn.Lower(deed_real_estate_details_dt.city_name).like(
             f"%{global_filter}%"))
         )
+    if kw.get("request_status_filter"):
+        query = query.where(deed_item_dt.status == kw.get("request_status_filter"))
+
+    if kw.get("split_filter"):
+        split_filter = 1 if kw.get("split_filter") == "eligible" else 0
+        query = query.where(deed_item_dt.split_eligibility == split_filter)
     
-    if status_filter:
-        query = query.where(deed_item_dt.status == status_filter)
+    if kw.get("loan_filter"):
+        loan_filter = 1 if kw.get("loan_filter") == "eligible" else 0
+        query = query.where(deed_item_dt.loan_eligibility == loan_filter)
 
-    res = query.run(as_dict=True)
-
+    data_len = len(query.run(as_dict=True))
+    
+    data = query.offset(offset).limit(page_size).run(as_dict=True)
     
     return {
-        "data" : res,
+        "data" : data,
         "meta": {
             "current_page": int((offset/page_size)+1),
-            "total_items": len(res),
+            "total_items": data_len,
             "items_per_page": page_size,
-            "total_pages": math.ceil(len(res) / page_size)
+            "total_pages": math.ceil(data_len / page_size)
         },
     }

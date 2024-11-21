@@ -16,6 +16,8 @@
   "total_principal_payment",
   "eligibility_check_result_section",
   "new_loan",
+  "bank_equity",
+  "customer_equity",
   "loan_eligibility",
   "split_eligibility"
  ],
@@ -42,7 +44,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "NEW\nEligible For Split\nEligibile For Loan\nNot Eligible"
+   "options": "NEW\nEligible For Split\nEligible For Loan\nNot Eligible"
   },
   {
    "default": "0",
@@ -91,12 +93,22 @@
    "fieldname": "split_eligibility",
    "fieldtype": "Check",
    "label": "Split Eligibility"
+  },
+  {
+   "fieldname": "bank_equity",
+   "fieldtype": "Percent",
+   "label": "Bank Equity"
+  },
+  {
+   "fieldname": "customer_equity",
+   "fieldtype": "Percent",
+   "label": "Customer Equity"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-20 21:08:44.385794",
+ "modified": "2024-11-21 15:15:33.262930",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "Eligibility Check Request Deed Item",
