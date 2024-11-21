@@ -267,10 +267,13 @@ def insert_deed(data):
                     })
             
             deed_data.save(ignore_permissions=True)
-            create_elgibility_request([deed_data.name] , deed_source = "WATHEQ Deed")
+            deed_data = deed_data.as_dict()
+            eligibility_request = create_elgibility_request([deed_data.name] , deed_source = "WATHEQ Deed")
+            frappe.db.commit()
             deed_data.workflow_state = "NEW"
             deed_data.wizard_step = 2
-            frappe.db.commit()
+            deed_data.request_id = eligibility_request.name
+            
         return deed_data
     except Exception as e:
         frappe.throw(str(e))
@@ -307,6 +310,7 @@ def get_user_last_deed(status):
         deed_data = frappe.get_doc("WATHEQ Deed" , document["deed_number"]).as_dict()
         deed_data.workflow_state = status
         deed_data.wizard_step = document["wizard_step"]
+        deed_data.request_id = document["request_id"]
 
         return deed_data
     return None
