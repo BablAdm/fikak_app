@@ -79,3 +79,44 @@ def get_deeds_list(global_filter = None , offset = 0 , page_size = 10 , order_di
             "total_pages": math.ceil(data_len / page_size)
         },
     }
+
+@frappe.whitelist(methods=["GET"])
+def get_deed_details(deed_id):
+    try:
+        deed_doc = frappe.get_doc("WATHEQ Deed", {"name" : deed_id , "deed_owner" : frappe.session.user})
+        return {
+            "status": True,
+            "data": deed_doc.as_dict(),
+            "message": "Deed details retrieved successfully"
+        }
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status": False,
+            "message": str(e)
+        }
+    
+
+@frappe.whitelist(methods=["GET"])
+def delete_deed(deed_id):
+    
+    try:
+        if frappe.get_all("Eligibility Check Request Deed Item", {"deed": deed_id}):
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": "Deed can't be deleted as it has requests associated with it"
+            }
+        deed_doc = frappe.get_doc("WATHEQ Deed", {"name" : deed_id , "deed_owner" : frappe.session.user})
+        deed_doc.delete(ignore_permissions=True)
+        frappe.db.commit()
+        return {
+            "status": True,
+            "message": "Deed deleted successfully"
+        }
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status": False,
+            "message": str(e)
+        }
