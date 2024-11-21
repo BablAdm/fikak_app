@@ -3,7 +3,6 @@
 import frappe
 import math
 from pypika import functions as fn
-import json
 
 @frappe.whitelist(methods=["GET"])
 def get_deeds_list(global_filter = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
