@@ -114,7 +114,7 @@ def get_deed_request_details(deed_id):
         return res[0]
     return None
 
-def get_deed_request_details_by_status(status):
+def get_deed_request_details_by_status():
     eligibility_dt = frappe.qb.DocType("Eligibility Check Request")
     eligibility_deed_item_dt = frappe.qb.DocType("Eligibility Check Request Deed Item")
 
@@ -127,7 +127,7 @@ def get_deed_request_details_by_status(status):
             eligibility_deed_item_dt.deed.as_("deed_number"),
             eligibility_dt.wizard_step.as_("wizard_step"),
             eligibility_deed_item_dt.status.as_("workflow_state")
-        ).where((eligibility_deed_item_dt.status == status) & (eligibility_deed_item_dt.is_active == 1) & (eligibility_dt.user == frappe.session.user))
+        ).where((eligibility_deed_item_dt.is_active == 1) & (eligibility_dt.user == frappe.session.user))
     )
     res = query.run(as_dict=True)
     if res:
@@ -304,8 +304,8 @@ def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
 
 # Fetch the first deed created by the current user with status 
 @frappe.whitelist(methods=['GET'])
-def get_user_last_deed(status):
-    document = get_deed_request_details_by_status(status)
+def get_user_last_active_deed(status = None):
+    document = get_deed_request_details_by_status()
     if document:
         deed_data = frappe.get_doc("WATHEQ Deed" , document["deed_number"]).as_dict()
         deed_data.workflow_state = status
