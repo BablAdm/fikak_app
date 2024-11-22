@@ -572,6 +572,11 @@ def insert_bank_account_transactions(bank_account , transactions, user):
 @frappe.whitelist(methods="GET")
 def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation"):
     try:
+        if isinstance(offset, str):
+            offset = int(offset)
+    
+        if isinstance(page_size, str):
+            page_size = int(page_size)
         request = frappe.get_doc("Eligibility Check Request" , request_id)
         if request.user != frappe.session.user:
             frappe.local.response["http_status_code"] = 403
