@@ -569,6 +569,7 @@ def insert_bank_account_transactions(bank_account , transactions, user):
         doc.insert(ignore_permissions=True)
     frappe.db.commit()
 
+# @deprecated we should use the one of eligibility request api
 @frappe.whitelist(methods="GET")
 def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation"):
     try:
