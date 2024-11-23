@@ -241,7 +241,21 @@ def update_eligibility_request(request_id,updates):
             "message": str(e)
         }
 
+def update_workflow_step(step):
+    """
+    Update the Eligibility Request workflow status.
 
+    This function updates the Eligibility Request workflow status in the database.
+
+    Args:
+        status (str): The status of the deed.
+    """
+    try:
+        doc = frappe.get_doc("Eligibility Check Request", {"workflow_state": "NEW" , "user" : frappe.session.user})
+        doc.wizard_step = step
+        doc.save(ignore_permissions=True)
+    except Exception as e:
+        return None
 
 
 @frappe.whitelist(methods=["GET"])
