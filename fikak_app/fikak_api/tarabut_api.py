@@ -4,7 +4,7 @@ import frappe
 import requests
 from frappe import _
 import math
-
+from . import eligibility_request_api
 
 def generate_access_token(endpoint, client_id, client_secret, customer_id):
     """
@@ -175,7 +175,7 @@ def handle_tarabut_webhook(intentId, status):
         doc.insert(ignore_permissions=True)  # Ignore permissions if necessary
         update_intent_request(intentId, doc.name, status)  # Update the intent request
         get_user_bank_accounts_from_tarabut(intentId , intent_request.user)
-        update_deed_workflow_step(3)
+        eligibility_request_api.update_workflow_step(3)
         frappe.db.commit()  # Commit the transaction
         return {"message": _("Data inserted successfully in TARABUT Callback"), "status": True}
     except Exception as e:
