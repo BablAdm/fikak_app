@@ -202,3 +202,62 @@ def get_eligiblity_request_list(offset = 0 , page_size = 10 , order_direction = 
 
 
     return requests
+
+
+# Update deed eligibility request state ( status , wizard steps)
+@frappe.whitelist(methods=['POST'])
+def update_eligibility_request(request_id,updates):
+    try:
+        if frappe.db.exists("Eligibility Check Request" , {'name' : request_id , "user" : frappe.session.user}):
+            request_dt = frappe.get_doc("Eligibility Check Request" , request_id)
+            # Check if the current user is the owner
+            if request_dt.user != frappe.session.user:
+                frappe.local.response.http_status_code = 403
+                return {
+                    "status": False,
+                    "message": _("You are not the owner of this Eligbility Request")
+                }
+
+            # Update each field in the dictionary
+            for field, value in updates.items():
+                if hasattr(request_dt, field):  # Check if the field exists on the DocType
+                    setattr(request_dt, field, value)
+                else:
+                    print(f"Warning: '{field}' does not exist on '{request_dt.doctype}' and will be ignored")
+
+
+            # Save the changes
+            request_dt.save()
+            frappe.db.commit()  # Commit to ensure changes are saved to the database
+            return {
+                "status": True,
+                "message": _("Eligiblity Request updated successfully")
+            }
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(),"Eligiblity Request Update exception : " + str(e))
+        return {
+            "status" : False,
+            "message": str(e)
+        }
+
+
+
+
+@frappe.whitelist(methods=["GET"])
+def delete_eligibility_request(request_id):
+    
+    try:
+        request_dt = frappe.get_doc("Eligibility Check Request", {"name" : request_id , "user" : frappe.session.user})
+        request_dt.delete(ignore_permissions=True)
+        frappe.db.commit()
+        return {
+            "status": True,
+            "message": "Eligibility Request deleted successfully"
+        }
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status": False,
+            "message": str(e)
+        }
