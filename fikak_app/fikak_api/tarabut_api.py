@@ -4,7 +4,7 @@ import frappe
 import requests
 from frappe import _
 import math
-
+from . import eligibility_request_api
 
 def generate_access_token(endpoint, client_id, client_secret, customer_id):
     """
@@ -175,7 +175,7 @@ def handle_tarabut_webhook(intentId, status):
         doc.insert(ignore_permissions=True)  # Ignore permissions if necessary
         update_intent_request(intentId, doc.name, status)  # Update the intent request
         get_user_bank_accounts_from_tarabut(intentId , intent_request.user)
-        update_deed_workflow_step(3)
+        eligibility_request_api.update_workflow_step(3)
         frappe.db.commit()  # Commit the transaction
         return {"message": _("Data inserted successfully in TARABUT Callback"), "status": True}
     except Exception as e:
@@ -569,9 +569,15 @@ def insert_bank_account_transactions(bank_account , transactions, user):
         doc.insert(ignore_permissions=True)
     frappe.db.commit()
 
+# @deprecated we should use the one of eligibility request api
 @frappe.whitelist(methods="GET")
 def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation"):
     try:
+        if isinstance(offset, str):
+            offset = int(offset)
+    
+        if isinstance(page_size, str):
+            page_size = int(page_size)
         request = frappe.get_doc("Eligibility Check Request" , request_id)
         if request.user != frappe.session.user:
             frappe.local.response["http_status_code"] = 403

@@ -278,6 +278,7 @@ def insert_deed(data):
     except Exception as e:
         frappe.throw(str(e))
 
+# @deprecated use the eligibility_request_api
 def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
     try:
        
