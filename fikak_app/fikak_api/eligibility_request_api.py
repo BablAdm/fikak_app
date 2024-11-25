@@ -46,8 +46,8 @@ def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_dir
         if isinstance(page_size, str):
             page_size = int(page_size)
         
-        process_request(request_id ,  offset , page_size)
-        
+        test = process_request(request_id ,  offset , page_size)
+        return test
         data = get_deeds_list(filter_by_request = request_id ,  offset = offset , page_size = page_size , order_direction = order_direction , order_by = order_by , **kwargs)          
         frappe.local.response["http_status_code"] = 200
         return data
