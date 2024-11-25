@@ -56,8 +56,10 @@ def create_new_watheq_request(national_id ,deed_id , request_id):
     return request
 
 @frappe.whitelist(methods=["GET"])
-def get_deed_data(deed_id,create_request):
+def get_deed_data(deed_id,create_request=0):
     try:
+        if isinstance(create_request, str):
+            create_request = int(create_request)
         user_data = frappe.get_doc("User" , frappe.session.user)
         national_id = user_data.get("username")
 
@@ -84,7 +86,7 @@ def get_deed_data(deed_id,create_request):
         
                 # We should create the request if create_eligibility_request = true
         
-        if(create_request == True):
+        if(create_request == 1):
             eligibility_request = create_elgibility_request([deed_data.name] , deed_source = "WATHEQ Deed")
 
         return deed_data
