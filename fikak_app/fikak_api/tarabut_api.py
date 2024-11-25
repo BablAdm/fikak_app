@@ -153,6 +153,21 @@ def update_intent_request(intent_id , tarabut_callback, status):
     doc.save(ignore_permissions=True)
     frappe.db.commit()
 
+def check_user_enabled_banks(user):
+    bank_account_details_dt = frappe.qb.DocType("Bank Account Details")
+    bank_account_consents_dt = frappe.qb.DocType("Bank Account Details Consent Item")
+
+    query = (
+        frappe.qb.from_(bank_account_details_dt)
+        .inner_join(bank_account_consents_dt)
+        .on(bank_account_details_dt.name == bank_account_consents_dt.parent)
+        .select(
+            bank_account_details_dt.name.as_("name")
+        ).where((bank_account_consents_dt.status == "ACTIVE")  & (bank_account_details_dt.user == frappe.session.user))
+    )
+
+    return query.run(as_dict=True)
+
 @frappe.whitelist(allow_guest=True)
 def handle_tarabut_webhook(intentId, status):
     """
@@ -334,7 +349,7 @@ def insert_bank_accounts(bank_accounts , user):
     """
     
     for account in bank_accounts:
-        if frappe.db.exists("Bank Account Details", {"account_id": account.get("accountId") , "user": frappe.session.user}):
+        if frappe.db.exists("Bank Account Details", {"account_id": account.get("accountId") , "user": user}):
             continue
         bank_provider = frappe.db.exists("Bank Provider", {"bank_code": account.get("providerId")})
         if not bank_provider:
