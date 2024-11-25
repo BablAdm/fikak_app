@@ -91,7 +91,7 @@ def process_request(request_id , offset , page_size):
             loan_eligibility = split_eligibility = loan_bba = None
 
             if requested_deed.get("current_market_deed_price") > 0 and deed_object.get("deed_price") > 0 :
-                i+=1
+                i = i +1
                 loan_eligibility = split_eligibility = False
                 #Compute total amount due to bank
                 total_due_to_bank = deed_object.get("deed_price") + deed_object.get("interest_amount") - deed_object.get("down_price")\
