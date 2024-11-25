@@ -9,7 +9,7 @@ import math
 # Create Eligbility check request
 def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
     try:
-       
+        # TODO : Before creating a request for concerned deed we should check if exist 
         # Create the parent Eligibility Check Request document
         eligibility_request = frappe.new_doc("Eligibility Check Request")
         eligibility_request.user = frappe.session.user

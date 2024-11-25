@@ -56,7 +56,7 @@ def create_new_watheq_request(national_id ,deed_id , request_id):
     return request
 
 @frappe.whitelist(methods=["GET"])
-def get_deed_data(deed_id):
+def get_deed_data(deed_id,create_request):
     try:
         user_data = frappe.get_doc("User" , frappe.session.user)
         national_id = user_data.get("username")
@@ -66,7 +66,6 @@ def get_deed_data(deed_id):
             eligibility_check_details =  get_deed_request_details(deed_data.name)
             if eligibility_check_details:
                 deed_data.update(eligibility_check_details)
-            ## TODO : We should check if the user has the right to see this deed
             
         else:
             watheq_settings = frappe.get_single('WATHEQ Settings')
@@ -83,7 +82,10 @@ def get_deed_data(deed_id):
             insert_watheq_request_callback(national_id,deed_id, responseData)
             deed_data = insert_deed(responseData)
         
+                # We should create the request if create_eligibility_request = true
         
+        if(create_request == True):
+            eligibility_request = create_elgibility_request([deed_data.name] , deed_source = "WATHEQ Deed")
 
         return deed_data
         
@@ -268,12 +270,10 @@ def insert_deed(data):
             
             deed_data.save(ignore_permissions=True)
             deed_data = deed_data.as_dict()
-            eligibility_request = create_elgibility_request([deed_data.name] , deed_source = "WATHEQ Deed")
             frappe.db.commit()
-            deed_data.workflow_state = "NEW"
-            deed_data.wizard_step = 2
-            deed_data.request_id = eligibility_request.name
-            
+            # deed_data.workflow_state = "NEW"
+            # deed_data.wizard_step = 2
+            # deed_data.request_id = eligibility_request.name
         return deed_data
     except Exception as e:
         frappe.throw(str(e))
