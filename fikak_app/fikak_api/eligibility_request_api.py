@@ -102,13 +102,17 @@ def process_request(request_id , offset , page_size):
                 customer_equity_new_price = 1 - bank_equity_from_new_price
                 
                 
-                split_eligibility = True if customer_equity_new_price > eligibity_check / 100 else False
-                if total_due_to_bank == 0 :
+                
+                if total_due_to_bank == 0 or not deed_object.is_real_estate_mortgaged:
                     loan_eligibility = True
-                    split_eligibility = False
+                else:
+                    split_eligibility = True if customer_equity_new_price > eligibity_check / 100 else False
+                
                 if split_eligibility or loan_eligibility:
                     loan_bba = (requested_deed.get("current_market_deed_price") * customer_equity_new_price )* \
                     (max_new_loan /100) * (1 - (waseera_fees / 100))
+                
+                
                 request_deed_item_doc = frappe.get_doc("Eligibility Check Request Deed Item" , requested_deed.deed_request_id)
                 status = "Not Eligible"
                 if loan_eligibility: status = "Eligible For Loan"
