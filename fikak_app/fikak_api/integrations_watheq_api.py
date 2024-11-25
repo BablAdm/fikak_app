@@ -9,6 +9,7 @@ from . import fake_api
 
 from fikak_app.fikak_api.eligibility_request_api import create_elgibility_request
 from fikak_app.api import check_kyc_submitted
+from pypika import Order
 
 def create_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , app_key):
     try:
@@ -134,6 +135,7 @@ def get_deed_request_details_by_status(deed_id = None):
             eligibility_deed_item_dt.status.as_("workflow_state")
         )
         .where(eligibility_dt.user == frappe.session.user)
+        .orderby(eligibility_deed_item_dt.creation ,order = Order.desc)
     )
     if deed_id:
         query = query.where(eligibility_deed_item_dt.deed == deed_id)
