@@ -167,13 +167,27 @@ def get_eligiblity_request_list(offset = 0 , page_size = 10 , order_direction = 
     
     # Fetch child table data for each request
     for req in data:
-        req["requested_deeds"] = frappe.get_all(
+        request_deeds = frappe.get_all(
             "Eligibility Check Request Deed Item", 
-            fields=["name as deed_request_id" , "deed_source" , "deed" , "total_interest_payment"
+            fields=["name as deed_request_id" , "deed" , "total_interest_payment"
                                                     , "current_market_deed_price" , "total_principal_payment"
                                                     , "new_loan" , "loan_eligibility" , "split_eligibility" , "status" , "customer_equity"],  # Add your child table fields
             filters={"parent": req["name"]},
         )
+        deeds =[]
+        for request_deed in request_deeds :
+            deed_dt = frappe.get_value(
+                "WATHEQ Deed",  # Replace with your linked table name
+                request_deed.deed,
+                ["deed_number"],
+                as_dict=True
+            )
+            deeds.append({
+                    "deed_number": deed_dt.deed_number,
+                    "deed_status": request_deed.status,
+                    "deed_name": request_deed.deed 
+                })
+        req["requested_deeds"] = deeds
 
     return {
         "data" : data,
