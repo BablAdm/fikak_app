@@ -78,7 +78,7 @@ def process_request(request_id , offset , page_size):
                                                     , "new_loan" , "loan_eligibility" , "split_eligibility" , "status" , "customer_equity"
                                                     ] 
                                          ,  start = offset , limit = page_size , order_by = "idx asc" )
-        i = 0
+        indeexxx = 0
         for requested_deed in requested_deeds:
             
             deed_object = frappe.get_doc(requested_deed.deed_source, requested_deed.deed)
@@ -91,7 +91,7 @@ def process_request(request_id , offset , page_size):
             loan_eligibility = split_eligibility = loan_bba = None
 
             if requested_deed.get("current_market_deed_price") > 0 and deed_object.get("deed_price") > 0 :
-                i = i +1
+                indeexxx = indeexxx + 1
                 loan_eligibility = split_eligibility = False
                 #Compute total amount due to bank
                 total_due_to_bank = deed_object.get("deed_price") + deed_object.get("interest_amount") - deed_object.get("down_price")\
@@ -125,7 +125,7 @@ def process_request(request_id , offset , page_size):
                 request_deed_item_doc.save(ignore_permissions=True)
             
         frappe.db.commit()
-        return i
+        return indeexxx
 
     except Exception as e:
         frappe.local.response["http_status_code"] = 500
