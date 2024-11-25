@@ -5,6 +5,32 @@ import math
 from pypika import Case , functions as fn
 
 @frappe.whitelist(methods=["GET"])
+def get_deeds_stats():
+    return {
+        "all_deeds_number" : frappe.db.count("WATHEQ Deed" , filters = {"deed_owner" : frappe.session.user}),
+        "not_eligible" : get_number_deeds_by_status("Not Eligible"),
+        "eligible_for_loan" : get_number_deeds_by_status("Eligible For Loan"),
+        "eligible_for_split" : get_number_deeds_by_status("Eligible For Split"),
+        "pending" : get_number_deeds_by_status("NEW"),
+    }
+
+def get_number_deeds_by_status(status):
+    eligibility_dt = frappe.qb.DocType("Eligibility Check Request")
+    eligibility_deed_item_dt = frappe.qb.DocType("Eligibility Check Request Deed Item")
+
+    query = (
+        frappe.qb.from_(eligibility_dt)
+        .inner_join(eligibility_deed_item_dt)
+        .on(eligibility_dt.name == eligibility_deed_item_dt.parent)
+        .select(
+            eligibility_deed_item_dt.name
+        ).where((eligibility_deed_item_dt.status == status) & (eligibility_dt.user == frappe.session.user))
+    )
+    res = query.run(as_dict=True)
+    return len(res)
+
+
+@frappe.whitelist(methods=["GET"])
 def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
     
     
