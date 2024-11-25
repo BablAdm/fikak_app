@@ -7,7 +7,7 @@ import json
 from . import global_utils
 from . import fake_api
 
-
+from fikak_app.fikak_api.eligibility_request_api import create_elgibility_request
 
 def create_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , app_key):
     try:
@@ -277,31 +277,6 @@ def insert_deed(data):
         return deed_data
     except Exception as e:
         frappe.throw(str(e))
-
-# @deprecated use the eligibility_request_api
-def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
-    try:
-       
-        # Create the parent Eligibility Check Request document
-        eligibility_request = frappe.new_doc("Eligibility Check Request")
-        eligibility_request.user = frappe.session.user
-        eligibility_request.submission_date = frappe.utils.now()
-        eligibility_request.wizard_step = 2
-        for deed in deeds:
-            eligibility_request.append('requested_deeds' , {
-                "deed_source" : deed_source,
-                "deed" : deed,
-                "status" : "NEW",
-                "is_active" : 1
-            })
-        eligibility_request.insert(ignore_permissions=True)
-        frappe.db.commit()
-        return eligibility_request
-    except Exception as e:
-        print("errrro " , str(e))
-        frappe.log_error(str(e), "Error Creating Eligibility Check Request")
-        return None
-
 
 # Fetch the first deed created by the current user with status 
 @frappe.whitelist(methods=['GET'])
