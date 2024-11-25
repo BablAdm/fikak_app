@@ -5,16 +5,18 @@ import requests
 from frappe import _
 import math
 from fikak_app.fikak_api.deeds_api import get_deeds_list
+from fikak_app.fikak_api.tarabut_api import check_user_enabled_banks
 
 # Create Eligbility check request
 def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
     try:
         # TODO : Before creating a request for concerned deed we should check if exist 
         # Create the parent Eligibility Check Request document
+        step = 3 if check_user_enabled_banks(frappe.session.user) else 2
         eligibility_request = frappe.new_doc("Eligibility Check Request")
         eligibility_request.user = frappe.session.user
         eligibility_request.submission_date = frappe.utils.now()
-        eligibility_request.wizard_step = 2
+        eligibility_request.wizard_step = step
         for deed in deeds:
             eligibility_request.append('requested_deeds' , {
                 "deed_source" : deed_source,
@@ -24,6 +26,7 @@ def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
             })
         eligibility_request.insert(ignore_permissions=True)
         frappe.db.commit()
+        
         return eligibility_request
     except Exception as e:
         print("errrro " , str(e))

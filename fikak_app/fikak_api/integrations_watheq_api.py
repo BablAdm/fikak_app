@@ -88,7 +88,7 @@ def get_deed_data(deed_id,create_request=0):
                 # We should create the request if create_eligibility_request = true
         
         if(create_request == 1):
-            eligibility_request = create_elgibility_request([deed_data.name] , deed_source = "WATHEQ Deed")
+            create_elgibility_request([deed_data.name] , deed_source = "WATHEQ Deed")
 
         return deed_data
         
@@ -119,7 +119,7 @@ def get_deed_request_details(deed_id):
         return res[0]
     return None
 
-def get_deed_request_details_by_status():
+def get_deed_request_details_by_status(deed_id = None):
     eligibility_dt = frappe.qb.DocType("Eligibility Check Request")
     eligibility_deed_item_dt = frappe.qb.DocType("Eligibility Check Request Deed Item")
 
@@ -132,8 +132,14 @@ def get_deed_request_details_by_status():
             eligibility_deed_item_dt.deed.as_("deed_number"),
             eligibility_dt.wizard_step.as_("wizard_step"),
             eligibility_deed_item_dt.status.as_("workflow_state")
-        ).where((eligibility_deed_item_dt.is_active == 1) & (eligibility_dt.user == frappe.session.user))
+        )
+        .where(eligibility_dt.user == frappe.session.user)
     )
+    if deed_id:
+        query = query.where(eligibility_deed_item_dt.deed == deed_id)
+    else:
+        query = query.where((eligibility_deed_item_dt.is_active == 1))
+    
     res = query.run(as_dict=True)
     if res:
         return res[0]
@@ -281,17 +287,32 @@ def insert_deed(data):
     except Exception as e:
         frappe.throw(str(e))
 
+@frappe.whitelist(methods=['GET'])
+def get_user_eligibility_check_steps(deed_id):
+    document = get_deed_request_details_by_status(deed_id)
+    if document:
+        return {
+            "wizard_step": document["wizard_step"],
+            "request_id": document["request_id"],
+            
+        }
+    return {
+        "is_kyc_submitted" : check_kyc_submitted(frappe.session.user)
+    }
+
 # Fetch the first deed created by the current user with status 
 @frappe.whitelist(methods=['GET'])
-def get_user_last_active_deed(status = None):
-    document = get_deed_request_details_by_status()
+def get_user_last_active_deed(status = None , deed_id = None):
+    document = get_deed_request_details_by_status(deed_id)
     if document:
         deed_data = frappe.get_doc("WATHEQ Deed" , document["deed_number"]).as_dict()
         deed_data.workflow_state = status
         deed_data.wizard_step = document["wizard_step"]
         deed_data.request_id = document["request_id"]
-        deed_data.is_kyc_submitted = check_kyc_submitted(frappe.session.user)
         return deed_data
+    if deed_id:
+        create_elgibility_request([deed_id] , deed_source = "WATHEQ Deed")
+        return get_user_last_active_deed(status , deed_id)
     return None
 
 # Fetch all Deeds Eligibility Request created by the current user with status
