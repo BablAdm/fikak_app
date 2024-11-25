@@ -72,7 +72,7 @@ def process_request(request_id , offset , page_size):
                 "status": False
             }
         requested_deeds = frappe.get_all("Eligibility Check Request Deed Item" , 
-                                         filters = {"parent" : request_id} , 
+                                         filters = {"parent" : request_id , "status" : "NEW"} , 
                                          fields = ["name as deed_request_id" , "deed_source" , "deed" , "total_interest_payment"
                                                     , "current_market_deed_price" , "total_principal_payment"
                                                     , "new_loan" , "loan_eligibility" , "split_eligibility" , "status" , "customer_equity"
@@ -81,48 +81,47 @@ def process_request(request_id , offset , page_size):
 
         for requested_deed in requested_deeds:
             
-            if requested_deed.status == "NEW":
-                deed_object = frappe.get_doc(requested_deed.deed_source, requested_deed.deed)
-                fikak_settings = frappe.get_single("Fikak Settings")
-                eligibity_check = fikak_settings.eligibity_check
-                max_new_loan = fikak_settings.max_new_loan
-                waseera_fees = fikak_settings.waseera_fees
-                #Compute customer total paid amount
-                
-                loan_eligibility = split_eligibility = loan_bba = None
+            deed_object = frappe.get_doc(requested_deed.deed_source, requested_deed.deed)
+            fikak_settings = frappe.get_single("Fikak Settings")
+            eligibity_check = fikak_settings.eligibity_check
+            max_new_loan = fikak_settings.max_new_loan
+            waseera_fees = fikak_settings.waseera_fees
+            #Compute customer total paid amount
+            
+            loan_eligibility = split_eligibility = loan_bba = None
 
-                if requested_deed.get("current_market_deed_price") > 0 and deed_object.get("deed_price") > 0 :
-                    loan_eligibility = split_eligibility = False
-                    #Compute total amount due to bank
-                    total_due_to_bank = deed_object.get("deed_price") + deed_object.get("interest_amount") - deed_object.get("down_price")\
-                                            - (requested_deed.get("total_interest_payment") + requested_deed.get("total_principal_payment"))
-                    #Compute bank equity from new market price
-                    bank_equity_from_new_price = total_due_to_bank / requested_deed.get("current_market_deed_price") if requested_deed.get("current_market_deed_price") > 0 else 0
-                    
-                    #Compute customer equity from new market price
-                    customer_equity_new_price = 1 - bank_equity_from_new_price
-                    
-                    
-                    split_eligibility = True if customer_equity_new_price > eligibity_check / 100 else False
-                    if total_due_to_bank == 0 :
-                        loan_eligibility = True
-                        split_eligibility = False
-                    if split_eligibility or loan_eligibility:
-                        loan_bba = (requested_deed.get("current_market_deed_price") * customer_equity_new_price )* \
-                        (max_new_loan /100) * (1 - (waseera_fees / 100))
-                    request_deed_item_doc = frappe.get_doc("Eligibility Check Request Deed Item" , requested_deed.deed_request_id)
-                    status = "Not Eligible"
-                    if loan_eligibility: status = "Eligible For Loan"
-                    if split_eligibility: status = "Eligible For Split"
-                    
-                    request_deed_item_doc.status = status
-                    if loan_eligibility: request_deed_item_doc.loan_eligibility = loan_eligibility
-                    if split_eligibility: request_deed_item_doc.split_eligibility = split_eligibility
-                    if loan_bba: request_deed_item_doc.new_loan = loan_bba
-                    if customer_equity_new_price: request_deed_item_doc.customer_equity = customer_equity_new_price
-                    if bank_equity_from_new_price: request_deed_item_doc.bank_equity = bank_equity_from_new_price
-                    
-                    request_deed_item_doc.save(ignore_permissions=True)
+            if requested_deed.get("current_market_deed_price") > 0 and deed_object.get("deed_price") > 0 :
+                loan_eligibility = split_eligibility = False
+                #Compute total amount due to bank
+                total_due_to_bank = deed_object.get("deed_price") + deed_object.get("interest_amount") - deed_object.get("down_price")\
+                                        - (requested_deed.get("total_interest_payment") + requested_deed.get("total_principal_payment"))
+                #Compute bank equity from new market price
+                bank_equity_from_new_price = total_due_to_bank / requested_deed.get("current_market_deed_price") if requested_deed.get("current_market_deed_price") > 0 else 0
+                
+                #Compute customer equity from new market price
+                customer_equity_new_price = 1 - bank_equity_from_new_price
+                
+                
+                split_eligibility = True if customer_equity_new_price > eligibity_check / 100 else False
+                if total_due_to_bank == 0 :
+                    loan_eligibility = True
+                    split_eligibility = False
+                if split_eligibility or loan_eligibility:
+                    loan_bba = (requested_deed.get("current_market_deed_price") * customer_equity_new_price )* \
+                    (max_new_loan /100) * (1 - (waseera_fees / 100))
+                request_deed_item_doc = frappe.get_doc("Eligibility Check Request Deed Item" , requested_deed.deed_request_id)
+                status = "Not Eligible"
+                if loan_eligibility: status = "Eligible For Loan"
+                if split_eligibility: status = "Eligible For Split"
+                
+                request_deed_item_doc.status = status
+                if loan_eligibility: request_deed_item_doc.loan_eligibility = loan_eligibility
+                if split_eligibility: request_deed_item_doc.split_eligibility = split_eligibility
+                if loan_bba: request_deed_item_doc.new_loan = loan_bba
+                if customer_equity_new_price: request_deed_item_doc.customer_equity = customer_equity_new_price
+                if bank_equity_from_new_price: request_deed_item_doc.bank_equity = bank_equity_from_new_price
+                
+                request_deed_item_doc.save(ignore_permissions=True)
             
         frappe.db.commit()
 
