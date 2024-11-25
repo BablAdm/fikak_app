@@ -12,9 +12,7 @@ def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
     try:
         # TODO : Before creating a request for concerned deed we should check if exist 
         # Create the parent Eligibility Check Request document
-        print("ghhhhhhhhhhhhhhhhhhhhhhhhhh")
         step = 3 if check_user_enabled_banks(frappe.session.user) else 2
-        print("ffffffffffffffffffffffffffffffff")
         eligibility_request = frappe.new_doc("Eligibility Check Request")
         eligibility_request.user = frappe.session.user
         eligibility_request.submission_date = frappe.utils.now()
