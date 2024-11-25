@@ -288,7 +288,7 @@ def insert_deed(data):
         frappe.throw(str(e))
 
 @frappe.whitelist(methods=['GET'])
-def get_user_eligibility_check_steps(deed_id):
+def get_user_eligibility_check_steps(deed_id = None):
     document = get_deed_request_details_by_status(deed_id)
     if document:
         return {
