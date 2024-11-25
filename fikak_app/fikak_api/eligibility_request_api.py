@@ -4,7 +4,7 @@ import frappe
 import requests
 from frappe import _
 import math
-
+from fikak_app.fikak_api.deeds_api import get_deeds_list
 
 # Create Eligbility check request
 def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
@@ -33,7 +33,7 @@ def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
 
 # Get ligibility check status 
 @frappe.whitelist(methods="GET")
-def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation"):
+def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kwargs):
 
     try:
         if isinstance(offset, str):
@@ -41,6 +41,25 @@ def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_dir
     
         if isinstance(page_size, str):
             page_size = int(page_size)
+        
+        process_request(request_id ,  offset , page_size)
+        
+        data = get_deeds_list(filter_by_request = request_id ,  offset = offset , page_size = page_size , order_direction = order_direction , order_by = order_by , **kwargs)          
+        frappe.local.response["http_status_code"] = 200
+        return data
+        
+    except Exception as e:
+        frappe.local.response["http_status_code"] = 500
+        return{
+            "status:" : False,
+            "message" : str(e),
+        }
+
+    
+
+def process_request(request_id , offset , page_size):
+    try:
+        
         request = frappe.get_doc("Eligibility Check Request" , request_id)
         if request.user != frappe.session.user:
             frappe.local.response["http_status_code"] = 403
@@ -55,20 +74,20 @@ def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_dir
                                                     , "new_loan" , "loan_eligibility" , "split_eligibility" , "status" , "customer_equity"
                                                     ] 
                                          ,  start = offset , limit = page_size , order_by = "idx asc" )
-        eligibility_results = []
+
         for requested_deed in requested_deeds:
-            deed_object = frappe.get_doc(requested_deed.deed_source, requested_deed.deed)
+            
             if requested_deed.status == "NEW":
+                deed_object = frappe.get_doc(requested_deed.deed_source, requested_deed.deed)
                 fikak_settings = frappe.get_single("Fikak Settings")
                 eligibity_check = fikak_settings.eligibity_check
                 max_new_loan = fikak_settings.max_new_loan
                 waseera_fees = fikak_settings.waseera_fees
                 #Compute customer total paid amount
-                customer_total_deed_payment = deed_object.get("down_price") + requested_deed.get("total_principal_payment")
                 
                 loan_eligibility = split_eligibility = loan_bba = None
 
-                if requested_deed.get("current_market_deed_price") and deed_object.get("deed_price"):
+                if requested_deed.get("current_market_deed_price") > 0 and deed_object.get("deed_price") > 0 :
                     loan_eligibility = split_eligibility = False
                     #Compute total amount due to bank
                     total_due_to_bank = deed_object.get("deed_price") + deed_object.get("interest_amount") - deed_object.get("down_price")\
@@ -87,60 +106,28 @@ def check_elgibility_status(request_id , offset = 0 , page_size = 10 , order_dir
                     if split_eligibility or loan_eligibility:
                         loan_bba = (requested_deed.get("current_market_deed_price") * customer_equity_new_price )* \
                         (max_new_loan /100) * (1 - (waseera_fees / 100))
-                request_deed_item_doc = frappe.get_doc("Eligibility Check Request Deed Item" , requested_deed.deed_request_id)
-                status = "Not Eligible"
-                if loan_eligibility: status = "Eligible For Loan"
-                if split_eligibility: status = "Eligible For Split"
-                
-                request_deed_item_doc.status = status
-                if loan_eligibility: request_deed_item_doc.loan_eligibility = loan_eligibility
-                if split_eligibility: request_deed_item_doc.split_eligibility = split_eligibility
-                if loan_bba: request_deed_item_doc.new_loan = loan_bba
-                if customer_equity_new_price: request_deed_item_doc.customer_equity = customer_equity_new_price
-                if bank_equity_from_new_price: request_deed_item_doc.bank_equity = bank_equity_from_new_price
-                
-                request_deed_item_doc.save(ignore_permissions=True)
-            else:
-                loan_eligibility = requested_deed.get("loan_eligibility")
-                split_eligibility = requested_deed.get("split_eligibility")
-                loan_bba = requested_deed.get("new_loan")
+                    request_deed_item_doc = frappe.get_doc("Eligibility Check Request Deed Item" , requested_deed.deed_request_id)
+                    status = "Not Eligible"
+                    if loan_eligibility: status = "Eligible For Loan"
+                    if split_eligibility: status = "Eligible For Split"
                     
-            eligibility_results.append({
-                "deed_number" : deed_object.deed_number,
-                "deed_serial" : deed_object.deed_serial,
-                "deed_city" : deed_object.real_estate_details[0].city_name,
-                "deed_area" : deed_object.deed_area,
-                "deed_status" : deed_object.deed_status,
-                "last_price_registred" : deed_object.deed_price,
-                "bursa_price" : requested_deed.get("current_market_deed_price"),
-                "equity_percent" : requested_deed.get("customer_equity") if requested_deed.status != "NEW" else customer_equity_new_price * 100,
-                "loan_bba" : loan_bba,
-                "loan_eligibility" : loan_eligibility,
-                "split_eligibility" : split_eligibility,
-            })
+                    request_deed_item_doc.status = status
+                    if loan_eligibility: request_deed_item_doc.loan_eligibility = loan_eligibility
+                    if split_eligibility: request_deed_item_doc.split_eligibility = split_eligibility
+                    if loan_bba: request_deed_item_doc.new_loan = loan_bba
+                    if customer_equity_new_price: request_deed_item_doc.customer_equity = customer_equity_new_price
+                    if bank_equity_from_new_price: request_deed_item_doc.bank_equity = bank_equity_from_new_price
+                    
+                    request_deed_item_doc.save(ignore_permissions=True)
             
         frappe.db.commit()
 
     except Exception as e:
-        frappe.local.response["http_status_code"] = 404
+        frappe.local.response["http_status_code"] = 500
         return{
             "status:" : False,
             "message" : str(e),
         }
-
-    return {
-        "message" : "Success",
-        "status:" : True,
-        "data" : eligibility_results,
-        "meta": {
-            "current_page": int((offset/page_size)+1),
-            "total_items": len(request.requested_deeds),
-            "items_per_page": page_size,
-            "total_pages": math.ceil(len(request.requested_deeds) / page_size)
-        },
-        
-    }
-
 
 # Fetch all  Eligibility Request created by the current user with status
 @frappe.whitelist(methods=['GET'])
@@ -204,7 +191,6 @@ def get_eligiblity_request_list(offset = 0 , page_size = 10 , order_direction = 
     return requests
 
 
-# Update deed eligibility request state ( status , wizard steps)
 @frappe.whitelist(methods=['POST'])
 def update_eligibility_request(request_id,updates):
     try:
@@ -241,7 +227,7 @@ def update_eligibility_request(request_id,updates):
             "message": str(e)
         }
 
-def update_workflow_step(step):
+def update_workflow_step(step , request_id = None):
     """
     Update the Eligibility Request workflow status.
 
@@ -250,8 +236,11 @@ def update_workflow_step(step):
     Args:
         status (str): The status of the deed.
     """
+    filters = {"user" : frappe.session.user}
+    if request_id:
+        filters["name"] = request_id
     try:
-        doc = frappe.get_doc("Eligibility Check Request", {"workflow_state": "NEW" , "user" : frappe.session.user})
+        doc = frappe.get_doc("Eligibility Check Request",filters)
         doc.wizard_step = step
         doc.save(ignore_permissions=True)
     except Exception as e:

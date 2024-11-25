@@ -2,10 +2,10 @@
 
 import frappe
 import math
-from pypika import functions as fn
+from pypika import Case , functions as fn
 
 @frappe.whitelist(methods=["GET"])
-def get_deeds_list(global_filter = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
+def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
     
     
     if isinstance(offset, str):
@@ -31,14 +31,19 @@ def get_deeds_list(global_filter = None , offset = 0 , page_size = 10 , order_di
             watheq_deed_dt.deed_area,
             watheq_deed_dt.deed_status,
             watheq_deed_dt.deed_price.as_("last_price_registred"),
+            watheq_deed_dt.is_real_estate_mortgaged,
             deed_real_estate_details_dt.city_name.as_("deed_city"),
+            deed_real_estate_details_dt.region_name.as_("deed_region"),
             deed_item_dt.parent.as_("request_id"),
-            deed_item_dt.status,
-            deed_item_dt.customer_equity.as_("equity_percent"),
-            deed_item_dt.new_loan.as_("loan_bba"),
-            deed_item_dt.current_market_deed_price.as_("bursa_price"),
+            Case()
+            .when(deed_item_dt.status == "NEW", "PENDING")
+            .when(deed_item_dt.status.isnotnull(), deed_item_dt.status)
+            .else_("Not Requested Yet").as_("status"),
             deed_item_dt.loan_eligibility,
-            deed_item_dt.split_eligibility
+            deed_item_dt.current_market_deed_price.as_("bursa_price"),
+            deed_item_dt.customer_equity.as_("equity_percent"),
+            deed_item_dt.new_loan.as_("loan_amount"),
+            deed_item_dt.split_eligibility,
         )
         .where(watheq_deed_dt.deed_owner == frappe.session.user)  
     )
@@ -60,7 +65,8 @@ def get_deeds_list(global_filter = None , offset = 0 , page_size = 10 , order_di
     if kw.get("split_filter"):
         split_filter = 1 if kw.get("split_filter") == "eligible" else 0
         query = query.where(deed_item_dt.split_eligibility == split_filter)
-    
+    if filter_by_request:
+        query = query.where(deed_item_dt.parent == filter_by_request)
     if kw.get("loan_filter"):
         loan_filter = 1 if kw.get("loan_filter") == "eligible" else 0
         query = query.where(deed_item_dt.loan_eligibility == loan_filter)

@@ -8,6 +8,7 @@ from . import global_utils
 from . import fake_api
 
 from fikak_app.fikak_api.eligibility_request_api import create_elgibility_request
+from fikak_app.api import check_kyc_submitted
 
 def create_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , app_key):
     try:
@@ -289,7 +290,7 @@ def get_user_last_active_deed(status = None):
         deed_data.workflow_state = status
         deed_data.wizard_step = document["wizard_step"]
         deed_data.request_id = document["request_id"]
-
+        deed_data.is_kyc_submitted = check_kyc_submitted(frappe.session.user)
         return deed_data
     return None
 
