@@ -120,7 +120,7 @@ def get_deed_request_details(deed_id):
         return res[0]
     return None
 
-def get_deed_request_details_by_status(deed_id = None):
+def get_deed_request_details_by_status(deed_id = None , request_id = None):
     eligibility_dt = frappe.qb.DocType("Eligibility Check Request")
     eligibility_deed_item_dt = frappe.qb.DocType("Eligibility Check Request Deed Item")
 
@@ -139,10 +139,17 @@ def get_deed_request_details_by_status(deed_id = None):
     )
     if deed_id:
         query = query.where(eligibility_deed_item_dt.deed == deed_id)
+    elif request_id:
+        query = query.where(eligibility_dt.name == request_id)
     else:
         query = query.where((eligibility_deed_item_dt.is_active == 1))
     
+    
+
     res = query.run(as_dict=True)
+    if request_id :
+        res[0]['number_of_deeds'] = len(res)
+
     if res:
         return res[0]
     return None
@@ -290,8 +297,8 @@ def insert_deed(data):
         frappe.throw(str(e))
 
 @frappe.whitelist(methods=['GET'])
-def get_user_eligibility_check_steps(deed_id = None):
-    document = get_deed_request_details_by_status(deed_id)
+def get_user_eligibility_check_steps(deed_id = None , request_id = None):
+    document = get_deed_request_details_by_status(deed_id , request_id)
     if document:
         return {
             "wizard_step": document["wizard_step"],
@@ -304,10 +311,11 @@ def get_user_eligibility_check_steps(deed_id = None):
 
 # Fetch the first deed created by the current user with status 
 @frappe.whitelist(methods=['GET'])
-def get_user_last_active_deed(status = None , deed_id = None):
-    document = get_deed_request_details_by_status(deed_id)
+def get_user_last_active_deed(status = None , deed_id = None , request_id = None):
+    document = get_deed_request_details_by_status(deed_id , request_id)
     if document:
         deed_data = frappe.get_doc("WATHEQ Deed" , document["deed_number"]).as_dict()
+        deed_data.number_of_deeds = document["number_of_deeds"] if "number_of_deeds" in document else 1
         deed_data.workflow_state = status
         deed_data.wizard_step = document["wizard_step"]
         deed_data.request_id = document["request_id"]
