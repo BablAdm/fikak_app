@@ -156,7 +156,7 @@ def get_eligiblity_request_list(offset = 0 , page_size = 10 , order_direction = 
         frappe.qb.from_(eligibility_request_dt)
      
         .select(
-            eligibility_request_dt.name,
+            eligibility_request_dt.name.as_("request_id"),
             eligibility_request_dt.user,
             eligibility_request_dt.submission_date,
             eligibility_request_dt.wizard_step
@@ -172,25 +172,10 @@ def get_eligiblity_request_list(offset = 0 , page_size = 10 , order_direction = 
     for req in data:
         request_deeds = frappe.get_all(
             "Eligibility Check Request Deed Item", 
-            fields=["name as deed_request_id" , "deed" , "total_interest_payment"
-                                                    , "current_market_deed_price" , "total_principal_payment"
-                                                    , "new_loan" , "loan_eligibility" , "split_eligibility" , "status" , "customer_equity"],  # Add your child table fields
-            filters={"parent": req["name"]},
+            fields=["name as deed_request_id" ], 
+            filters={"parent": req["request_id"]},
         )
-        deeds =[]
-        for request_deed in request_deeds :
-            deed_dt = frappe.get_value(
-                "WATHEQ Deed",  # Replace with your linked table name
-                request_deed.deed,
-                ["deed_number"],
-                as_dict=True
-            )
-            deeds.append({
-                    "deed_number": deed_dt.deed_number,
-                    "deed_status": request_deed.status,
-                    "deed_name": request_deed.deed 
-                })
-        req["requested_deeds"] = deeds
+        req["requested_deeds"] = len(request_deeds)
 
     return {
         "data" : data,
@@ -201,16 +186,6 @@ def get_eligiblity_request_list(offset = 0 , page_size = 10 , order_direction = 
             "total_pages": math.ceil(data_len / page_size)
         },
     }   
-    # requests = frappe.get_all(
-    #         "Eligibility Check Request",  
-    #         filters=filters,
-    #         fields=["name","user", "submission_date", "wizard_step"],  # Specify fields you need
-    #         start = offset , limit = page_size , order_by = "modified asc",
-    #     )
-
-
-    return requests
-
 
 @frappe.whitelist(methods=['POST'])
 def update_eligibility_request(request_id,updates):
