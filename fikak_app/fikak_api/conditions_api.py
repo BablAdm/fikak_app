@@ -21,10 +21,10 @@ def get_terms_and_conditions(type = "General"):
 @frappe.whitelist(methods="POST")
 def submit_conditions(terms_and_conditions):
     if frappe.db.exists("Terms And Conditions Submission", {"user" : frappe.session.user ,  "terms_and_conditions": terms_and_conditions}):
-        frappe.local.response.http_status_code = 400
+        frappe.local.response.http_status_code = 200
         return {
-            "status": False,
-            "message": "Already Submitted"
+            "status": True,
+            "message": "Submitted"
         }
 
     frappe.get_doc({
