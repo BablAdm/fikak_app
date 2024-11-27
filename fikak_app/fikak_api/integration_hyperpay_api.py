@@ -89,8 +89,8 @@ def initiate_widget_integration_payment(deed_name, amount, currency="USD", payme
             "message": str(e),
         }
 
-@frappe.whitelist(allow_guest=True)
-def initiate_server_to_server_payment(transaction_id, amount, currency="USD", payment_type="DB"):
+@frappe.whitelist(allow_guest=False)
+def initiate_server_to_server_payment(transaction_id, amount,card, currency="USD",payment_brand = "VISA", payment_type="DB"):
     """
     Initiates a STS payment request with HyperPay and logs the request and response in Frappe.
     Args:
@@ -98,6 +98,7 @@ def initiate_server_to_server_payment(transaction_id, amount, currency="USD", pa
         amount (float): Payment amount
         currency (str): Currency code, default is 'USD'
         payment_type (str): Payment type, default is 'DB' (debit)
+        card {  number,holder,expiryMonth,expiryYear,cvv}
     Returns:
         dict: Response from HyperPay
     """
@@ -110,21 +111,27 @@ def initiate_server_to_server_payment(transaction_id, amount, currency="USD", pa
         "Content-Type": "application/x-www-form-urlencoded",
     }
     payload = {
-        "entityId": settings['entity_id'], 
-        "amount": str(amount),
-        "currency": currency,
-        "paymentType": payment_type,
-        "merchantTransactionId": transaction_id,
+        "entityId" : settings['entity_id'], 
+        "amount" : str(amount),
+        "currency" : currency,
+        "paymentBrand" : payment_brand ,
+        "paymentType" : payment_type,
+        "card.number" : card["number"],
+        "card.holder" : card["holder"],
+        "card.expiryMonth" : card["expiryMonth"],
+        "card.expiryYear": card["expiryYear"],
+        "card.cvv" : card["cvv"]
     }
 
     try:
         # Log the request payload
         log = frappe.get_doc({
-            "doctype": "HyperPay Log",
-            "transaction_id": transaction_id,
+            "doctype": "Hyperpay Widget Integration Request",
+            "entity_id": settings['entity_id'],
+            "request_id": transaction_id,
             "request_payload": json.dumps(payload),
-            "status": "Pending",
-            "timestamp": datetime.now(),
+            "request_status": "Pending",
+            "date": datetime.now(),
         })
         log.insert(ignore_permissions=True)
 
