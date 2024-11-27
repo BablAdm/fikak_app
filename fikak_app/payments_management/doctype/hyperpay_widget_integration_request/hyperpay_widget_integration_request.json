@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2024-11-26 11:24:29.132164",
+ "default_view": "List",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "entity_id",
+  "request_payload",
+  "payment_status",
+  "date",
+  "request_status",
+  "deed_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "entity_id",
+   "fieldtype": "Data",
+   "label": "Entity Id"
+  },
+  {
+   "fieldname": "request_payload",
+   "fieldtype": "Long Text",
+   "label": "Request Payload"
+  },
+  {
+   "default": "WAITING",
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "WAITING\nCOMPLETED\nREJECTED\nEXPIRED"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Datetime",
+   "label": "Date"
+  },
+  {
+   "fieldname": "request_status",
+   "fieldtype": "Data",
+   "label": "Request Status"
+  },
+  {
+   "fieldname": "deed_name",
+   "fieldtype": "Data",
+   "label": "Deed Name"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-27 10:17:09.011779",
+ "modified_by": "Administrator",
+ "module": "Payments Management",
+ "name": "Hyperpay Widget Integration Request",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

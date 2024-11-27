@@ -1,0 +1,96 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2024-11-26 10:10:29.732287",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "entity_id",
+  "amount",
+  "currency",
+  "payment_brand",
+  "payment_type",
+  "card_number",
+  "card_holder",
+  "card_expirymonth",
+  "card_expiryyear",
+  "card_cvv"
+ ],
+ "fields": [
+  {
+   "fieldname": "entity_id",
+   "fieldtype": "Data",
+   "label": "Entity Id"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Data",
+   "label": "Amount"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Data",
+   "label": "Currency"
+  },
+  {
+   "fieldname": "payment_brand",
+   "fieldtype": "Data",
+   "label": "Payment Brand"
+  },
+  {
+   "fieldname": "payment_type",
+   "fieldtype": "Data",
+   "label": "Payment Type"
+  },
+  {
+   "fieldname": "card_number",
+   "fieldtype": "Data",
+   "label": "Card Number"
+  },
+  {
+   "fieldname": "card_holder",
+   "fieldtype": "Data",
+   "label": "Card Holder"
+  },
+  {
+   "fieldname": "card_expirymonth",
+   "fieldtype": "Data",
+   "label": "Card ExpiryMonth"
+  },
+  {
+   "fieldname": "card_expiryyear",
+   "fieldtype": "Data",
+   "label": "Card ExpiryYear"
+  },
+  {
+   "fieldname": "card_cvv",
+   "fieldtype": "Data",
+   "label": "Card cvv"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-27 10:17:35.466093",
+ "modified_by": "Administrator",
+ "module": "Payments Management",
+ "name": "Perform debit payment Request",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
