@@ -1,0 +1,21 @@
+{
+    "id":"8ac7a49f93613ed40193642f924147c2",
+    "referencedId":"8ac7a4a193613ed10193640df4417a34",
+    "paymentType":"CP",
+    "amount":"92.00",
+    "currency":"EUR",
+    "descriptor":"9606.4511.9521 OPP_Channel",
+    "result":{
+      "code":"000.100.110",
+      "description":"Request successfully processed in 'Merchant in Integrator Test Mode'"
+    },
+    "resultDetails":{
+      "clearingInstituteName":"Elavon-euroconex_UK_Test"
+    },
+    "buildNumber":"7de7ee29a38fba75de5ccc655af335769f4da37a@2024-11-19 00:42:27 +0000",
+    "timestamp":"2024-11-25 16:37:39.533+0000",
+    "ndc":"8a8294174b7ecb28014b9699220015ca_f2069d80980a47eb9b207a9b1e6cc077",
+    "source":"OPP",
+    "paymentMethod":"CC",
+    "shortId":"9606.4511.9521"
+  }
