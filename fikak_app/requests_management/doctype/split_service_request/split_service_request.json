@@ -5,19 +5,13 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "eligibility_check",
+  "eligibility_check_request",
   "deed",
-  "status"
+  "status",
+  "requester",
+  "submission_date"
  ],
  "fields": [
-  {
-   "fieldname": "eligibility_check",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Eligibility Check",
-   "options": "Eligibility Check Request",
-   "reqd": 1
-  },
   {
    "fieldname": "deed",
    "fieldtype": "Link",
@@ -33,11 +27,32 @@
    "label": "Status",
    "options": "Pending\nEvaluation\nAccepted\nRejected",
    "reqd": 1
+  },
+  {
+   "fieldname": "requester",
+   "fieldtype": "Link",
+   "label": "Requester",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "submission_date",
+   "fieldtype": "Datetime",
+   "label": "Submission Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "eligibility_check_request",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Eligibility Check Request",
+   "options": "Eligibility Check Request",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-21 20:00:54.291307",
+ "modified": "2024-11-26 21:55:48.811805",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Service Request",

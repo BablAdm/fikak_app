@@ -5,12 +5,14 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "requester",
+  "evaluation_source",
   "submission_date",
   "description",
   "column_break_gqdj",
-  "status",
-  "evaluation_source",
+  "deed",
   "request",
+  "status",
   "evaluation_result_section",
   "evaluation_price"
  ],
@@ -18,9 +20,12 @@
   {
    "fieldname": "submission_date",
    "fieldtype": "Datetime",
-   "label": "Submission Date"
+   "in_list_view": 1,
+   "label": "Submission Date",
+   "reqd": 1
   },
   {
+   "default": "Pending",
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
@@ -56,11 +61,26 @@
    "fieldname": "evaluation_price",
    "fieldtype": "Currency",
    "label": "Evaluation Price"
+  },
+  {
+   "fieldname": "requester",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Requester",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "deed",
+   "fieldtype": "Link",
+   "label": "Deed",
+   "options": "WATHEQ Deed",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-21 20:00:31.306447",
+ "modified": "2024-11-26 21:58:12.715840",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Evaluation Request",
