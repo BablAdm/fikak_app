@@ -12,18 +12,18 @@ EXTRA_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
-class TestHyperpayWidgetIntegrationRequest(UnitTestCase):
+class TestHyperpayRequest(UnitTestCase):
 	"""
-	Unit tests for HyperpayWidgetIntegrationRequest.
+	Unit tests for HyperpayRequest.
 	Use this class for testing individual functions and methods.
 	"""
 
 	pass
 
 
-class TestHyperpayWidgetIntegrationRequest(IntegrationTestCase):
+class TestHyperpayRequest(IntegrationTestCase):
 	"""
-	Integration tests for HyperpayWidgetIntegrationRequest.
+	Integration tests for HyperpayRequest.
 	Use this class for testing interactions between multiple components.
 	"""
 

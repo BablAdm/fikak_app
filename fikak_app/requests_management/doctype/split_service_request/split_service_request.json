@@ -25,7 +25,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Pending\nEvaluation\nAccepted\nRejected",
+   "options": "Pending\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nOffer\nAccepted\nRejected",
    "reqd": 1
   },
   {
@@ -52,7 +52,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-26 21:55:48.811805",
+ "modified": "2024-11-28 01:41:48.616941",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Service Request",
