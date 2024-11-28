@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-27 14:41:05.600671",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "request_id",
+  "status",
+  "internal_id",
+  "request_body",
+  "response_body",
+  "evaluation_request"
+ ],
+ "fields": [
+  {
+   "fieldname": "request_id",
+   "fieldtype": "Data",
+   "label": "Request Id"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "fieldname": "internal_id",
+   "fieldtype": "Data",
+   "label": "Internal Id"
+  },
+  {
+   "fieldname": "request_body",
+   "fieldtype": "Long Text",
+   "label": "Request Body"
+  },
+  {
+   "fieldname": "response_body",
+   "fieldtype": "Long Text",
+   "label": "Response Body"
+  },
+  {
+   "fieldname": "evaluation_request",
+   "fieldtype": "Link",
+   "label": "Evaluation Request",
+   "options": "Evaluation Request"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-27 22:13:23.865462",
+ "modified_by": "Administrator",
+ "module": "Evaluators Management",
+ "name": "Evaluator Evaluation Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

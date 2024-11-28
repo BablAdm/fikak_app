@@ -1,0 +1,174 @@
+import frappe
+import requests
+
+
+
+def get_evaluator_settings():
+    """
+    Fetches Evaluator configuration from the Evaluator Evaluation Settings Doctype.
+    Returns:
+        dict: Configuration containing base URL, access token, and enabled status.
+    """
+    settings = frappe.get_single("Evaluator Evaluation Settings")
+    if not settings.enabled:
+        frappe.throw("Evaluator integration is disabled. Please enable it in the Evaluator Settings.")
+    
+    return {
+        "base_url": settings.evaluator_base_url, 
+        "access_token": settings.evaluator_access_token
+    }
+
+@frappe.whitelist(allow_guest=True)
+def create_evaluate_request(request_params):
+    """
+    Create a request for evaluator .
+    Returns:
+        dict: response for evaluator json.
+    """
+    try: 
+        # Fetch Evaluator settings
+        settings = get_evaluator_settings()
+
+        endpoint = f"{settings['base_url']}/api/EvaluationRequests/Create"
+        headers = {
+            "Authorization": f"Bearer {settings['access_token']}",
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+        
+        # Prepare the data for the API request
+        form_data = request_params
+        # TODO : Handle deed doc attachements on request
+        form_data ["deed_document"] = None
+        
+        # Perform the first API call
+        response = requests.post(endpoint,data=form_data, headers=headers )
+        response_json = response.json()
+        
+        if (not response_json.get("status") and response_json.get("errorMessage") != 'Request already exists'): 
+            frappe.throw(f"API Error: {response_json.get('errorMessage')}")
+        
+        # Store request and response in Evaluator Evaluation Request Doctype
+        request_doc = frappe.get_doc({
+            "doctype": "Evaluator Evaluation Request",
+            "request_id": response_json["data"]["request_id"],
+            "status": response_json["data"]["status"],
+            "internal_id": response_json["data"]["internal_id"],
+            "request_body": frappe.as_json(form_data),
+            "response_body": frappe.as_json(response_json),
+        })
+        request_doc.insert(ignore_permissions=True)
+
+        
+        return {"status": "success", "message": "Evaluation requested successfully"}
+    
+    except Exception as e:
+        frappe.log_error(message=str(e), title="Evaluation API Error")
+        return {"status": "error", "message": str(e)}
+
+
+
+@frappe.whitelist(allow_guest=True)
+def handle_evaluator_request_webhook(request_id, response = ""):
+    try: 
+        # Fetch Evaluator settings
+        settings = get_evaluator_settings()
+        
+        # Perform the second API call to fetch the request result
+        endpoint = f"{settings['base_url']}/api/EvaluationRequests/{request_id}"
+        headers = {
+            "Authorization": f"Bearer {settings['access_token']}",
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+        # TODO : should uncoment this and replace it by response from the evaluator
+        result_response = requests.get(endpoint, headers=headers)
+        result_json = result_response.json()
+        
+        # Validate the result response
+        if not result_json.get("status"):
+            frappe.throw(f"API Result Error: {result_json.get('errorMessage')}")
+
+        # 1. get the amount from json and save evaluation doc 
+        evaluated_price = fetch_value_from_evaluator_response(result_json["data"]["evaluation"]) #result_json["data"]["evaluation"]["all_fields_from_reports"][0]
+
+        # 2. Update evaluation request document status with done
+        update_evaluation_request(request_id,evaluated_price, "Done")
+    
+        
+        # Store the result in Evaluator Evaluation Result Doctype
+        result_doc = frappe.get_doc({
+            "doctype": "Evaluator Evaluation Hook Response",
+            "request_id": result_json["data"]["request_id"],
+            "status": result_json["data"]["status"],
+            "internal_id": result_json["data"]["internal_id"],
+            "evaluation_data": frappe.as_json(result_json["data"]["evaluation"])
+        })
+        result_doc.insert(ignore_permissions=True)
+        
+        frappe.db.commit()
+
+        return {"status": "success", "message": "Evaluation processed successfully"}
+    
+
+    
+    except Exception as e:
+        frappe.log_error(message=str(e), title="Evaluation API Error")
+        return {"status": "error", "message": str(e)}
+    
+
+def update_evaluation_request(request_name,evaluated_price, new_status):
+    """
+    Update the status field on the Evaluation Request by searching with the request name.
+
+    :param request_name: Name of the request (from the `request` field).
+    :param new_status: The new status to update in the `Evaluation Request`.
+    :return: Success message or error.
+    """
+    try:
+        # Fetch the Evaluation Request document using the `request` field
+        evaluation_request_dt = frappe.get_doc("Evaluation Request", {"name": request_name})
+
+        if not evaluation_request_dt:
+            frappe.throw(f"No Evaluation Request found for request: {request_name}")
+
+ 
+
+        # Update the status field
+        evaluation_request_dt.evaluation_price = evaluated_price		
+        evaluation_request_dt.status = new_status
+
+        evaluation_request_dt.save(ignore_permissions=True)  # Save with ignore permissions if necessary
+        frappe.db.commit()
+        return f"Status for Evaluation Request '{evaluation_request_dt.name}' updated to '{new_status}'."
+    except Exception as e:
+        frappe.log_error(f"Error updating status for request '{request_name}': {str(e)}", "Update Evaluation Request Status")
+        frappe.throw(f"Could not update status: {str(e)}")
+
+
+
+def fetch_value_from_evaluator_response(json_response):
+    """
+    Fetch the value of a specified field from a JSON response
+    based on the configuration in the Evaluation Settings Doctype.
+
+    :return: Value of the configured field if found, or an appropriate error message.
+    """
+    try:
+        # Fetch the target field name from Evaluation Settings
+        settings_doc = frappe.get_single("Evaluator Evaluation Settings")
+        amount_field_name = settings_doc.amount_field_name
+
+        if not amount_field_name:
+            frappe.throw("No field name configured in Evaluation Settings.")
+ 
+
+        # Search for the field in the `all_fields_from_reports` list
+        for item in json_response.get("all_fields_from_reports", []):
+            if item.get("name") == amount_field_name:
+                return item.get("value")
+
+        # If the field is not found, return an error message
+        frappe.throw(f"Field '{amount_field_name}' not found in the response data.")
+
+    except Exception as e:
+        frappe.log_error(f"Error retrieving field value: {str(e)}", "Get Value from JSON Response")
+        frappe.throw(f"An error occurred: {str(e)}")

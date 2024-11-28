@@ -9,3 +9,4 @@ Terms And Conditions
 Requests Management
 Payment Management
 Payments Management
+Evaluators Management
