@@ -9,7 +9,9 @@
  "field_order": [
   "eligibity_check",
   "max_new_loan",
-  "waseera_fees"
+  "waseera_fees",
+  "evaluation_payment_section",
+  "evaluation_amount"
  ],
  "fields": [
   {
@@ -26,12 +28,22 @@
    "fieldname": "waseera_fees",
    "fieldtype": "Percent",
    "label": "Waseera Fees"
+  },
+  {
+   "fieldname": "evaluation_payment_section",
+   "fieldtype": "Section Break",
+   "label": "Evaluation Payment"
+  },
+  {
+   "fieldname": "evaluation_amount",
+   "fieldtype": "Currency",
+   "label": "Evaluation Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-20 20:47:42.504822",
+ "modified": "2024-11-27 14:18:49.137291",
  "modified_by": "Administrator",
  "module": "Fikak Settings",
  "name": "Fikak Settings",

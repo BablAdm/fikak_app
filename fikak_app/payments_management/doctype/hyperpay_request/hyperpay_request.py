@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class HyperpayWidgetIntegrationRequest(Document):
+class HyperpayRequest(Document):
 	pass

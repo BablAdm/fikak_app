@@ -30,7 +30,6 @@ def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
         
         return eligibility_request
     except Exception as e:
-        print("errrro " , str(e))
         frappe.log_error(str(e), "Error Creating Eligibility Check Request")
         return None
 
