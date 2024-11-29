@@ -117,24 +117,33 @@ def handle_evaluator_response_webhook(request_id, response = ""):
 
 
 @frappe.whitelist()
-def generate_evaluator_report(evaluation_request_id):
+def generate_evaluator_report(deed_id):
     """
     Generate a report for the evaluator result .
     :param docname: The name of the Doctype record to fetch.
     :return: A dictionary containing report data.
     """
+    deed = frappe.get_doc("WATHEQ Deed", deed_id)
+    if deed.deed_owner != frappe.session.user:
+        frappe.local.response.http_status_code = 404
+        return {
+            "status": False,
+            "message": "You are not authorized to view this deed"
+        }
     try:
+        split_service_request = frappe.get_doc("Split Service Request", {"deed": deed_id, "requester": frappe.session.user})
         # Fetch the Evaluation Request Doctype document
-        evaluation_request_dt = frappe.get_doc("Evaluation Request", evaluation_request_id)
+        evaluation_request_dt = frappe.get_doc("Evaluation Request", {"request" : split_service_request.name})
 
         # Extract specific properties
         report_data = {
             "name": evaluation_request_dt.name,
+
             "status": evaluation_request_dt.status,  # Replace with actual field name
             "evaluation_price": evaluation_request_dt.evaluation_price,  # Replace with actual field name
         }
         # get response from evaluator doc
-        evaluator_response_dt = frappe.get_doc("Evaluator Evaluation Hook Response" , {"request_id" : evaluation_request_id})
+        evaluator_response_dt = frappe.get_doc("Evaluator Evaluation Hook Response" , {"request_id" : evaluation_request_dt.name})
 
         # Parse the JSON field
         json_field = frappe.parse_json(evaluator_response_dt.evaluation_data) 
@@ -144,8 +153,18 @@ def generate_evaluator_report(evaluation_request_id):
         }
 
         # Combine the data
-        report_data["evaluator_report"] = extracted_values
+        report_data["report_props"] = extracted_values
+        report_data["date"] = evaluator_response_dt.creation.strftime('%d/%m/%Y')
 
+        # Fetch Deed details information
+        deed_name = evaluation_request_dt.deed
+        deed_dt = frappe.get_doc("WATHEQ Deed", deed_name)
+        report_data["deed_details"] = {
+            "deedNumber" : deed_name,
+            "real_estate_type_name" : deed_dt.real_estate_details[0].real_estate_type_name,
+            "area" : deed_dt.real_estate_details[0].area,
+            "location_description" : deed_dt.real_estate_details[0].location_description
+        }
         # Return the report data
         return {"status": "success", "report": report_data}
     except Exception as e:
