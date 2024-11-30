@@ -89,7 +89,7 @@ def handle_evaluator_response_webhook(request_id, response = ""):
 
         # 1. get the amount from json and save evaluation doc 
         evaluated_price = fetch_value_from_evaluator_response(result_json["data"]["evaluation"]) #result_json["data"]["evaluation"]["all_fields_from_reports"][0]
-
+        
         # 2. Update evaluation request document status with done
         update_evaluation_request(request_id,evaluated_price, "Done")
     
@@ -188,9 +188,9 @@ def update_evaluation_request(request_name,evaluated_price, new_status):
             frappe.throw(f"No Evaluation Request found for request: {request_name}")
 
  
-
+        deed_doc = frappe.get_doc("WATHEQ Deed", evaluation_request_dt.deed)
         # Update the status field
-        evaluation_request_dt.evaluation_price = evaluated_price		
+        evaluation_request_dt.evaluation_price = int(evaluated_price) * int(deed_doc.deed_area)
         evaluation_request_dt.status = new_status
 
         evaluation_request_dt.save(ignore_permissions=True)  # Save with ignore permissions if necessary

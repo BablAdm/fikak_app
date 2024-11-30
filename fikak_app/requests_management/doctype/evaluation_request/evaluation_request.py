@@ -1,7 +1,6 @@
 # Copyright (c) 2024, Waseera and contributors
 # For license information, please see license.txt
 
-# import frappe
 from frappe.model.document import Document
 from fikak_app.fikak_api.integrations_evaluator_api import create_evaluate_request
 import frappe
@@ -15,8 +14,12 @@ class EvaluationRequest(Document):
 
 
 	def on_update(self):
+		if self._doc_before_save and self._doc_before_save.status != "Done" and self.status == "Done":
+			update_split_service_request_status(self.request, "Evaluated" , self.evaluation_price)
+
 		if self.status == "Paid" and ( self._doc_before_save and self._doc_before_save.status != "Paid" ) : 
 			try:
+				
 
 				# Fetch related Deed details
 				if not self.deed:
@@ -24,7 +27,7 @@ class EvaluationRequest(Document):
 
 				deed_dt = frappe.get_doc("WATHEQ Deed", self.deed)
 				# Retrieve user data
-				user_data = frappe.get_doc("User", frappe.session.user)
+				user_data = frappe.get_doc("User", self.requester)
 				user_person_data = frappe.get_doc("Person Data" , {"user" : user_data.name})
 				deed_date_gregorian = convert_hijri_to_gregorian(deed_dt.deed_date)
 				# Prepare the request parameters from the document
@@ -84,8 +87,10 @@ def convert_hijri_to_gregorian(hijri_date_str):
 #result = convert_hijri_to_gregorian(hijri_date_str)
 #print(f"Gregorian Date: {result}")
 
-		
-	
-import frappe
-
-
+def update_split_service_request_status(request_id , status , evaluation_price):
+	split_service_request = frappe.get_doc("Split Service Request", request_id)
+	split_service_request.status = status
+	split_service_request.current_market_deed_price = evaluation_price
+	split_service_request.save(ignore_permissions=True)
+	frappe.db.commit()
+	return split_service_request
