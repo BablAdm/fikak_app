@@ -77,3 +77,7 @@ bench --site fikak_product.localhost trim-tables
     "status" : true,
     "message" : "succes"
 }
+
+
+# install converter from hidjri to date
+bench pip install convertdate
