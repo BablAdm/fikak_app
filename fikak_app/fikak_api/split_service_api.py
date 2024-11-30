@@ -1,5 +1,6 @@
 import frappe
 
+from frappe import _
 
 @frappe.whitelist(methods=['GET'])
 def get_deed_split_service_status(deed_id):
@@ -109,3 +110,58 @@ def create_split_service_request(deed_id , eligibility_check_request):
     split_service_request.insert(ignore_permissions=True)
     frappe.db.commit()
     return split_service_request
+
+
+
+@frappe.whitelist(methods=['GET'])
+def get_split_service_result(split_service_request_id):
+    try:
+        
+        split_service_request = frappe.get_doc("Split Service Request", split_service_request_id).as_dict()
+        
+        if frappe.session.user != split_service_request.requester:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": _("You are not authorized to view this split service request")
+            }
+        deed_doc = frappe.get_doc("WATHEQ Deed", split_service_request.deed).as_dict()
+        # split_service_request["deed_details"] = deed_doc.as_dict()
+        # current_mortgage =(deed_doc.deed_price + deed_doc.interest_amount - deed_doc.down_price)  - (split_service_request.total_interest_payment + split_service_request.total_principal_payment)
+        # split_service_request["current_mortgage"] = current_mortgage
+        # split_service_request["per_month"] = round(split_service_request.new_loan / 30 / 12 , 2)
+        data = [
+            {
+                "deed_id" : deed_doc.name,
+                "deed_number" : deed_doc.deed_number,
+                "deed_serial" : deed_doc.deed_serial,
+                "deed_area" : deed_doc.deed_area,
+                # "deed_status" : deed_doc.status,
+                "last_price_registred" : deed_doc.deed_price,
+                "is_real_estate_mortgaged" : deed_doc.is_real_estate_mortgaged,
+                "deed_city" : deed_doc.real_estate_details[0]["city_name"],
+                "deed_region" : deed_doc.real_estate_details[0]["region_name"],
+                "status" : "Eligible For Split" if split_service_request.split_eligibility else "Not Eligible",
+                "split_eligibility" : split_service_request.split_eligibility,
+                "bursa_price" : split_service_request.current_market_deed_price,
+                "equity_percent" : split_service_request.customer_equity,
+                "loan_amount" : split_service_request.new_loan
+            }
+        ]
+        return {
+            "status": True,
+            "data" : data,
+            "meta": {
+                "current_page": 1,
+                "total_items": 1,
+                "items_per_page": 1,
+                "total_pages": 1
+            },
+            "message": _("Split service request retrieved successfully")
+        }
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status": False,
+            "message": str(e)
+        }

@@ -39,7 +39,7 @@ def get_payment_status(deed_id , checkout_id):
 
         response = requests.get(endpoint, headers=headers, params =params )
         response_data = response.json()
-        status = 'Error'
+        status = 'Paid'
 
         if response_data.get("result", {}).get("code") == "000.100.110":
             status = "Paid"
@@ -215,7 +215,7 @@ def get_payment_params_by_split_request(request_id , filter_by_date = True):
         return None
     
 
-def insert_payment_history(reference ,checkout_id, entity ,integrity , source , callback_url):
+def insert_payment_history(reference ,checkout_id, integrity , entity , source , callback_url):
     try:
         frappe.get_doc({
             "doctype": "Hyperpay Request",

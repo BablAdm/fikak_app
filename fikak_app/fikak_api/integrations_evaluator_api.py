@@ -148,8 +148,8 @@ def generate_evaluator_report(deed_id):
         # Parse the JSON field
         json_field = frappe.parse_json(evaluator_response_dt.evaluation_data) 
         extracted_values = {
-            entry["name"]: entry["value"]
-            for entry in json_field.get("all_fields_from_reports", [])
+            entry["description"]: entry["value"]
+            for entry in json_field.get("all_fields_from_reports", []) if(entry.get("value") is not None and entry.get("value") is not "")
         }
 
         # Combine the data
