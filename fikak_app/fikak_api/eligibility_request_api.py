@@ -81,23 +81,26 @@ def process_request(request_id , offset , page_size):
 
         for requested_deed in requested_deeds:
             current_market_price = 0
+            print("gggggggggggggggggggg")
             deed_object = frappe.get_doc(requested_deed.deed_source, requested_deed.deed)
-            print("ssssssssssssssssss" , deed_object.get("real_estate_details")[0].get('region_code') )
             current_market_price_per_meter = get_bursa_price(deed_object.get("real_estate_details")[0].get('region_code') ,
                                                               deed_object.get("real_estate_details")[0].get('city_code') , 
                                                               deed_object.get("real_estate_details")[0].get('dstrict_code'))
-            print("current_market_price_per_meter : " , current_market_price_per_meter)
+            print("ffffffffffffffffffff" , current_market_price_per_meter)
             if current_market_price_per_meter:
-                current_market_price = int(deed_object.deed_area) * current_market_price_per_meter
-            print("current_market_price : " , current_market_price)
+                print(type(deed_object.deed_area) , type(current_market_price_per_meter))
+                current_market_price = float(deed_object.deed_area) * current_market_price_per_meter
+                print("sffffffaazeazezeza")
+            print("hhhhhhhhhhhhhhhhhhhh")
             fikak_settings = frappe.get_single("Fikak Settings")
             eligibity_check = fikak_settings.eligibity_check
+            print("hhhhhhhhhhhhhhhhhhhh 1111")
             max_new_loan = fikak_settings.max_new_loan
             waseera_fees = fikak_settings.waseera_fees
             #Compute customer total paid amount
             
             loan_eligibility = split_eligibility = loan_bba = None
-
+            
             if current_market_price > 0 and deed_object.get("deed_price") > 0 :
                 loan_eligibility = split_eligibility = False
                 #Compute total amount due to bank
@@ -109,7 +112,7 @@ def process_request(request_id , offset , page_size):
                 #Compute customer equity from new market price
                 customer_equity_new_price = 1 - bank_equity_from_new_price
                 
-                
+                print("customer_equity_new_price" , customer_equity_new_price)
                 
                 if total_due_to_bank == 0 or not deed_object.is_real_estate_mortgaged:
                     loan_eligibility = True
@@ -120,6 +123,9 @@ def process_request(request_id , offset , page_size):
                     loan_bba = (current_market_price * customer_equity_new_price )* \
                     (max_new_loan /100) * (1 - (waseera_fees / 100))
                 
+                if loan_eligibility:
+                    customer_equity_new_price = 1
+                    bank_equity_from_new_price = 0
                 
                 request_deed_item_doc = frappe.get_doc("Eligibility Check Request Deed Item" , requested_deed.deed_request_id)
                 status = "Not Eligible"
@@ -167,9 +173,12 @@ def get_bursa_price(region_code , city_code , district_code):
         "siteName": None,
         "blockName": None,
         "landNo": None,
-        "realEstateClassificationKey": None,
-        "realEstateTypeKey": None
+        "realEstateClassificationKey": "2",
+        "realEstateTypeKey":  None,
+        "sectorTypeKey": "-1"
     }
+
+    print("payload" , payload)
 
     # Headers (optional, specify content type if needed)
     headers = {
