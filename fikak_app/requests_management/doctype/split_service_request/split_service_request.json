@@ -9,7 +9,16 @@
   "deed",
   "status",
   "requester",
-  "submission_date"
+  "submission_date",
+  "pricing_section",
+  "current_market_deed_price",
+  "total_interest_payment",
+  "total_principal_payment",
+  "column_break_hflg",
+  "new_loan",
+  "bank_equity",
+  "customer_equity",
+  "split_eligibility"
  ],
  "fields": [
   {
@@ -48,11 +57,56 @@
    "label": "Eligibility Check Request",
    "options": "Eligibility Check Request",
    "reqd": 1
+  },
+  {
+   "fieldname": "pricing_section",
+   "fieldtype": "Section Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "current_market_deed_price",
+   "fieldtype": "Currency",
+   "label": "Current Market Deed Price"
+  },
+  {
+   "fieldname": "total_interest_payment",
+   "fieldtype": "Currency",
+   "label": "Total Interest Payment"
+  },
+  {
+   "fieldname": "total_principal_payment",
+   "fieldtype": "Currency",
+   "label": "Total Principal Payment"
+  },
+  {
+   "fieldname": "column_break_hflg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_loan",
+   "fieldtype": "Currency",
+   "label": "New Loan"
+  },
+  {
+   "fieldname": "bank_equity",
+   "fieldtype": "Percent",
+   "label": "Bank Equity"
+  },
+  {
+   "fieldname": "customer_equity",
+   "fieldtype": "Percent",
+   "label": "Customer Equity"
+  },
+  {
+   "default": "0",
+   "fieldname": "split_eligibility",
+   "fieldtype": "Check",
+   "label": "Split Eligibility"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-28 01:41:48.616941",
+ "modified": "2024-11-30 03:26:28.928823",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Service Request",
