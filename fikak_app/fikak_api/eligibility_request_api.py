@@ -5,6 +5,7 @@ import requests
 from frappe import _
 import math
 from fikak_app.fikak_api.deeds_api import get_deeds_list
+from requests.auth import HTTPBasicAuth
 
 # Create Eligbility check request
 def create_elgibility_request(deeds , deed_source = "WATHEQ Deed"):
@@ -79,8 +80,16 @@ def process_request(request_id , offset , page_size):
                                          ,  start = offset , limit = page_size , order_by = "idx asc" )
 
         for requested_deed in requested_deeds:
-            
+            current_market_price = 0
             deed_object = frappe.get_doc(requested_deed.deed_source, requested_deed.deed)
+            print("ssssssssssssssssss" , deed_object.get("real_estate_details")[0].get('region_code') )
+            current_market_price_per_meter = get_bursa_price(deed_object.get("real_estate_details")[0].get('region_code') ,
+                                                              deed_object.get("real_estate_details")[0].get('city_code') , 
+                                                              deed_object.get("real_estate_details")[0].get('dstrict_code'))
+            print("current_market_price_per_meter : " , current_market_price_per_meter)
+            if current_market_price_per_meter:
+                current_market_price = int(deed_object.deed_area) * current_market_price_per_meter
+            print("current_market_price : " , current_market_price)
             fikak_settings = frappe.get_single("Fikak Settings")
             eligibity_check = fikak_settings.eligibity_check
             max_new_loan = fikak_settings.max_new_loan
@@ -89,13 +98,13 @@ def process_request(request_id , offset , page_size):
             
             loan_eligibility = split_eligibility = loan_bba = None
 
-            if requested_deed.get("current_market_deed_price") > 0 and deed_object.get("deed_price") > 0 :
+            if current_market_price > 0 and deed_object.get("deed_price") > 0 :
                 loan_eligibility = split_eligibility = False
                 #Compute total amount due to bank
                 total_due_to_bank = deed_object.get("deed_price") + deed_object.get("interest_amount") - deed_object.get("down_price")\
                                         - (requested_deed.get("total_interest_payment") + requested_deed.get("total_principal_payment"))
                 #Compute bank equity from new market price
-                bank_equity_from_new_price = total_due_to_bank / requested_deed.get("current_market_deed_price") if requested_deed.get("current_market_deed_price") > 0 else 0
+                bank_equity_from_new_price = total_due_to_bank / current_market_price if current_market_price > 0 else 0
                 
                 #Compute customer equity from new market price
                 customer_equity_new_price = 1 - bank_equity_from_new_price
@@ -108,7 +117,7 @@ def process_request(request_id , offset , page_size):
                     split_eligibility = True if customer_equity_new_price > eligibity_check / 100 else False
                 
                 if split_eligibility or loan_eligibility:
-                    loan_bba = (requested_deed.get("current_market_deed_price") * customer_equity_new_price )* \
+                    loan_bba = (current_market_price * customer_equity_new_price )* \
                     (max_new_loan /100) * (1 - (waseera_fees / 100))
                 
                 
@@ -118,11 +127,13 @@ def process_request(request_id , offset , page_size):
                 if split_eligibility: status = "Eligible For Split"
                 
                 request_deed_item_doc.status = status
+
                 if loan_eligibility: request_deed_item_doc.loan_eligibility = loan_eligibility
                 if split_eligibility: request_deed_item_doc.split_eligibility = split_eligibility
                 if loan_bba: request_deed_item_doc.new_loan = loan_bba
-                if customer_equity_new_price: request_deed_item_doc.customer_equity = customer_equity_new_price
+                if customer_equity_new_price and customer_equity_new_price > 0: request_deed_item_doc.customer_equity = customer_equity_new_price
                 if bank_equity_from_new_price: request_deed_item_doc.bank_equity = bank_equity_from_new_price
+                if current_market_price: request_deed_item_doc.current_market_deed_price = current_market_price
                 
                 request_deed_item_doc.save(ignore_permissions=True)
             
@@ -134,6 +145,51 @@ def process_request(request_id , offset , page_size):
             "status:" : False,
             "message" : str(e),
         }
+    
+
+def get_bursa_price(region_code , city_code , district_code):
+    # Init Data
+    region_code = f"{int(region_code):02}"
+    city_code = f"{region_code}{int(city_code):05}"
+    
+    # API URL
+    url = "http://dev-api.waseera.sa:8082/moj/od/get_price"  # Replace with your API endpoint
+    
+    # Basic Authentication credentials
+    username = "amine"  # Replace with your username
+    password = "Amine.Test.3000"  # Replace with your password
+
+    # Request body
+    payload = {
+        "regionKey": region_code,
+        "townKey": city_code,
+        "districtKey": district_code,
+        "siteName": None,
+        "blockName": None,
+        "landNo": None,
+        "realEstateClassificationKey": None,
+        "realEstateTypeKey": None
+    }
+
+    # Headers (optional, specify content type if needed)
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    # Make the POST request
+    response = requests.post(
+        url,
+        json=payload,
+        auth=HTTPBasicAuth(username, password),
+        headers=headers
+    )
+
+    # Handle the response
+    if response.status_code == 200:
+        print("response " , response.json())
+        return  response.json().get("deedEstimatedPriceByMeter")
+    else:
+        return None
 
 # Fetch all  Eligibility Request created by the current user with status
 @frappe.whitelist(methods=['GET'])

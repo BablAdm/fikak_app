@@ -18,7 +18,7 @@
   "area",
   "area_text",
   "column_break_wtld",
-  "dstrict_code",
+  "district_code",
   "district_name",
   "location_description",
   "constrained",
@@ -111,11 +111,6 @@
   {
    "fieldname": "column_break_wtld",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "dstrict_code",
-   "fieldtype": "Data",
-   "label": "Dstrict Code"
   },
   {
    "fieldname": "district_name",
@@ -249,12 +244,17 @@
    "fieldname": "west_limit_length_char",
    "fieldtype": "Data",
    "label": "West Limit Length Char"
+  },
+  {
+   "fieldname": "district_code",
+   "fieldtype": "Data",
+   "label": "District Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-11-13 16:03:09.645084",
+ "modified": "2024-11-28 15:22:58.351580",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Real Estate Details Item",

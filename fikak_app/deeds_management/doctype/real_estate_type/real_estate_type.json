@@ -1,37 +1,38 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:city_name",
- "creation": "2024-10-23 17:51:05.466148",
- "default_view": "List",
+ "autoname": "field:type_name",
+ "creation": "2024-11-28 02:25:42.920545",
  "doctype": "DocType",
- "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "city_name",
-  "city_code"
+  "type_name",
+  "type_code"
  ],
  "fields": [
   {
-   "fieldname": "city_name",
+   "fieldname": "type_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "City Name",
+   "label": "Type Name",
    "reqd": 1,
    "unique": 1
   },
   {
-   "fieldname": "city_code",
+   "fieldname": "type_code",
    "fieldtype": "Data",
-   "label": "City Code"
+   "in_list_view": 1,
+   "label": "Type Code",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-28 02:24:14.882750",
+ "modified": "2024-11-28 02:26:40.931170",
  "modified_by": "Administrator",
- "module": "Users Management",
- "name": "City",
+ "module": "Deeds Management",
+ "name": "Real Estate Type",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
