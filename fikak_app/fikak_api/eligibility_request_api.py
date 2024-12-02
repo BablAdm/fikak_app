@@ -137,6 +137,7 @@ def process_request(request_id , offset , page_size):
                 if loan_eligibility: request_deed_item_doc.loan_eligibility = loan_eligibility
                 if split_eligibility: request_deed_item_doc.split_eligibility = split_eligibility
                 if loan_bba: request_deed_item_doc.new_loan = loan_bba
+                if not (loan_eligibility or split_eligibility): request_deed_item_doc.loan_bba = 0
                 if customer_equity_new_price and customer_equity_new_price > 0: request_deed_item_doc.customer_equity = customer_equity_new_price
                 if bank_equity_from_new_price: request_deed_item_doc.bank_equity = bank_equity_from_new_price
                 if current_market_price: request_deed_item_doc.current_market_deed_price = current_market_price

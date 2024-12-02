@@ -3,6 +3,7 @@
 import frappe
 import math
 from pypika import Case , functions as fn
+from fikak_app.fikak_api.global_utils import translate 
 
 @frappe.whitelist(methods=["GET"])
 def get_deeds_stats():
@@ -65,6 +66,10 @@ def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 
             .when(deed_item_dt.status == "NEW", "PENDING")
             .when(deed_item_dt.status.isnotnull(), deed_item_dt.status)
             .else_("Not Requested Yet").as_("status"),
+            Case()
+            .when(deed_item_dt.status == "NEW", "PENDING")
+            .when(deed_item_dt.status.isnotnull(), deed_item_dt.status)
+            .else_("Not Requested Yet").as_("status_label"),
             deed_item_dt.loan_eligibility,
             deed_item_dt.current_market_deed_price.as_("bursa_price"),
             deed_item_dt.customer_equity.as_("equity_percent"),
@@ -102,7 +107,7 @@ def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 
     data = query.offset(offset).limit(page_size).run(as_dict=True)
     
     return {
-        "data" : data,
+        "data" : translate(data , ["status"]),  
         "meta": {
             "current_page": int((offset/page_size)+1),
             "total_items": data_len,
