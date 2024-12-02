@@ -74,7 +74,7 @@
    "is_query_report": 0,
    "label": "Consent Request",
    "link_count": 0,
-   "link_to": "TARABUT Consent Request",
+   "link_to": "TARABUT Intent Request",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -100,7 +100,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-11-05 15:54:16.219299",
+ "modified": "2024-11-30 20:02:30.894258",
  "modified_by": "Administrator",
  "module": "Fikak Integration",
  "name": "Customer Data",
@@ -110,7 +110,7 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 3.0,
+ "sequence_id": 4.0,
  "shortcuts": [],
  "title": "Customer Data"
 }

@@ -33,12 +33,14 @@
   {
    "fieldname": "source",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Source",
    "options": "Split Service Request"
   },
   {
    "fieldname": "reference",
    "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
    "label": "Reference",
    "options": "source"
   },
@@ -65,6 +67,7 @@
    "default": "Pending",
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
    "options": "Pending\nPaid\nRejected"
   },
@@ -89,7 +92,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-28 01:43:16.235662",
+ "modified": "2024-11-30 20:04:31.226335",
  "modified_by": "Administrator",
  "module": "Payments Management",
  "name": "Hyperpay Request",

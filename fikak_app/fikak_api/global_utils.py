@@ -2,7 +2,7 @@ import uuid
 import frappe
 from frappe import _
 
-from datetime import datetime , timedelta
+from datetime import datetime
 
 def generate_request_id():
     # Generate a UUID
@@ -35,13 +35,12 @@ def translate(data, skiped_keys=[]):
 
         if isinstance(data, dict):
             for key, value in data.items():
-                if not any(s in key for s in pass_translation):
+                if not (key in pass_translation):
                     data[key] = translate_data(value)
 
         elif isinstance(data, list):
             for i in range(len(data)):
                 data[i] = translate_data(data[i])
-
         return _(data, frappe.local.request.headers.get('Accept-Language'))
 
     translated_data = translate_data(data)

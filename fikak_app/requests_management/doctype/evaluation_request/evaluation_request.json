@@ -28,6 +28,7 @@
    "default": "Pending",
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
    "options": "Pending\nPaid\nNot paid\nDone"
   },
@@ -39,6 +40,8 @@
   {
    "fieldname": "request",
    "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Request",
    "options": "evaluation_source"
   },
@@ -66,6 +69,7 @@
    "fieldname": "requester",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Requester",
    "options": "User",
    "reqd": 1
@@ -73,6 +77,8 @@
   {
    "fieldname": "deed",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Deed",
    "options": "WATHEQ Deed",
    "reqd": 1
@@ -80,7 +86,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-26 21:58:12.715840",
+ "modified": "2024-11-30 20:04:02.190964",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Evaluation Request",

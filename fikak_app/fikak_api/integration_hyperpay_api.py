@@ -50,7 +50,6 @@ def get_payment_status(deed_id , checkout_id):
             update_evaluation_request_status(evaluation_request , status)
             update_hyperpay_request_status(hyperpay_request , status , response_data)
             if status == "Paid":
-                print("sssssssssssssssssssssssssssssssssssssssss" , hyperpay_request.reference , status)
                 update_split_service_status(hyperpay_request.reference , status)
         
         
