@@ -27,10 +27,10 @@ def set_evaluation_as_paid(deed_id):
            return {"test_mode" : 0}
  
         # Get the evaluation request Doc and make it as paid
-        evaluationRequest_dt = frappe.get_doc("Evaluation Request", {"deed": deed_id, "status": "Pending"})
+        evaluationRequest_dt = frappe.get_doc("Evaluation Request", {"deed": deed_id})
         
         if not evaluationRequest_dt:
-            frappe.throw(f"Deed with ID {deed_id} not found in Eligibility Check Request {request_id}.")
+            frappe.throw(f"Deed with ID {deed_id} not found in Eligibility Check Request {deed_id}.")
 
         evaluationRequest_dt.status = "Paid"
         evaluationRequest_dt.save(ignore_permissions=True)
