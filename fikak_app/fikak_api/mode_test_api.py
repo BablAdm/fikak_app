@@ -1,6 +1,6 @@
 import frappe
 from frappe.exceptions import DoesNotExistError
-
+from fikak_app.fikak_api.integrations_evaluator_api import handle_evaluator_response_webhook
 
 @frappe.whitelist()
 def check_test_mode():
@@ -17,7 +17,7 @@ def check_test_mode():
 
 
 @frappe.whitelist()
-def set_evaluation_as_paid(deed_id):
+def set_evaluation_as_paid(split_service_request):
     """
     Fetch The Evaluation Request Doctype".
     """
@@ -27,15 +27,19 @@ def set_evaluation_as_paid(deed_id):
            return {"test_mode" : 0}
  
         # Get the evaluation request Doc and make it as paid
-        evaluationRequest_dt = frappe.get_doc("Evaluation Request", {"deed": deed_id})
+        evaluationRequest_dt = frappe.get_doc("Evaluation Request", {"request": split_service_request,"evaluation_source":"Split Service Request"})
         
         if not evaluationRequest_dt:
-            frappe.throw(f"Deed with ID {deed_id} not found in Eligibility Check Request {deed_id}.")
+            frappe.throw(f"Evaluation Request with ID {split_service_request} not found in Eligibility Check Request {split_service_request}.")
 
         evaluationRequest_dt.status = "Paid"
         evaluationRequest_dt.save(ignore_permissions=True)
-        frappe.db.commit()
 
+
+        split_service_dt = frappe.get_doc("Split Service Request", split_service_request)
+        split_service_dt.status = "Paid"
+        split_service_dt.save(ignore_permissions=True)
+        frappe.db.commit()
       
         return {
             "test_mode" : 1,
@@ -44,6 +48,13 @@ def set_evaluation_as_paid(deed_id):
 
     except DoesNotExistError:
         frappe.throw(f"Deed with ID {deed_id} does not exist.")
+
+
+@frappe.whitelist()
+def simulate_evaluator_webhook(split_service_request):
+    # Fetch the Evaluation Request Doctype document
+    evaluation_request_dt = frappe.get_doc("Evaluation Request", {"request" : split_service_request})
+    return handle_evaluator_response_webhook(evaluation_request_dt.name)
 
 
 @frappe.whitelist()
@@ -57,6 +68,7 @@ def get_eligibility_request_deed_data(deed_id, request_id=0):
            return {"test_mode" : 0}
         if(request_id == 0):
             request_id = get_eligibility_request_id(deed_id)
+            
         # Fetch the parent document
         request_doc = frappe.get_doc("Eligibility Check Request", request_id)
 
@@ -66,12 +78,17 @@ def get_eligibility_request_deed_data(deed_id, request_id=0):
         if not deed:
             frappe.throw(f"Deed with ID {deed_id} not found in Eligibility Check Request {request_id}.")
 
+        # Fetch the parent document
+        deed_dt = frappe.get_doc("WATHEQ Deed", deed_id)         
+
         return {
             "test_mode" : 1,
             "deed_name": deed.deed,
-            "current_market_deed_price": deed.current_market_deed_price,
+           # "current_market_deed_price": deed.current_market_deed_price,
             "total_interest_payment": deed.total_interest_payment,
-            "total_principal_payment": deed.total_principal_payment
+            "total_principal_payment": deed.total_principal_payment,
+            "deed_price": deed_dt.deed_price,
+            "down_price": deed_dt.down_price,
         }
 
     except DoesNotExistError:
@@ -93,21 +110,27 @@ def update_eligibility_request_deed_data( deed_id , updated_fields, request_id=0
         request_doc = frappe.get_doc("Eligibility Check Request", request_id)
 
         # Find the deed in the child table
-        deed = next((item for item in request_doc.requested_deeds if item.deed == deed_id), None)
+        el_deed_dt = next((item for item in request_doc.requested_deeds if item.deed == deed_id), None)
 
-        if not deed:
+        if not el_deed_dt:
             frappe.throw(f"Deed with ID {deed_id} not found in Eligibility Check Request {request_id}.")
 
         # Update fields
         updated_fields = frappe.parse_json(updated_fields)  # Convert JSON string to dictionary
         for key, value in updated_fields.items():
-            if hasattr(deed, key):
-                setattr(deed, key, value)
-            else:
-                frappe.throw(f"Field {key} does not exist in Eligibility Check Request Deed Item.")
-
+            if hasattr(el_deed_dt, key):
+                setattr(el_deed_dt, key, value)
         # Save the changes
-        request_doc.save()
+        el_deed_dt.save()
+
+        # Fetch the parent document
+        deed_dt = frappe.get_doc("WATHEQ Deed", deed_id) 
+        for key, value in updated_fields.items():
+            if hasattr(deed_dt, key):
+                setattr(deed_dt, key, value)
+        # Save the changes
+        deed_dt.save()
+
         frappe.db.commit()
 
         return {"test_mode" : 1,"message": f"Deed {deed_id} updated successfully in Eligibility Check Request {request_id}."}
@@ -124,7 +147,7 @@ def get_eligibility_request_id(deed_id):
         FROM 
             `tabEligibility Check Request Deed Item` 
         WHERE 
-            name = %s 
+            deed = %s 
         ORDER BY 
             creation DESC 
         LIMIT 1
