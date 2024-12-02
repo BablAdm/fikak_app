@@ -46,8 +46,8 @@ def set_evaluation_as_paid(split_service_request):
             "paid": "sucess"
         }
 
-    except DoesNotExistError:
-        frappe.throw(f"Deed with ID {deed_id} does not exist.")
+    except DoesNotExistError as e:
+        frappe.throw(f"split request with ID {split_service_request} does not exist." , e)
 
 
 @frappe.whitelist()

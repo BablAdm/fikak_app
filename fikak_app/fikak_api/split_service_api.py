@@ -83,6 +83,7 @@ def create_evaluation_request(deed_id):
         frappe.db.commit()
         return {
             "status": True,
+            "data" : split_service_request,
             "message": "Evaluation request created successfully"
         }
     except Exception as e:
