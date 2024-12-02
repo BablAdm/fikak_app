@@ -7,7 +7,8 @@
  "field_order": [
   "development",
   "user_id_watheq",
-  "user_id_bank"
+  "user_id_bank",
+  "enable_mode_test"
  ],
  "fields": [
   {
@@ -25,12 +26,18 @@
    "fieldname": "user_id_bank",
    "fieldtype": "Data",
    "label": "User ID BANK"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_mode_test",
+   "fieldtype": "Check",
+   "label": "Enable Mode Test"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-20 21:29:09.629895",
+ "modified": "2024-12-01 22:01:47.141041",
  "modified_by": "Administrator",
  "module": "Fikak App",
  "name": "DEV MOD PROPS",
