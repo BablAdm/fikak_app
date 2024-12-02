@@ -160,8 +160,6 @@ def check_request_status(national_id , tansaction_id , random ):
         has_more_than_3_min , passing_time = is_request_older_than_3_minutes(request_record)
         if has_more_than_3_min:
             request_status = check_request(national_id , tansaction_id, random)
-            print("more than 3 minutes")
-            print(request_status)
             if request_status[1]['status'] and request_status[1]['data']['status'] == "EXPIRED":
                 update_request_status(tansaction_id , request_record.request_id , "EXPIRED")
                 status = "EXPIRED"

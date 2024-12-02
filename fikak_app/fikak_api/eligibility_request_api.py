@@ -81,20 +81,14 @@ def process_request(request_id , offset , page_size):
 
         for requested_deed in requested_deeds:
             current_market_price = 0
-            print("gggggggggggggggggggg")
             deed_object = frappe.get_doc(requested_deed.deed_source, requested_deed.deed)
             current_market_price_per_meter = get_bursa_price(deed_object.get("real_estate_details")[0].get('region_code') ,
                                                               deed_object.get("real_estate_details")[0].get('city_code') , 
                                                               deed_object.get("real_estate_details")[0].get('dstrict_code'))
-            print("ffffffffffffffffffff" , current_market_price_per_meter)
             if current_market_price_per_meter:
-                print(type(deed_object.deed_area) , type(current_market_price_per_meter))
                 current_market_price = float(deed_object.deed_area) * current_market_price_per_meter
-                print("sffffffaazeazezeza")
-            print("hhhhhhhhhhhhhhhhhhhh")
             fikak_settings = frappe.get_single("Fikak Settings")
             eligibity_check = fikak_settings.eligibity_check
-            print("hhhhhhhhhhhhhhhhhhhh 1111")
             max_new_loan = fikak_settings.max_new_loan
             waseera_fees = fikak_settings.waseera_fees
             #Compute customer total paid amount
@@ -111,9 +105,7 @@ def process_request(request_id , offset , page_size):
                 
                 #Compute customer equity from new market price
                 customer_equity_new_price = 1 - bank_equity_from_new_price
-                
-                print("customer_equity_new_price" , customer_equity_new_price)
-                
+                                
                 if total_due_to_bank == 0 or not deed_object.is_real_estate_mortgaged:
                     loan_eligibility = True
                 else:
@@ -179,8 +171,6 @@ def get_bursa_price(region_code , city_code , district_code):
         "sectorTypeKey": "-1"
     }
 
-    print("payload" , payload)
-
     # Headers (optional, specify content type if needed)
     headers = {
         "Content-Type": "application/json"
@@ -196,7 +186,6 @@ def get_bursa_price(region_code , city_code , district_code):
 
     # Handle the response
     if response.status_code == 200:
-        print("response " , response.json())
         return  response.json().get("deedEstimatedPriceByMeter")
     else:
         return None

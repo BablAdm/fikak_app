@@ -18,7 +18,6 @@ class SplitServiceRequest(Document):
 			self.customer_equity = customer_equity_new_price
 			self.new_loan = max_new_loan
 			self.bank_equity = bank_equity_from_new_price
-			print(max_new_loan , split_eligibility , customer_equity_new_price , bank_equity_from_new_price)
 			self.save()
 
 
