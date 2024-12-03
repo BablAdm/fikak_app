@@ -167,7 +167,6 @@ def generate_evaluator_report(deed_id):
         # Return the report data
         return {"status": "success", "report": report_data}
     except Exception as e:
-        frappe.local.response.http_status_code = 500
         return {"status": "error", "message": str(e)}
 
 
