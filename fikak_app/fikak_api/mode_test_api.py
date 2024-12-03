@@ -135,8 +135,12 @@ def update_eligibility_request_deed_data( deed_id , updated_fields, request_id=0
 
         return {"test_mode" : 1,"message": f"Deed {deed_id} updated successfully in Eligibility Check Request {request_id}."}
 
-    except DoesNotExistError:
-        frappe.throw(f"Eligibility Check Request with ID {request_id} does not exist.")
+    except DoesNotExistError as e:
+        return {
+            "data": None,
+            "message": str(e),
+            "status": False
+        }
 
 
 def get_eligibility_request_id(deed_id):
