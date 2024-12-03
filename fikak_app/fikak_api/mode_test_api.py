@@ -136,6 +136,7 @@ def update_eligibility_request_deed_data( deed_id , updated_fields, request_id=0
         return {"test_mode" : 1,"message": f"Deed {deed_id} updated successfully in Eligibility Check Request {request_id}."}
 
     except DoesNotExistError as e:
+        frappe.local.response.http_status_code = 404
         return {
             "data": None,
             "message": str(e),
