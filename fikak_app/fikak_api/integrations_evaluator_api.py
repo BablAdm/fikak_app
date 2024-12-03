@@ -107,7 +107,13 @@ def handle_evaluator_response_webhook(request_id, response = ""):
         frappe.log_error(message=str(e), title="Evaluation API Error")
         return {"status": "error", "message": str(e)}
 
-
+evaluationObject = {
+    "date_of_evaluation" : "تاريخ التقييم",
+    "market_average_price_m2": "السعر المتوسط للمتر المربع",
+    "market_price" : "السعر السوقي",
+    "status" : "الحالة",
+    "report_url" : "رابط التقرير",
+}
 
 @frappe.whitelist()
 def generate_evaluator_report(deed_id):
@@ -141,8 +147,8 @@ def generate_evaluator_report(deed_id):
         # Parse the JSON field
         json_field = frappe.parse_json(evaluator_response_dt.evaluation_data) 
         extracted_values = {
-            entry["description"]: entry["value"]
-            for entry in json_field.get("all_fields_from_reports", []) if(entry.get("value") is not None and entry.get("value") is not "")
+            evaluationObject[key]: value
+            for key ,value in json_field.items() if value is not None
         }
 
         # Combine the data
@@ -161,7 +167,7 @@ def generate_evaluator_report(deed_id):
         # Return the report data
         return {"status": "success", "report": report_data}
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Generate Report Error")
+        frappe.local.response.http_status_code = 500
         return {"status": "error", "message": str(e)}
 
 
