@@ -25,16 +25,12 @@ def set_evaluation_as_paid(split_service_request):
         # before start we should check if mode test is enabled 
         if(is_test_mode_enabled() == False):
            return {"test_mode" : 0}
- 
-        # Get the evaluation request Doc and make it as paid
-        evaluationRequest_dt = frappe.get_doc("Evaluation Request", {"request": split_service_request,"evaluation_source":"Split Service Request"})
         
-        if not evaluationRequest_dt:
-            frappe.throw(f"Evaluation Request with ID {split_service_request} not found in Eligibility Check Request {split_service_request}.")
-
-        evaluationRequest_dt.status = "Paid"
-        evaluationRequest_dt.save(ignore_permissions=True)
-
+        # Get the evaluation request Doc and make it as paid
+        evaluation_request_dt = frappe.get_doc("Evaluation Request", {"request": split_service_request,"evaluation_source":"Split Service Request"})
+        
+        evaluation_request_dt.status = "Paid"
+        evaluation_request_dt.save(ignore_permissions=True)
 
         split_service_dt = frappe.get_doc("Split Service Request", split_service_request)
         split_service_dt.status = "Paid"
@@ -46,8 +42,11 @@ def set_evaluation_as_paid(split_service_request):
             "paid": "sucess"
         }
 
-    except DoesNotExistError as e:
-        frappe.throw(f"split request with ID {split_service_request} does not exist." , e)
+    except Exception as e:
+        return {
+            "status": False,
+            "message": str(e)
+        }
 
 
 @frappe.whitelist()

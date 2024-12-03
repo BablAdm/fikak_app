@@ -20,7 +20,6 @@ class EvaluationRequest(Document):
 		if self.status == "Paid" and ( self._doc_before_save and self._doc_before_save.status != "Paid" ) : 
 			try:
 				
-
 				# Fetch related Deed details
 				if not self.deed:
 					frappe.throw("Deed is not linked to the Evaluation Request.")
@@ -44,10 +43,6 @@ class EvaluationRequest(Document):
 					"client_name": user_data.full_name,#self.client_name,
 					"phone": user_person_data.phone_number,#self.phone,
 				}
-				
-				# Fetch the deed document file
-				# deed_document = frappe.get_doc("File", {"attached_to_name": doc.name, "attached_to_doctype": "EvaluationRequest"}).file_url
-				deed_document = None
 				# Trigger the API
 				response = create_evaluate_request(request_params)
 				

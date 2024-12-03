@@ -43,7 +43,6 @@ def create_evaluate_request(request_params):
         # Perform the first API call
         response = requests.post(endpoint,data=form_data, headers=headers )
         response_json = response.json()
-        
         if (not response_json.get("status") and response_json.get("errorMessage") != 'Request already exists'): 
             frappe.throw(f"API Error: {response_json.get('errorMessage')}")
         
@@ -57,7 +56,6 @@ def create_evaluate_request(request_params):
             "response_body": frappe.as_json(response_json),
         })
         request_doc.insert(ignore_permissions=True)
-
         
         return {"status": "success", "message": "Evaluation requested successfully"}
     
@@ -65,9 +63,6 @@ def create_evaluate_request(request_params):
         frappe.log_error(message=str(e), title="Evaluation API Error")
         return {"status": "error", "message": str(e)}
 
-
-
-@frappe.whitelist(allow_guest=True)
 def handle_evaluator_response_webhook(request_id, response = ""):
     try: 
         # Fetch Evaluator settings
@@ -82,18 +77,16 @@ def handle_evaluator_response_webhook(request_id, response = ""):
         # TODO : should uncoment this and replace it by response from the evaluator
         result_response = requests.get(endpoint, headers=headers)
         result_json = result_response.json()
-        
         # Validate the result response
         if not result_json.get("status"):
             frappe.throw(f"API Result Error: {result_json.get('errorMessage')}")
-
         # 1. get the amount from json and save evaluation doc 
-        evaluated_price = fetch_value_from_evaluator_response(result_json["data"]["evaluation"]) #result_json["data"]["evaluation"]["all_fields_from_reports"][0]
-        
+        # evaluated_price = fetch_value_from_evaluator_response(result_json["data"]["evaluation"]) #result_json["data"]["evaluation"]["all_fields_from_reports"][0]
+        evaluated_price = result_json.get("data").get("evaluation").get("market_average_price_m2")
+        evaluated_price = evaluated_price if evaluated_price >0 else 1000
         # 2. Update evaluation request document status with done
         update_evaluation_request(request_id,evaluated_price, "Done")
     
-        
         # Store the result in Evaluator Evaluation Result Doctype
         result_doc = frappe.get_doc({
             "doctype": "Evaluator Evaluation Hook Response",
