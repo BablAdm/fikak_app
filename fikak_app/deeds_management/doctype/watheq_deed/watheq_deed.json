@@ -55,7 +55,11 @@
   "realestatedetails_tab",
   "real_estate_details",
   "eligibilitystats_tab",
-  "selected_services",
+  "service",
+  "column_break_egob",
+  "service_status",
+  "section_break_lspj",
+  "statuses",
   "pricing_tab",
   "deed_price",
   "interest_amount",
@@ -300,13 +304,7 @@
   {
    "fieldname": "eligibilitystats_tab",
    "fieldtype": "Tab Break",
-   "label": "Waseera Workflow"
-  },
-  {
-   "fieldname": "selected_services",
-   "fieldtype": "Select",
-   "label": "Selected Services",
-   "options": "Mortgage split\nAsset-Backed Loan\nInvestments"
+   "label": "Status Tracking"
   },
   {
    "fieldname": "deed_owner",
@@ -344,11 +342,38 @@
    "fieldname": "is_first_home",
    "fieldtype": "Check",
    "label": "Is First Home?"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "service_status",
+   "fieldtype": "Select",
+   "label": "Service Status",
+   "options": "\nPending\nEligible For Split\nEligible For Loan\nNot Eligible\nPaid\nEvaluated\nOffer\nAccepted\nRejected"
+  },
+  {
+   "fieldname": "service",
+   "fieldtype": "Select",
+   "label": "Service",
+   "options": "\nEligibility Check\nSplit Service\nAsset-Backed Loan"
+  },
+  {
+   "fieldname": "statuses",
+   "fieldtype": "Table",
+   "label": "Status Track",
+   "options": "Watheq Deed Status Item"
+  },
+  {
+   "fieldname": "column_break_egob",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_lspj",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-26 15:18:56.694235",
+ "modified": "2024-12-05 17:46:02.815895",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Deed",
