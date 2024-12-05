@@ -99,13 +99,16 @@ def generate_nafath_transaction(national_id):
         }
 
 @frappe.whitelist(allow_guest = True)
-def nafath_callback(token , transId , requestId , national_id = None):
+def nafath_callback(transId , token = None , response = None , status = None , ServiceName = None, requestId = None , national_id = None):
     try:
+        token = token if token else response
+
         decoded_token = decode_jwt_token(token)
         callback_id = insert_callback(token , decoded_token)
         if decoded_token.get('error'):
             return decoded_token
-        
+        if response:
+            return True
         if national_id:
             decoded_token['PersonId'] = national_id
         if decoded_token.get("status") == "REJECTED":
