@@ -10,6 +10,7 @@
   "status",
   "requester",
   "submission_date",
+  "is_active",
   "pricing_section",
   "current_market_deed_price",
   "total_interest_payment",
@@ -102,11 +103,17 @@
    "fieldname": "split_eligibility",
    "fieldtype": "Check",
    "label": "Split Eligibility"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active?"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-30 03:26:28.928823",
+ "modified": "2024-12-05 14:54:24.820521",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Service Request",

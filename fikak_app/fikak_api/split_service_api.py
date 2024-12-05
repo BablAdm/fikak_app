@@ -1,6 +1,92 @@
 import frappe
 
 from frappe import _
+from fikak_app.utils.global_utils import translate 
+from pypika import functions as fn
+import math
+
+
+
+@frappe.whitelist(methods=["GET"])
+def get_split_requests_list(global_filter = None , filter_by_request = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
+    
+    
+    if isinstance(offset, str):
+        offset = int(offset)
+    
+    if isinstance(page_size, str):
+        page_size = int(page_size)
+
+    watheq_deed_dt = frappe.qb.DocType("WATHEQ Deed")
+    split_service_dt = frappe.qb.DocType("Split Service Request")
+    deed_real_estate_details_dt = frappe.qb.DocType("WATHEQ Real Estate Details Item")
+    # Get the deeds that are not deleted
+    query = (
+        frappe.qb.from_(watheq_deed_dt)
+        .inner_join(deed_real_estate_details_dt)
+        .on(watheq_deed_dt.name == deed_real_estate_details_dt.parent)
+        .inner_join(split_service_dt)
+        .on((watheq_deed_dt.name == split_service_dt.deed) & (split_service_dt.is_active == 1))
+        .select(
+            watheq_deed_dt.name.as_("deed_id"),
+            watheq_deed_dt.deed_number,
+            watheq_deed_dt.deed_area,
+            deed_real_estate_details_dt.location_description,
+            deed_real_estate_details_dt.city_name.as_("deed_city"),
+            deed_real_estate_details_dt.region_name.as_("deed_region"),
+            split_service_dt.name.as_("request_id"),
+            split_service_dt.status,
+            split_service_dt.status.as_("status_label"),
+            split_service_dt.split_eligibility,
+            split_service_dt.current_market_deed_price.as_("bursa_price"),
+            split_service_dt.customer_equity.as_("equity_percent")
+            
+        )
+        .where(watheq_deed_dt.deed_owner == frappe.session.user)  
+    )
+    # Apply the global filter
+    if global_filter:
+        query = query.where(
+             (fn.Lower(watheq_deed_dt.name).like(
+            f"%{global_filter}%"))|
+            (fn.Lower(watheq_deed_dt.deed_number).like(
+            f"%{global_filter}%"))|
+            (fn.Lower(watheq_deed_dt.deed_serial).like(
+            f"%{global_filter}%"))|
+            (fn.Lower(watheq_deed_dt.deed_area).like(
+            f"%{global_filter}%"))|
+            (fn.Lower(deed_real_estate_details_dt.city_name).like(
+            f"%{global_filter}%"))|
+             (fn.Lower(split_service_dt.name).like(
+            f"%{global_filter}%"))
+        )
+    if kw.get("request_status_filter"):
+        query = query.where(split_service_dt.status == kw.get("request_status_filter"))
+
+    # if kw.get("split_filter"):
+    #     split_filter = 1 if kw.get("split_filter") == "eligible" else 0
+    #     query = query.where(split_service_dt.split_eligibility == split_filter)
+    # if filter_by_request:
+    #     query = query.where(split_service_dt.parent == filter_by_request)
+    # if kw.get("loan_filter"):
+    #     loan_filter = 1 if kw.get("loan_filter") == "eligible" else 0
+    #     query = query.where(split_service_dt.loan_eligibility == loan_filter)
+
+    data_len = len(query.run(as_dict=True))
+    
+    data = query.offset(offset).limit(page_size).run(as_dict=True)
+    
+    return {
+        "data" : translate(data , ["status"]),  
+        "meta": {
+            "current_page": int((offset/page_size)+1),
+            "total_items": data_len,
+            "items_per_page": page_size,
+            "total_pages": math.ceil(data_len / page_size)
+        },
+    }
+
+
 
 @frappe.whitelist(methods=['GET'])
 def get_deed_split_service_status(deed_id):
@@ -127,10 +213,6 @@ def get_split_service_result(split_service_request_id):
                 "message": _("You are not authorized to view this split service request")
             }
         deed_doc = frappe.get_doc("WATHEQ Deed", split_service_request.deed).as_dict()
-        # split_service_request["deed_details"] = deed_doc.as_dict()
-        # current_mortgage =(deed_doc.deed_price + deed_doc.interest_amount - deed_doc.down_price)  - (split_service_request.total_interest_payment + split_service_request.total_principal_payment)
-        # split_service_request["current_mortgage"] = current_mortgage
-        # split_service_request["per_month"] = round(split_service_request.new_loan / 30 / 12 , 2)
         data = [
             {
                 "deed_id" : deed_doc.name,
