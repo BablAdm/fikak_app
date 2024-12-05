@@ -4,8 +4,10 @@ from frappe import _
 import requests
 import json
 
-from . import global_utils
-from . import fake_api
+from fikak_app.fikak_api.fake_api import get_deed_data
+
+from fikak_app.utils.global_utils import  generate_request_id
+
 
 from fikak_app.fikak_api.eligibility_request_api import create_elgibility_request
 from fikak_app.api import check_kyc_submitted
@@ -158,7 +160,7 @@ def get_deed_request_details_by_status(deed_id = None , request_id = None):
  
 
 def insert_watheq_request_callback(national_id,deed_id,response_data):
-    request_id = global_utils.generate_request_id()
+    request_id = generate_request_id()
     # Convert the JSON dictionary to a JSON string
     json_string = json.dumps(response_data)
     doc = frappe.get_doc({

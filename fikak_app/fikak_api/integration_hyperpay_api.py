@@ -234,7 +234,7 @@ def insert_payment_history(reference ,checkout_id, integrity , entity , source ,
         print(str(e))
 
 
-@frappe.whitelist(allow_guest=False)
+@frappe.whitelist()
 def initiate_server_to_server_payment(transaction_id, amount,card, currency="USD",payment_brand = "VISA", payment_type="DB"):
     """
     Initiates a STS payment request with HyperPay and logs the request and response in Frappe.
@@ -308,7 +308,7 @@ def initiate_server_to_server_payment(transaction_id, amount,card, currency="USD
         }
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_server_to_server_payment_status(checkout_id):
     """
     Retrieves the payment status from HyperPay.

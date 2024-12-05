@@ -2,13 +2,14 @@
 import frappe
 from frappe import _
 import requests
-import uuid
 
 from datetime import datetime , timedelta
 import frappe.utils
 import jwt
 
 from frappe.utils.password import update_password
+from fikak_app.utils.global_utils import  generate_request_id
+
 
 REQUEST_ERRORS = {
     "422-031-046" : "طلب غير صالح: تم إرسال بيانات غير صالحة",
@@ -96,18 +97,6 @@ def generate_nafath_transaction(national_id):
             "status" : False,
             "message": str(e)
         }
-
-def generate_request_id():
-    # Generate a UUID
-    uuid_part = str(uuid.uuid4())
-    
-    # Get the current date-time as a formatted string (year, month, day, hour, minute, second, microsecond)
-    datetime_part = datetime.now().strftime('%Y%m%d%H%M%S%f')
-    
-    # Combine UUID with the formatted date-time string
-    request_id = f"{uuid_part}{datetime_part}"
-    
-    return request_id
 
 @frappe.whitelist(allow_guest = True)
 def nafath_callback(token , transId , requestId , national_id = None):
