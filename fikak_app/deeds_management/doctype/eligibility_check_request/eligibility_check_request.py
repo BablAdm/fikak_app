@@ -22,7 +22,7 @@ class EligibilityCheckRequest(Document):
 		else:
 			#TODO : Update only the new deeds
 			#TODO : Update deeds that are not in the old request and the status has been changed
-		print("fsssssssssssssssssss")
+			pass
 		pass
 
 
