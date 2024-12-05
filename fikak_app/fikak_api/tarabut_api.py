@@ -384,7 +384,7 @@ def insert_bank_accounts(bank_accounts , user):
         frappe.db.commit()
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_my_bank_accounts():
     """
     Get the user's bank accounts.

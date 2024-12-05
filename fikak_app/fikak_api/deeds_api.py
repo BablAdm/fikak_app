@@ -3,7 +3,7 @@
 import frappe
 import math
 from pypika import Case , functions as fn
-from fikak_app.fikak_api.global_utils import translate 
+from fikak_app.utils.global_utils import translate 
 
 @frappe.whitelist(methods=["GET"])
 def get_deeds_stats():
@@ -133,7 +133,7 @@ def get_deed_details(deed_id):
         }
     
 
-@frappe.whitelist(methods=["GET"])
+@frappe.whitelist(methods=["DELETE"])
 def delete_deed(deed_id):
     
     try:
