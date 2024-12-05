@@ -5,7 +5,7 @@ from frappe import _
 from datetime import datetime
 from convertdate import islamic
 import re
-
+from frappe.translate import get_translations
 
 def generate_request_id():
     # Generate a UUID
@@ -20,35 +20,55 @@ def generate_request_id():
     return request_id
 
 
-def translate(data, skiped_keys=[]):
+def translate(data, skipped_keys=None):
     """
-    Recursively translates the given data using the specified language.
+    Translates the given data structure (list or dict) based on the language from request headers.
 
     Args:
-        data: The data to be translated.
-        skiped_keys: A list of keys to be skipped during translation.
+        data (dict | list): The data to be translated. Can be a dictionary or a list of dictionaries.
+        skipped_keys (list): List of keys to exclude from translation.
 
     Returns:
-        The translated data.
+        dict | list: Translated data structure.
     """
-    pass_translation = ['id', 'email', 'first_name',
-                        'last_name', 'user_name'] + skiped_keys
+    if skipped_keys is None:
+        skipped_keys = []
 
-    def translate_data(data):
+    # Get the desired language from headers, default to 'en'
+    language = frappe.local.request.headers.get("Accept-Language", "en")
+   
+    def translate_value(value, key=None):
+        """Translates individual values unless the key is in skipped_keys."""
+        if key in skipped_keys:
+            return value  # Skip translation for this key
+        if isinstance(value, str):
+            # Use translations as a dictionary to translate strings
+            print("value , "  , key , value ,"  ,  " ,  _(value, frappe.local.request.headers.get('Accept-Language')) )
+    
+        if isinstance(value, dict):
+            return translate_dict(value)  # Recursively translate dictionaries
+        if isinstance(value, list):
+            return translate_list(value)  # Recursively translate lists
+        return value  # Return other types as-is
 
-        if isinstance(data, dict):
-            for key, value in data.items():
-                if not any(s in key for s in pass_translation):
-                    data[key] = translate_data(value)
+    def translate_dict(d):
+        """Translates all key-value pairs in a dictionary."""
+        return {key: translate_value(value, key) for key, value in d.items()}
 
-        elif isinstance(data, list):
-            for i in range(len(data)):
-                data[i] = translate_data(data[i])
+    def translate_list(lst):
+        """Translates all items in a list."""
+        return [translate_value(item) for item in lst]
 
-        return _(data, frappe.local.request.headers.get('Accept-Language'))
+    # Determine the type of data and translate accordingly
+    if isinstance(data, dict):
+        return translate_dict(data)
+    if isinstance(data, list):
+        return translate_list(data)
 
-    translated_data = translate_data(data)
-    return translated_data
+    # Return as-is if data is neither a list nor a dictionary
+    return data
+
+
 
 
 

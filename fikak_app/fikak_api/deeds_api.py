@@ -81,6 +81,8 @@ def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 
     # Apply the global filter
     if global_filter:
         query = query.where(
+             (fn.Lower(watheq_deed_dt.name).like(
+            f"%{global_filter}%"))|
             (fn.Lower(watheq_deed_dt.deed_number).like(
             f"%{global_filter}%"))|
             (fn.Lower(watheq_deed_dt.deed_serial).like(
