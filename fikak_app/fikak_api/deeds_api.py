@@ -95,7 +95,8 @@ def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 
             f"%{global_filter}%"))
         )
     if kw.get("request_status_filter"):
-        query = query.where(deed_item_dt.status == kw.get("request_status_filter"))
+        status_filter = "Pending" if kw.get("request_status_filter") == "NEW" else kw.get("request_status_filter")
+        query = query.where(watheq_deed_dt.service_status == status_filter)
 
     if kw.get("split_filter"):
         split_filter = 1 if kw.get("split_filter") == "eligible" else 0
@@ -105,6 +106,17 @@ def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 
     if kw.get("loan_filter"):
         loan_filter = 1 if kw.get("loan_filter") == "eligible" else 0
         query = query.where(deed_item_dt.loan_eligibility == loan_filter)
+
+    if kw.get("service_filter"):
+        if (kw.get("service_filter") == "NEW") :
+            query = query.where(watheq_deed_dt.service.isnull())
+        else : 
+            query = query.where(watheq_deed_dt.service == kw.get("service_filter"))
+
+    if kw.get("mortgage"):
+        mortgage = 1 if kw.get("mortgage") == "1" else 0
+        query = query.where(watheq_deed_dt.is_real_estate_mortgaged == mortgage)
+
 
     data_len = len(query.run(as_dict=True))
     
