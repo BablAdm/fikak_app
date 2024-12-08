@@ -59,6 +59,8 @@ def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 
             watheq_deed_dt.deed_status,
             watheq_deed_dt.deed_price.as_("last_price_registred"),
             watheq_deed_dt.is_real_estate_mortgaged,
+            watheq_deed_dt.service,
+            watheq_deed_dt.service_status,
             deed_real_estate_details_dt.city_name.as_("deed_city"),
             deed_real_estate_details_dt.region_name.as_("deed_region"),
             deed_item_dt.parent.as_("request_id"),

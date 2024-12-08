@@ -3,11 +3,21 @@
 
 import frappe
 from frappe.model.document import Document
-
+from fikak_app.controllers.deed_controller import update_deed_workflow
 
 class SplitServiceRequest(Document):
 
 	def on_update(self):
+
+		# If the status is updated we should update the deed workflow status
+		if self._doc_before_save.status != self.status:
+			service = "Split Service"
+			status = self.status
+			if(status == "NEW"):
+				status = "Pending"
+ 
+			update_deed_workflow(self.deed,service, status)
+		# handle result after evaluation hook response
 		if self._doc_before_save and self._doc_before_save.status != "Evaluated" and self.status == "Evaluated":
 			requested_deed = {
 				"total_interest_payment" : self.total_interest_payment,
@@ -18,7 +28,16 @@ class SplitServiceRequest(Document):
 			self.customer_equity = customer_equity_new_price
 			self.new_loan = max_new_loan
 			self.bank_equity = bank_equity_from_new_price
+			# updating the status according to result in order to update the deed workflow
+			if(split_eligibility):
+				self.status="Eligible For Split"
+			else:
+				self.status="Not Eligible"
+			service = "Split Service"
+			update_deed_workflow(self.deed,service, self.status)
 			self.save()
+		
+
 
 
 	def after_insert(self):

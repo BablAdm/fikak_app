@@ -348,7 +348,7 @@
    "fieldname": "service_status",
    "fieldtype": "Select",
    "label": "Service Status",
-   "options": "\nPending\nEligible For Split\nEligible For Loan\nNot Eligible\nPaid\nEvaluated\nOffer\nAccepted\nRejected"
+   "options": "\nPending\nEligible For Split\nEligible For Loan\nNot Eligible\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nOffer\nAccepted\nRejected"
   },
   {
    "fieldname": "service",
@@ -373,7 +373,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-05 17:46:02.815895",
+ "modified": "2024-12-07 22:23:23.898266",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Deed",
