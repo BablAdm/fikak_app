@@ -33,9 +33,6 @@ def translate(data, skipped_keys=None):
     """
     if skipped_keys is None:
         skipped_keys = []
-
-    # Get the desired language from headers, default to 'en'
-    language = frappe.local.request.headers.get("Accept-Language", "en")
    
     def translate_value(value, key=None):
         """Translates individual values unless the key is in skipped_keys."""
@@ -43,7 +40,8 @@ def translate(data, skipped_keys=None):
             return value  # Skip translation for this key
         if isinstance(value, str):
             # Use translations as a dictionary to translate strings
-            print("value , "  , key , value ,"  ,  " ,  _(value, frappe.local.request.headers.get('Accept-Language')) )
+            
+            return _(value, frappe.local.request.headers.get('Accept-Language'))
     
         if isinstance(value, dict):
             return translate_dict(value)  # Recursively translate dictionaries
