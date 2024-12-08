@@ -15,45 +15,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Requests",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Evaluation Request",
-   "link_count": 0,
-   "link_to": "Evaluation Request",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Split Service Request",
-   "link_count": 0,
-   "link_to": "Split Service Request",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Hyperpay Request",
-   "link_count": 0,
-   "link_to": "Hyperpay Request",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Deeds",
    "link_count": 1,
    "link_type": "DocType",
@@ -107,9 +68,58 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Requests",
+   "link_count": 4,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Evaluation Request",
+   "link_count": 0,
+   "link_to": "Evaluation Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Split Service Request",
+   "link_count": 0,
+   "link_to": "Split Service Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hyperpay Request",
+   "link_count": 0,
+   "link_to": "Hyperpay Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Split Bank Request",
+   "link_count": 0,
+   "link_to": "Split Bank Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-12-03 18:31:28.073833",
+ "modified": "2024-12-08 18:41:03.017618",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Service",

@@ -31,6 +31,7 @@ def get_split_requests_list(global_filter = None , filter_by_request = None , of
             watheq_deed_dt.name.as_("deed_id"),
             watheq_deed_dt.deed_number,
             watheq_deed_dt.deed_area,
+            watheq_deed_dt.creation.as_("request_date"),
             deed_real_estate_details_dt.location_description,
             deed_real_estate_details_dt.city_name.as_("deed_city"),
             deed_real_estate_details_dt.region_name.as_("deed_region"),
@@ -63,19 +64,13 @@ def get_split_requests_list(global_filter = None , filter_by_request = None , of
     if kw.get("request_status_filter"):
         query = query.where(split_service_dt.status == kw.get("request_status_filter"))
 
-    # if kw.get("split_filter"):
-    #     split_filter = 1 if kw.get("split_filter") == "eligible" else 0
-    #     query = query.where(split_service_dt.split_eligibility == split_filter)
-    # if filter_by_request:
-    #     query = query.where(split_service_dt.parent == filter_by_request)
-    # if kw.get("loan_filter"):
-    #     loan_filter = 1 if kw.get("loan_filter") == "eligible" else 0
-    #     query = query.where(split_service_dt.loan_eligibility == loan_filter)
+    if kw.get("filter_by_status"):
+        query = query.where(split_service_dt.status == kw.get("filter_by_status"))
 
     data_len = len(query.run(as_dict=True))
     
     data = query.offset(offset).limit(page_size).run(as_dict=True)
-    
+
     return {
         "data" : translate(data , ["status"]),  
         "meta": {
