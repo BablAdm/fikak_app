@@ -70,7 +70,7 @@ def get_split_requests_list(global_filter = None , filter_by_request = None , of
     data_len = len(query.run(as_dict=True))
     
     data = query.offset(offset).limit(page_size).run(as_dict=True)
-    
+
     return {
         "data" : translate(data , ["status"]),  
         "meta": {
