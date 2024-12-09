@@ -35,7 +35,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Pending\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nOffer\nAccepted\nRejected",
+   "options": "Pending\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nEligible For Loan\nNot Eligible\nOffer\nAccepted\nRejected",
    "reqd": 1
   },
   {
@@ -113,7 +113,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-05 14:54:24.820521",
+ "modified": "2024-12-08 17:23:56.220422",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Service Request",

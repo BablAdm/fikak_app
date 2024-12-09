@@ -23,7 +23,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "\nPending\nEligible For Split\nEligible For Loan\nNot Eligible\nPaid\nEvaluated\nOffer\nAccepted\nRejected",
+   "options": "\nPending\nEligible For Split\nEligible For Loan\nNot Eligible\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nOffer\nAccepted\nRejected",
    "reqd": 1
   },
   {
@@ -38,7 +38,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-05 17:43:48.273343",
+ "modified": "2024-12-07 22:25:11.220371",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "Watheq Deed Status Item",

@@ -120,8 +120,8 @@ def update_eligibility_request_deed_data( deed_id , updated_fields, request_id=0
             if hasattr(el_deed_dt, key):
                 setattr(el_deed_dt, key, value)
         # Save the changes
-        el_deed_dt.save()
-
+        #el_deed_dt.save()
+        request_doc.save()
         # Fetch the parent document
         deed_dt = frappe.get_doc("WATHEQ Deed", deed_id) 
         for key, value in updated_fields.items():
