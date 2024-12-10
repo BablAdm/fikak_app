@@ -10,11 +10,13 @@
   "mortgage_start_payment_date",
   "mortgage_installement",
   "type",
+  "status",
   "column_break_wgjm",
   "mortgage_number_months",
   "mortgage_duration",
   "smr_id",
-  "smr_bank_id"
+  "smr_bank_id",
+  "offer_date"
  ],
  "fields": [
   {
@@ -76,12 +78,23 @@
    "label": "Type",
    "options": "\nUpdate\nRealease And Create New",
    "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nPending\nWaiting For Customer Validation\nNegociation\nAccepted\nRejected"
+  },
+  {
+   "fieldname": "offer_date",
+   "fieldtype": "Date",
+   "label": "Offer Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-08 18:33:59.398991",
+ "modified": "2024-12-10 15:25:51.883106",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Bank Request Response Item",

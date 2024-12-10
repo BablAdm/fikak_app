@@ -6,15 +6,18 @@
  "engine": "InnoDB",
  "field_order": [
   "eligibility_check_request",
-  "deed",
-  "status",
   "requester",
   "submission_date",
+  "split_service_update",
+  "column_break_hooc",
+  "deed",
+  "status",
   "is_active",
   "pricing_section",
   "current_market_deed_price",
   "total_interest_payment",
   "total_principal_payment",
+  "current_due_amount",
   "column_break_hflg",
   "new_loan",
   "bank_equity",
@@ -35,7 +38,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Pending\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nEligible For Loan\nNot Eligible\nOffer\nAccepted\nRejected",
+   "options": "Pending\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nEligible For Loan\nEligible For Split\nNot Eligible\nOffer\nAccepted\nRejected",
    "reqd": 1
   },
   {
@@ -109,11 +112,26 @@
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active?"
+  },
+  {
+   "fieldname": "current_due_amount",
+   "fieldtype": "Currency",
+   "label": "Current Due Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "split_service_update",
+   "fieldtype": "Check",
+   "label": "Split Service Update"
+  },
+  {
+   "fieldname": "column_break_hooc",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-08 17:23:56.220422",
+ "modified": "2024-12-09 14:37:05.027100",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Service Request",
