@@ -2,7 +2,7 @@ import frappe
 
 from frappe import _
 from fikak_app.utils.global_utils import translate 
-from pypika import functions as fn
+from pypika import Case , functions as fn
 import math
 
 from fikak_app.external_requests.split_service_requests import call_split_bank_request_api
@@ -49,17 +49,17 @@ def get_split_requests_list(global_filter = None , filter_by_request = None , of
     if global_filter:
         query = query.where(
              (fn.Lower(watheq_deed_dt.name).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(watheq_deed_dt.deed_number).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(watheq_deed_dt.deed_serial).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(watheq_deed_dt.deed_area).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(deed_real_estate_details_dt.city_name).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
              (fn.Lower(split_service_dt.name).like(
-            f"%{global_filter}%"))
+            f"%{global_filter.lower()}%"))
         )
     if kw.get("request_status_filter"):
         query = query.where(split_service_dt.status == kw.get("request_status_filter"))
@@ -172,6 +172,67 @@ def create_bank_split_request(split_service_request_id , deed_id):
             "message": str(e)
         }
 
+@frappe.whitelist(methods=['GET'])
+def get_split_service_offers(split_service_request_id ,  global_filter = None , filter_by_request = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
+    
+    
+    if isinstance(offset, str):
+        offset = int(offset)
+    
+    if isinstance(page_size, str):
+        page_size = int(page_size)
+    
+    bank_request_dt = frappe.qb.DocType("Split Bank Request")
+    bank_request_response_dt = frappe.qb.DocType("Split Bank Request Response Item")
+
+    query = (
+        frappe.qb.from_(bank_request_dt)
+        .inner_join(bank_request_response_dt)
+        .on(bank_request_dt.name == bank_request_response_dt.parent)
+        .select(
+            bank_request_dt.name.as_("bank_request_id"),
+            Case()
+            .when(bank_request_dt.status == "Waiting For Customer Validation", "Customer Review")
+            .else_(bank_request_dt.status).as_("bank_request_status"),
+            bank_request_dt.submission_date.as_("bank_request_submission_date"),
+            bank_request_response_dt.name.as_('offer_id'),
+            bank_request_response_dt.negociated_due_amount,
+            bank_request_response_dt.mortgage_number_months,
+            bank_request_response_dt.offer_date,
+            bank_request_response_dt.new_mortgage_end_date,
+            Case()
+            .when(bank_request_response_dt.status == "Waiting For Customer Validation", "Customer Review")
+            .else_(bank_request_response_dt.status).as_("bank_offer_status"),
+            bank_request_response_dt.mortgage_start_payment_date,
+            bank_request_response_dt.mortgage_installement,
+            bank_request_response_dt.type,
+            bank_request_response_dt.mortgage_duration,
+            bank_request_response_dt.smr_bank_id
+        )
+        .where(bank_request_dt.split_service_request == split_service_request_id)
+    )
+
+    if global_filter :
+        query = query.where(
+            (fn.Lower(bank_request_response_dt.status).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(bank_request_response_dt.type).like(
+            f"%{global_filter.lower()}%"))
+            )
+    data = query.run(as_dict=True)
+    data_len = len(data)
+    data = data[offset:offset+page_size]
+
+    return {
+        "data" : data,
+        "meta": {
+            "current_page": offset,
+            "total_items": data_len,
+            "items_per_page": page_size,
+            "total_pages": math.ceil(data_len / page_size)
+        },
+        "message" : _("Bank offers retrieved successfully")
+    }
 
 
 

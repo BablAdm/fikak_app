@@ -84,15 +84,15 @@ def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 
     if global_filter:
         query = query.where(
              (fn.Lower(watheq_deed_dt.name).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(watheq_deed_dt.deed_number).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(watheq_deed_dt.deed_serial).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(watheq_deed_dt.deed_area).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(deed_real_estate_details_dt.city_name).like(
-            f"%{global_filter}%"))
+            f"%{global_filter.lower()}%"))
         )
     if kw.get("request_status_filter"):
         status_filter = "Pending" if kw.get("request_status_filter") == "NEW" else kw.get("request_status_filter")

@@ -61,15 +61,15 @@ def get_user_bank_accounts(global_filter = None , offset = 0 , page_size = 10 , 
     if global_filter:
         query = query.where(
             (fn.Lower(bank_account_dt.bank_name).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(bank_account_dt.account_number).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(bank_account_dt.iban).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(bank_account_dt.currency).like(
-            f"%{global_filter}%"))|
+            f"%{global_filter.lower()}%"))|
             (fn.Lower(bank_account_dt.bank_account_type).like(
-            f"%{global_filter}%"))
+            f"%{global_filter.lower()}%"))
         )
     
     # Execute the query
