@@ -23,9 +23,10 @@ class SplitServiceRequest(Document):
 				"total_interest_payment" : self.total_interest_payment,
 				"total_principal_payment" : self.total_principal_payment
 			}
-			max_new_loan , split_eligibility , customer_equity_new_price , bank_equity_from_new_price = get_prices(self.deed , requested_deed , self.current_market_deed_price)
+			max_new_loan , split_eligibility , customer_equity_new_price , bank_equity_from_new_price , total_due_to_bank = get_prices(self.deed , requested_deed , self.current_market_deed_price)
 			self.split_eligibility = split_eligibility
 			self.customer_equity = customer_equity_new_price
+			self.current_due_amount = total_due_to_bank
 			self.new_loan = max_new_loan
 			self.bank_equity = bank_equity_from_new_price
 			# updating the status according to result in order to update the deed workflow
@@ -77,4 +78,4 @@ def get_prices(deed , requested_deed , current_market_price):
 		(max_new_loan /100) * (1 - (waseera_fees / 100))
 	
 	
-	return loan_bba , split_eligibility , customer_equity_new_price , bank_equity_from_new_price
+	return loan_bba , split_eligibility , customer_equity_new_price , bank_equity_from_new_price , total_due_to_bank
