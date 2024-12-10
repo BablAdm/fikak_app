@@ -5,7 +5,7 @@ from fikak_app.utils.global_utils import translate
 from pypika import functions as fn
 import math
 
-
+from fikak_app.external_requests.split_service_requests import call_split_bank_request_api
 
 @frappe.whitelist(methods=["GET"])
 def get_split_requests_list(global_filter = None , filter_by_request = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
@@ -80,6 +80,98 @@ def get_split_requests_list(global_filter = None , filter_by_request = None , of
             "total_pages": math.ceil(data_len / page_size)
         },
     }
+
+
+@frappe.whitelist(methods=['POST'])
+def create_bank_split_request(split_service_request_id , deed_id):
+
+    try:
+
+        split_service_request = frappe.get_doc("Split Service Request", split_service_request_id)
+        if split_service_request.requester != frappe.session.user:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": "You are not authorized to create a bank request for this split service request"
+            }
+        deed = frappe.get_doc("WATHEQ Deed", deed_id)
+        if deed.deed_owner != frappe.session.user:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": "You are not authorized to create a bank request for this deed"
+            }
+        if split_service_request.status != "Eligible For Split":
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": "This split service request is not approved"
+            }
+        if split_service_request.split_eligibility == False:
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": "This split service request is not eligible for split"
+            }
+        if split_service_request.is_active == 0:
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": "This split service request is not active"
+            }
+        
+        person_data = frappe.get_doc("Person Data", frappe.session.user)
+
+
+        mortgage_data = {
+            "current_mortgage_id": "", #TODO: Get from deed mortgage info
+            "current_due_amount": split_service_request.current_due_amount,
+            "new_market_price": split_service_request.current_market_deed_price,
+            "bank_equity_percentage": split_service_request.bank_equity,
+            "bank_holder": {
+                "cr": "",
+                "bank_name": ""
+            },
+            "deed_number": deed.deed_number,
+            "owner_national_id": person_data.nin,
+            "smr_id": split_service_request.name,
+            "status": "New",  # Possible values: New, Old, Negotiation
+            "wakala_number": "12345", #TODO: Get from settings
+            "update": split_service_request.split_service_update  # Only for demo
+        }
+
+
+        result = call_split_bank_request_api(mortgage_data)
+        if result.get("status"):    
+            bank_request = frappe.get_doc({
+                "doctype": "Split Bank Request",
+                "requester": frappe.session.user,
+                "split_service_request": split_service_request_id,
+                "deed_id": deed_id,
+                "submission_date": frappe.utils.now_datetime(),
+                "status": "Pending"
+            })
+            bank_request.insert(ignore_permissions=True)
+            frappe.db.commit()
+        else:
+            return result
+        return {
+            "status": True,
+            "data" : {
+                "result" : result,
+                "bank_request" : bank_request
+            },
+            "message": "Bank request created successfully"
+        }
+
+    
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status": False,
+            "message": str(e)
+        }
+
 
 
 
@@ -220,6 +312,7 @@ def get_split_service_result(split_service_request_id):
                 "deed_city" : deed_doc.real_estate_details[0]["city_name"],
                 "deed_region" : deed_doc.real_estate_details[0]["region_name"],
                 "status" : "Eligible For Split" if split_service_request.split_eligibility else "Not Eligible",
+                "split_request_status" : split_service_request.status,
                 "split_eligibility" : split_service_request.split_eligibility,
                 "bursa_price" : split_service_request.current_market_deed_price,
                 "equity_percent" : split_service_request.customer_equity,
