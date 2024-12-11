@@ -166,6 +166,93 @@ def get_eligibility_request_id(deed_id):
     return request_name
 
 
+import frappe
+from frappe import _
+
+@frappe.whitelist()
+def insert_split_bank_request_item( deed_id, data):
+    """
+    Inserts a new child item into 'Split Bank Request Response Item' linked to a 'Split Service Request'.
+
+    :param deed_id: ID of the deed linked to the 'Split Service Request'
+    :param data: Dictionary containing the fields for the child doctype
+    :return: Response with success or error message
+    """
+    try:
+        # before start we should check if mode test is enabled 
+        if(is_test_mode_enabled() == False):
+           return {"test_mode" : 0}
+        
+        # Fetch the most recent Split Service Request linked to the deed_id using Frappe ORM
+        split_request = frappe.get_all(
+            "Split Bank Request",
+            filters={"deed_id": deed_id},
+            fields=["name", "submission_date"],
+            order_by="submission_date desc",
+            limit=1
+        )
+
+        if not split_request:
+            return {
+                "status": False,
+                "message": "No Split Service Request found for the provided Deed ID"
+            }
+
+        split_request_id = split_request[0]["name"]
+
+        # Fetch the parent Split Service Request document
+        split_request = frappe.get_doc("Split Bank Request", split_request_id)
+
+
+        # Validate input data
+        required_fields = [
+            "negociated_due_amount", "new_mortgage_end_date",
+            "mortgage_start_payment_date"
+        ]
+        for field in required_fields:
+            if field not in data:
+                    frappe.local.response.http_status_code = 404
+                    return {
+                        "status": False,
+                        "message": "Missing required field: {field}"
+                    }
+
+        # Create a new child item
+        child_item = {
+            "negociated_due_amount": data["negociated_due_amount"],
+            "new_mortgage_end_date": data["new_mortgage_end_date"],
+            "mortgage_start_payment_date": data["mortgage_start_payment_date"],
+            # "mortgage_installement": data["mortgage_installement"],
+             "type":"Update",
+            # "status": data["status"],
+            "mortgage_number_months": 10,
+            "mortgage_duration": 10,
+            # "smr_id": data["smr_id"],
+            # "smr_bank_id": data["smr_bank_id"],
+            # "offer_date": data["offer_date"]
+        }
+
+        # Append the child item to the parent doctype
+        split_request.append("responses", child_item)
+
+        # Save the parent doctype
+        split_request.save()
+        frappe.db.commit()
+
+        return {
+            "status": "success",
+            "message": _("Child item inserted successfully"),
+            "split_request_id": split_request_id
+        }
+
+    except Exception as e:
+        frappe.local.response.http_status_code = 404
+        return {
+            "status": False,
+            "message": "Insert Split Bank Request Item Error"
+        }
+
+
 
 def is_test_mode_enabled():
     """

@@ -1,0 +1,11 @@
+{
+    "negociated_due_amount_for_update": {{multiply (multiply (add (body 'new_market_price') 0) (divide (add (body 'bank_equity_percentage') 0) 100)) 1.1}},
+    "update_mortgage_date": {{now 'dd-MM-YYYY'}},
+    "end_date_of_new_mortgage": {{dateTimeShift date='09-12-2024' format='dd-MM-YYYY' years=10 months=0 days=0 }},
+    "mortgage_installement": {{divide (multiply (multiply (add (body 'new_market_price') 0) (divide (add (body 'bank_equity_percentage') 0) 100)) 1.1) (multiply 12 10)}},
+     "mortgage_duration": 10,
+     "mortgage_number_months": {{multiply 12 10}},
+     "mortgage_start_payment_date":{{now 'dd-MM-YYYY'}},
+     "smr_id": "{{body 'smr_id'}}",
+     "smr_bank_id": "{{int 1000 9999}}"
+ }

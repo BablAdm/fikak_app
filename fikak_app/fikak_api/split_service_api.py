@@ -235,6 +235,34 @@ def get_split_service_offers(split_service_request_id ,  global_filter = None , 
     }
 
 
+@frappe.whitelist()
+def get_split_service_offers_by_deed(deed_id):
+    """
+    Retrieves the last inserted 'Split Bank Request Response Item' for the most recent 'Split Service Request' by deed_id.
+    
+    :param deed_id: ID of the deed linked to the 'Split Service Request'
+    :return: Dictionary containing the last response item or an error message if no data is found
+    """
+    # Fetch the most recent Split Service Request linked to the deed_id
+    split_request = frappe.get_all(
+        "Split Service Request",
+        filters={"deed_id": deed_id},
+        fields=["name", "submission_date"],
+        order_by="submission_date desc",
+        limit=1
+    )
+
+    if not split_request:
+        frappe.local.response.http_status_code = 400
+        return {
+            "status": False,
+            "message": "There is no split request for current deed"
+        }
+
+    split_request_id = split_request[0]["name"]
+
+    return get_split_service_offers(split_request_id)
+
 
 @frappe.whitelist(methods=['GET'])
 def get_deed_split_service_status(deed_id):
@@ -326,10 +354,12 @@ def create_evaluation_request(deed_id):
             "status": False,
             "message": str(e)
         }
-    
+
+# TODO : Move to deed controller    
 def get_active_deed_eligibility_request(deed_id):
     return frappe.get_all("Eligibility Check Request Deed Item", {"deed": deed_id, "status": "Eligible For Split" , "is_active" : 1},["parent"] ,pluck = "parent",  order_by="creation desc" , limit=1)
 
+# TODO : Move to deed controller
 def get_deed_active_split_service_request(deed_id):
     return frappe.get_all("Split Service Request", {"deed": deed_id},["name"], pluck="name", order_by="creation desc", limit=1)
 
