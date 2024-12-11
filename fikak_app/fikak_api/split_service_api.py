@@ -245,8 +245,8 @@ def get_split_service_offers_by_deed(deed_id):
     """
     # Fetch the most recent Split Service Request linked to the deed_id
     split_request = frappe.get_all(
-        "Split Bank Request",
-        filters={"deed_id": deed_id},
+        "Split Service Request",
+        filters={"deed": deed_id},
         fields=["name", "submission_date"],
         order_by="submission_date desc",
         limit=1
