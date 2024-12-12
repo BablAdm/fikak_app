@@ -290,6 +290,7 @@ def update_bank_offer_status(bank_offer_id , bank_split_request_id , status):
         }
     
     except Exception as e:
+        frappe.local.response.http_status_code = 500
         return {
             "status" : False,
             "message" : str(e)

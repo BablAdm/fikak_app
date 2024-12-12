@@ -1,6 +1,8 @@
 import frappe
 from frappe.exceptions import DoesNotExistError
 from fikak_app.fikak_api.integrations_evaluator_api import handle_evaluator_response_webhook
+from frappe import _
+import frappe.utils
 
 @frappe.whitelist()
 def check_test_mode():
@@ -165,10 +167,6 @@ def get_eligibility_request_id(deed_id):
     request_name = parent_request[0]["parent"]
     return request_name
 
-
-import frappe
-from frappe import _
-
 @frappe.whitelist()
 def insert_split_bank_request_item( deed_id, data):
     """
@@ -201,7 +199,7 @@ def insert_split_bank_request_item( deed_id, data):
         split_request_id = split_request[0]["name"]
 
         # Fetch the parent Split Service Request document
-        split_request = frappe.get_doc("Split Bank Request", split_request_id)
+        split_request_response_item = frappe.get_doc("Split Bank Request Response Item",{"parent" : split_request_id , "status" : "Pending" } )
 
 
         # Validate input data
@@ -209,6 +207,7 @@ def insert_split_bank_request_item( deed_id, data):
             "negociated_due_amount", "new_mortgage_end_date",
             "mortgage_start_payment_date"
         ]
+
         for field in required_fields:
             if field not in data:
                     frappe.local.response.http_status_code = 404
@@ -216,27 +215,33 @@ def insert_split_bank_request_item( deed_id, data):
                         "status": False,
                         "message": "Missing required field: {field}"
                     }
+        print("ssssssssssss  ,  " , data["new_mortgage_end_date"])
+        split_request_response_item.status = "Waiting For Customer Validation"
+        split_request_response_item.negociated_due_amount = int(data["negociated_due_amount"]) 
+        split_request_response_item.new_mortgage_end_date = data["new_mortgage_end_date"]
+        split_request_response_item.mortgage_start_payment_date = data["mortgage_start_payment_date"]
+        split_request_response_item.type = "Update"
+        split_request_response_item.mortgage_installement = (int(data["negociated_due_amount"]) / 10) / 12
+        split_request_response_item.mortgage_number_months = data["mortgage_number_months"]
+        split_request_response_item.mortgage_duration = 10
+        split_request_response_item.offer_date = frappe.utils.now_datetime()
+        split_request_response_item.save(ignore_permissions=True)
 
         # Create a new child item
-        child_item = {
-            "negociated_due_amount": data["negociated_due_amount"],
-            "new_mortgage_end_date": data["new_mortgage_end_date"],
-            "mortgage_start_payment_date": data["mortgage_start_payment_date"],
-            # "mortgage_installement": data["mortgage_installement"],
-             "type":"Update",
-            "status": "Waiting For Customer Validation",
-            "mortgage_number_months": 10,
-            "mortgage_duration": 10,
-            # "smr_id": data["smr_id"],
-            # "smr_bank_id": data["smr_bank_id"],
-            # "offer_date": data["offer_date"]
-        }
+        # child_item = {
+        #     "negociated_due_amount": data["negociated_due_amount"],
+        #     "new_mortgage_end_date": data["new_mortgage_end_date"],
+        #     "mortgage_start_payment_date": data["mortgage_start_payment_date"],
+        #     # "mortgage_installement": data["mortgage_installement"],
+        #      "type":"Update",
+        #     "status": "Waiting For Customer Validation",
+        #     "mortgage_number_months": 10,
+        #     "mortgage_duration": 10,
+        #     # "smr_id": data["smr_id"],
+        #     # "smr_bank_id": data["smr_bank_id"],
+        #     "offer_date": frappe.utils.now_datetime()
+        # }
 
-        # Append the child item to the parent doctype
-        split_request.append("responses", child_item)
-
-        # Save the parent doctype
-        split_request.save()
         frappe.db.commit()
 
         return {
@@ -249,7 +254,7 @@ def insert_split_bank_request_item( deed_id, data):
         frappe.local.response.http_status_code = 404
         return {
             "status": False,
-            "message": "Insert Split Bank Request Item Error"
+            "message": str(e)
         }
 
 

@@ -1,9 +1,8 @@
 
 
 import frappe
-import requests
 from fikak_app.external_requests.mortgage_service_requests import release_mortgage_request_api,create_new_mortgage_request_api
-
+from frappe import _
 
 
 def create_mortgage_registration_request( split_bank_request_id):

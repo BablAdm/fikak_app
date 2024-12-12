@@ -37,8 +37,13 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-11-20 12:55:34.847312",
+ "links": [
+  {
+   "link_doctype": "Split Service Request",
+   "link_fieldname": "eligibility_check_request"
+  }
+ ],
+ "modified": "2024-12-12 14:15:56.912882",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "Eligibility Check Request",
