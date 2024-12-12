@@ -71,7 +71,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nPending\nAccepted\nRejected"
+   "options": "\nPending\nRealesed\nRegistred"
   },
   {
    "fieldname": "mortgage_info_section",
@@ -146,7 +146,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-11 19:57:57.856588",
+ "modified": "2024-12-12 11:06:02.367580",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Mortgage Registration Request",
