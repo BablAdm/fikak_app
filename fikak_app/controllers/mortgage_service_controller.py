@@ -5,7 +5,6 @@ import requests
 from fikak_app.external_requests.mortgage_service_requests import release_mortgage_request_api,register_mortgage_request_api,update_mortgage_request_api
 
 
-
 def create_mortgage_registration_request( split_bank_request_id):
     """
     Create a new Mortgage Registration Request with details from related doctypes.

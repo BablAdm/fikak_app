@@ -372,8 +372,21 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-12-07 22:23:23.898266",
+ "links": [
+  {
+   "link_doctype": "Split Bank Request",
+   "link_fieldname": "deed_id"
+  },
+  {
+   "link_doctype": "Split Service Request",
+   "link_fieldname": "deed"
+  },
+  {
+   "link_doctype": "Evaluation Request",
+   "link_fieldname": "deed"
+  }
+ ],
+ "modified": "2024-12-12 14:18:29.695413",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Deed",
