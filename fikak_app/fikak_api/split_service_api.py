@@ -147,7 +147,7 @@ def create_bank_split_request(split_service_request_id , deed_id):
                 "split_service_request": split_service_request_id,
                 "deed_id": deed_id,
                 "submission_date": frappe.utils.now_datetime(),
-                "status": "Pending" , 
+                "status": "Waiting For Customer Validation" , 
                 "responses" : [{
                     "negociated_due_amount": result.get("data").get("negociated_due_amount_for_update"),
                     "mortgage_number_months": result.get("data").get("mortgage_number_months"),
@@ -155,7 +155,7 @@ def create_bank_split_request(split_service_request_id , deed_id):
                     "mortgage_duration" : result.get("data").get("mortgage_duration"),
                     "mortgage_start_payment_date" : result.get("data").get("mortgage_start_payment_date"),
                     "mortgage_installement" : result.get("data").get("mortgage_installement"),
-                    "type" : result.get("data").get("split_type"),
+                    # "type" : result.get("data").get("split_type"),
                     "status" : "Waiting For Customer Validation",
                     "smr_id" : result.get("data").get("smr_id"),
                     "smr_bank_id" : result.get("data").get("smr_bank_id"),

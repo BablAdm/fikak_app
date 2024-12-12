@@ -21,8 +21,6 @@ def call_split_bank_request_api(mortgage_data):
         
         # Perform the first API call
         response = requests.post(endpoint,data=json.dumps(mortgage_data), headers=headers )
-        print("reposne "  ,  response.text)
-        print("reposne "  ,  response.json())
         response_json = response.json()
         if response.status_code != 200: 
             frappe.local.response.http_status_code = 500
