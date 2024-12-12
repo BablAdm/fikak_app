@@ -2,7 +2,7 @@
 
 import frappe
 import requests
-
+import json
 
 def call_split_bank_request_api(mortgage_data):
     """
@@ -16,10 +16,13 @@ def call_split_bank_request_api(mortgage_data):
         
         endpoint = "http://dev-api.waseera.sa/smr/api/v1/bankSplitUpdate"
         headers = {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
         }
+        
         # Perform the first API call
-        response = requests.post(endpoint,data=mortgage_data, headers=headers )
+        response = requests.post(endpoint,data=json.dumps(mortgage_data), headers=headers )
+        print("reposne "  ,  response.text)
+        print("reposne "  ,  response.json())
         response_json = response.json()
         if response.status_code != 200: 
             frappe.local.response.http_status_code = 500
@@ -32,4 +35,4 @@ def call_split_bank_request_api(mortgage_data):
     
     except Exception as e:
         frappe.log_error(message=str(e), title="Evaluation API Error")
-        return {"status": "error", "message": str(e)}
+        return {"status": False, "message": str(e)}

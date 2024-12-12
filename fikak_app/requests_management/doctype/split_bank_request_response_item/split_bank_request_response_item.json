@@ -3,6 +3,7 @@
  "allow_rename": 1,
  "creation": "2024-12-08 18:05:56.170197",
  "doctype": "DocType",
+ "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "negociated_due_amount",
@@ -24,15 +25,13 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Negociated Due Amount",
-   "non_negative": 1,
-   "reqd": 1
+   "non_negative": 1
   },
   {
    "fieldname": "new_mortgage_end_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "New mortgage End Date",
-   "reqd": 1
+   "label": "New mortgage End Date"
   },
   {
    "fieldname": "mortgage_installement",
@@ -54,8 +53,7 @@
    "fieldname": "mortgage_start_payment_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Mortgage Start Payment Date",
-   "reqd": 1
+   "label": "Mortgage Start Payment Date"
   },
   {
    "fieldname": "smr_id",
@@ -76,8 +74,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "\nUpdate\nRealease And Create New",
-   "reqd": 1
+   "options": "\nUpdate\nRealease And Create New"
   },
   {
    "fieldname": "status",
@@ -94,7 +91,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-10 15:25:51.883106",
+ "modified": "2024-12-11 19:39:43.983956",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Bank Request Response Item",

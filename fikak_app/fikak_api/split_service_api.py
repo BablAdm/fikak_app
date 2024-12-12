@@ -122,7 +122,6 @@ def create_bank_split_request(split_service_request_id , deed_id):
         
         person_data = frappe.get_doc("Person Data", frappe.session.user)
 
-
         mortgage_data = {
             "current_mortgage_id": "", #TODO: Get from deed mortgage info
             "current_due_amount": split_service_request.current_due_amount,
@@ -140,20 +139,34 @@ def create_bank_split_request(split_service_request_id , deed_id):
             "update": split_service_request.split_service_update  # Only for demo
         }
 
-
         result = call_split_bank_request_api(mortgage_data)
-        if result.get("status"):    
+        if result.get("status"):
             bank_request = frappe.get_doc({
                 "doctype": "Split Bank Request",
                 "requester": frappe.session.user,
                 "split_service_request": split_service_request_id,
                 "deed_id": deed_id,
                 "submission_date": frappe.utils.now_datetime(),
-                "status": "Pending"
+                "status": "Pending" , 
+                "responses" : [{
+                    "negociated_due_amount": result.get("data").get("negociated_due_amount_for_update"),
+                    "mortgage_number_months": result.get("data").get("mortgage_number_months"),
+                    "new_mortgage_end_date" : result.get("data").get("end_date_of_new_mortgage"),
+                    "mortgage_duration" : result.get("data").get("mortgage_duration"),
+                    "mortgage_start_payment_date" : result.get("data").get("mortgage_start_payment_date"),
+                    "mortgage_installement" : result.get("data").get("mortgage_installement"),
+                    "type" : result.get("data").get("split_type"),
+                    "status" : "Waiting For Customer Validation",
+                    "smr_id" : result.get("data").get("smr_id"),
+                    "smr_bank_id" : result.get("data").get("smr_bank_id"),
+                    "offer_date" : frappe.utils.now()
+
+                }]
             })
             bank_request.insert(ignore_permissions=True)
             frappe.db.commit()
         else:
+            frappe.local.response.http_status_code = 500
             return result
         return {
             "status": True,
@@ -184,16 +197,22 @@ def get_split_service_offers(split_service_request_id ,  global_filter = None , 
     
     bank_request_dt = frappe.qb.DocType("Split Bank Request")
     bank_request_response_dt = frappe.qb.DocType("Split Bank Request Response Item")
+    watheq_deed = frappe.qb.DocType("WATHEQ Deed")
 
     query = (
         frappe.qb.from_(bank_request_dt)
         .inner_join(bank_request_response_dt)
         .on(bank_request_dt.name == bank_request_response_dt.parent)
+        .inner_join(watheq_deed)
+        .on(bank_request_dt.deed_id == watheq_deed.name)
         .select(
             bank_request_dt.name.as_("bank_request_id"),
             Case()
             .when(bank_request_dt.status == "Waiting For Customer Validation", "Customer Review")
             .else_(bank_request_dt.status).as_("bank_request_status"),
+            watheq_deed.deed_number,
+            watheq_deed.deed_serial,
+            watheq_deed.deed_area,
             bank_request_dt.submission_date.as_("bank_request_submission_date"),
             bank_request_response_dt.name.as_('offer_id'),
             bank_request_response_dt.negociated_due_amount,
@@ -233,6 +252,48 @@ def get_split_service_offers(split_service_request_id ,  global_filter = None , 
         },
         "message" : _("Bank offers retrieved successfully")
     }
+
+
+@frappe.whitelist(methods=["POST"])
+def update_bank_offer_status(bank_offer_id , bank_split_request_id , status):
+#Status : Accepted , Rejected , Negociation
+    try:
+        bank_split_request = frappe.get_doc("Split Bank Request" , bank_split_request_id)
+        if bank_split_request.status != "Waiting For Customer Validation":
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": _("You can't update this Bank Offer Status  , it must be Under customer Review")
+            }
+
+        if frappe.session.user != bank_split_request.requester:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": _("You can't update this Bank Offer Status  , You are not authorized to update this bank offer")
+            }
+        
+        bank_offer = frappe.get_doc("Split Bank Request Response Item" , bank_offer_id)
+        if bank_offer.status != "Waiting For Customer Validation":
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": _("You can't update this Bank Offer Status  , it must be Under customer Review")
+            }
+        bank_offer.status = status
+        bank_offer.save(ignore_permissions=True)
+
+        return {
+            "status": True,
+            "data" : bank_offer,
+            "message" : _("Your Bank Offer Status Updated Successfully , we will notify you with the result")
+        }
+    
+    except Exception as e:
+        return {
+            "status" : False,
+            "message" : str(e)
+        }
 
 
 @frappe.whitelist()
