@@ -44,7 +44,7 @@
    "fieldname": "split_bank_request",
    "fieldtype": "Link",
    "label": "Split Bank Request",
-   "options": "Split Service Request"
+   "options": "Split Bank Request"
   },
   {
    "fieldname": "requester",
@@ -146,7 +146,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-12 11:06:02.367580",
+ "modified": "2024-12-12 12:15:52.672893",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Mortgage Registration Request",
