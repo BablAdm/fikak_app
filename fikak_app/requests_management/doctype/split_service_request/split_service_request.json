@@ -130,8 +130,21 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-12-09 14:37:05.027100",
+ "links": [
+  {
+   "link_doctype": "Split Bank Request",
+   "link_fieldname": "split_service_request"
+  },
+  {
+   "link_doctype": "Evaluation Request",
+   "link_fieldname": "request"
+  },
+  {
+   "link_doctype": "Hyperpay Request",
+   "link_fieldname": "reference"
+  }
+ ],
+ "modified": "2024-12-12 14:14:43.267496",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Service Request",
