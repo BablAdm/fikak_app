@@ -224,7 +224,7 @@ def insert_split_bank_request_item( deed_id, data):
             "mortgage_start_payment_date": data["mortgage_start_payment_date"],
             # "mortgage_installement": data["mortgage_installement"],
              "type":"Update",
-            # "status": data["status"],
+            "status": "Waiting For Customer Validation",
             "mortgage_number_months": 10,
             "mortgage_duration": 10,
             # "smr_id": data["smr_id"],
