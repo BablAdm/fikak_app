@@ -4,74 +4,225 @@ import frappe
 import requests
 
 
-def create_new_mortgage_request_api(deed_info, organization_info, mortgage_info):
+def release_mortgage_request_api(mortgage_registration_request_id):
     """
-    Sends a POST request to the external API.
-    """
-    try:
-        endpoint = "http://dev-api.waseera.sa/smr/api/v1/createNewMortgage"
-        payload = {
-            "deedInfo": deed_info,
-            "organizationInfo": organization_info,
-            "mortgageInfo": mortgage_info,
-        }
-        headers = {"Content-Type": "application/json"}
-
-        # Send the request
-        response = requests.post(endpoint, json=payload, headers=headers)
-        response.raise_for_status()
-
- 
-        response_json = response.json()
-        if response.status_code != 200: 
-            frappe.local.response.http_status_code = 500
-            return {
-                "status" : False,
-                "message" : f"API Error: {response_json.get('error')}" 
-            }
-    
-        return {"status": True,"data" : response_json ,  "message": "Split Request Created successfully"}
-    
-    except Exception as e:
-        frappe.log_error(message=str(e), title="Evaluation API Error")
-        return {"status": "error", "message": str(e)}
-    
- 
-    
-def release_mortgage_request_api(deed_info, organization_info):
-    """
-    Sends a POST request to the external API.
+    Sends data to an external API using information from the 
+    'Mortgage Registration Request' doctype.
     """
     try:
-        endpoint = "http://dev-api.waseera.sa/smr/api/v1/releaseMortgage"
+        # Fetch the Mortgage Registration Request document
+        mortgage_request = frappe.get_doc("Mortgage Registration Request", mortgage_registration_request_id)
+
+        # Retrieve user data
+        person_data = frappe.get_doc("Person Data", frappe.session.user)
+
+        # Prepare the payload based on the document fields
         payload = {
-            "deedInfo": deed_info,
-            "organizationInfo": organization_info
-        }
+                "deedNumber": mortgage_request.deed_id,
+                "ownerNationalId": person_data.nin,
+                "ownerDobHijri": person_data.birth_date, # TODO : see the hidjri date
+                "ownerMobileNumber": person_data.phone_number,
+                "requestId": mortgage_request.name,
+                "courtCode": "" , #mortgage_request.court_code, # TODO : hwo to get this info
+                "consumerNationalId": person_data.nin, # TODO : see the diff betwen user and consumer 
+                "consumerDobHijri":  person_data.birth_date, 
+                }
+
+        # API configuration
+        url = "http://apidev.test.com/api/v1/Request/ReleaseMortgage"  # TODO : Replace with the actual API URL
         headers = {"Content-Type": "application/json"}
 
-        # Send the request
-        response = requests.post(endpoint, json=payload, headers=headers)
+        # Send the POST request
+        response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
 
- 
-        response_json = response.json()
-        if response.status_code != 200: 
-            frappe.local.response.http_status_code = 500
+        # Handle the response
+        response_data = response.json()
+        if response_data.get("isSuccess"):
+            data = response_data.get("data", {})
+            if data.get("isDeedUpdated"):
+                # Update the status field in the Mortgage Registration Request
+                mortgage_request.db_set("status", "Released", commit=True)
+                return {
+                    "status": "success",
+                    "message": "Data sent successfully. Status updated to 'Updated'.",
+                    "response": response_data,
+                }
+            else:
+                return {
+                    "status": "warning",
+                    "message": "Data sent successfully, but deed is not updated.",
+                    "response": response_data,
+                }
+        else:
             return {
-                "status" : False,
-                "message" : f"API Error: {response_json.get('error')}" 
+                "status": "error",
+                "message": "API returned an error.",
+                "error_list": response_data.get("errorList", []),
+                "response": response_data,
             }
-    
-        return {"status": True,"data" : response_json ,  "message": "Split Request Created successfully"}
-    
-    except Exception as e:
-        frappe.log_error(message=str(e), title="Evaluation API Error")
+
+    except requests.exceptions.RequestException as e:
+        frappe.log_error(frappe.get_traceback(), _("External API Error"))
         return {"status": "error", "message": str(e)}
+    except frappe.DoesNotExistError:
+        return {"status": "error", "message": "Mortgage Registration Request not found."}
+    
  
+    
+def register_mortgage_request_api(mortgage_registration_request_id):
+    """
+    Sends data to an external API using information from the 
+    'Mortgage Registration Request' doctype.
+    """
+    try:
+        # Fetch the Mortgage Registration Request document
+        mortgage_request = frappe.get_doc("Mortgage Registration Request", mortgage_registration_request_id)
+
+        # Retrieve user data
+        person_data = frappe.get_doc("Person Data", frappe.session.user)
+
+        # Prepare the payload based on the document fields
+        payload = {
+            "deedNumber": mortgage_request.deed_id,
+            "ownerNationalId": person_data.nin,
+            "ownerDobHijri": person_data.birth_date, # TODO : see the hidjri date
+            "ownerMobileNumber": person_data.phone_number,
+            "consumerNationalId": person_data.nin, # TODO : see consumerNationalId
+            "consumerDobHijri": person_data.birth_date, # TODO : see the hidjri date
+            "requestId": mortgage_request.name,
+            "courtCode": "", #mortgage_request.court_code, # TODO : hwo to get this info
+            "mortgageeType": "",# mortgage_request.mortgagee_type, # TODO : hwo to get this info
+            "mortgageeId": person_data.nin, # TODO : see consumerNationalId
+            "mortgageAmount": mortgage_request.due_amount,
+            "firstPaymentDate": mortgage_request.start_payment_date,
+            "lastPaymentDate": mortgage_request.end_date,
+            "numberOfInstallments": mortgage_request.number_months,
+            "installmentAmount": mortgage_request.installement,
+            "upfrontPayment": "",#  # TODO : see upfront_payment or 0,
+            "lastPayment": "",#  # TODO : see last_payment or 0,
+        }
+
+        # API configuration
+        url = "http://apidev.test.com/api/v1/Request/Mortgage"  # TODO : Replace with the actual API URL
+        headers = {"Content-Type": "application/json"}
+
+        # Send the POST request
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+
+        # Handle the response
+        response_data = response.json()
+
+        if response_data.get("isSuccess"):
+            data = response_data.get("data", {})
+            if data.get("isDeedUpdated"):
+                # Update the status field in the Mortgage Registration Request
+                mortgage_request.db_set("status", "Registred", commit=True)
+                return {
+                    "status": "success",
+                    "message": "Data sent successfully. Status updated to 'Updated'.",
+                    "response": response_data,
+                }
+            else:
+                return {
+                    "status": "warning",
+                    "message": "Data sent successfully, but deed is not updated.",
+                    "response": response_data,
+                }
+        else:
+            return {
+                "status": "error",
+                "message": "API returned an error.",
+                "error_list": response_data.get("errorList", []),
+                "response": response_data,
+            }
+
+    except requests.exceptions.RequestException as e:
+        frappe.log_error(frappe.get_traceback(), _("External API Error"))
+        return {"status": "error", "message": str(e)}
+    except frappe.DoesNotExistError:
+        return {"status": "error", "message": "Mortgage Registration Request not found."}
 
 
-def handle_hook_response(mortgage_request_id, status):
+# TODO : the core of update should be adapted once we have moj response
+def update_mortgage_request_api(mortgage_registration_request_id):
+    """
+    Sends data to an external API using information from the 
+    'Mortgage Registration Request' doctype.
+    """
+    try:
+        # Fetch the Mortgage Registration Request document
+        mortgage_request = frappe.get_doc("Mortgage Registration Request", mortgage_registration_request_id)
+
+        # Retrieve user data
+        person_data = frappe.get_doc("Person Data", frappe.session.user)
+
+        # Prepare the payload based on the document fields
+        payload = {
+            "deedNumber": mortgage_request.deed_id,
+            "ownerNationalId": person_data.nin,
+            "ownerDobHijri": person_data.birth_date, # TODO : see the hidjri date
+            "ownerMobileNumber": person_data.phone_number,
+            "consumerNationalId": person_data.nin, # TODO : see consumerNationalId
+            "consumerDobHijri": person_data.birth_date, # TODO : see the hidjri date
+            "requestId": mortgage_request.name,
+            "courtCode": "", #mortgage_request.court_code, # TODO : hwo to get this info
+            "mortgageeType": "",# mortgage_request.mortgagee_type, # TODO : hwo to get this info
+            "mortgageeId": person_data.nin, # TODO : see consumerNationalId
+            "mortgageAmount": mortgage_request.due_amount,
+            "firstPaymentDate": mortgage_request.start_payment_date,
+            "lastPaymentDate": mortgage_request.end_date,
+            "numberOfInstallments": mortgage_request.number_months,
+            "installmentAmount": mortgage_request.installement,
+            "upfrontPayment": "",#  # TODO : see upfront_payment or 0,
+            "lastPayment": "",#  # TODO : see last_payment or 0,
+        }
+
+        # API configuration
+        url = "http://apidev.test.com/api/v1/Operations/Update"  # TODO : Replace with the actual API URL
+        headers = {"Content-Type": "application/json"}
+
+        # Send the POST request
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+
+        # Handle the response
+        response_data = response.json()
+
+        if response_data.get("isSuccess"):
+            data = response_data.get("data", {})
+            if data.get("isDeedUpdated"):
+                # Update the status field in the Mortgage Registration Request
+                mortgage_request.db_set("status", "Registred", commit=True)
+                return {
+                    "status": "success",
+                    "message": "Data sent successfully. Status updated to 'Updated'.",
+                    "response": response_data,
+                }
+            else:
+                return {
+                    "status": "warning",
+                    "message": "Data sent successfully, but deed is not updated.",
+                    "response": response_data,
+                }
+        else:
+            return {
+                "status": "error",
+                "message": "API returned an error.",
+                "error_list": response_data.get("errorList", []),
+                "response": response_data,
+            }
+
+    except requests.exceptions.RequestException as e:
+        frappe.log_error(frappe.get_traceback(), _("External API Error"))
+        return {"status": "error", "message": str(e)}
+    except frappe.DoesNotExistError:
+        return {"status": "error", "message": "Mortgage Registration Request not found."}
+
+
+# TODO : We keep this code in case of Async Response
+def handle_hook_response(mortgage_request_id, response):
     """
     Updates the status of the Mortgage Registration Request based on the external API response.
     """
@@ -79,16 +230,35 @@ def handle_hook_response(mortgage_request_id, status):
         # Fetch the Mortgage Registration Request
         mortgage_request = frappe.get_doc("Mortgage Registration Request", mortgage_request_id)
 
-        # Update the status
-        mortgage_request.status = status
-        
-        # TODO : Add some other informations
-        
-        
-        mortgage_request.save()
-        frappe.db.commit()
+       
 
-        return {"status": "success", "message": "Mortgage Registration Request status updated successfully."}
+        # Handle the response
+        response_data = response.json()
+
+        if response_data.get("isSuccess"):
+            data = response_data.get("data", {})
+            if data.get("isDeedUpdated"):
+                # Update the status field in the Mortgage Registration Request
+                mortgage_request.db_set("status", "Registred", commit=True)
+                return {
+                    "status": "success",
+                    "message": "Data sent successfully. Status updated to 'Updated'.",
+                    "response": response_data,
+                }
+            else:
+                return {
+                    "status": "warning",
+                    "message": "Data sent successfully, but deed is not updated.",
+                    "response": response_data,
+                }
+        else:
+            return {
+                "status": "error",
+                "message": "API returned an error.",
+                "error_list": response_data.get("errorList", []),
+                "response": response_data,
+            }        
+        
 
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), _("Hook Response Error"))

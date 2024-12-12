@@ -1,8 +1,8 @@
 
 
 import frappe
-from fikak_app.external_requests.mortgage_service_requests import release_mortgage_request_api,create_new_mortgage_request_api
-from frappe import _
+import requests
+from fikak_app.external_requests.mortgage_service_requests import release_mortgage_request_api,register_mortgage_request_api,update_mortgage_request_api
 
 
 def create_mortgage_registration_request( split_bank_request_id):
@@ -50,16 +50,14 @@ def create_mortgage_registration_request( split_bank_request_id):
         mortgage_request.insert()
         frappe.db.commit()
 
-        # Call to Release Mortgage  && create new Mortgage API
-        # TODO : See the deed_info  + organisation_info  data
-        deed_info = {"deed_id": deed_id}
-        organization_info = {"org_name": "Waseera"}
-        release_mortgage_request_api(deed_info, organization_info)
-        
-        # TODO : See the mortgage info data 
-        mortgage_info = {"mortgage_id": split_bank_request.mortgage_id}
-        create_new_mortgage_request_api(deed_info, organization_info, mortgage_info)
-        
+        # Call to Release Mortgage API 
+        if(accepted_response.type == "Realease And Create New"):
+            release_mortgage_request_api(mortgage_request.name)
+            
+            register_mortgage_request_api(mortgage_request.name)
+        else:
+            update_mortgage_request_api(mortgage_request.name)
+
         return {"status": "success", "message": "Mortgage Registration Request created successfully.", "docname": mortgage_request.name}
 
     except Exception as e:
