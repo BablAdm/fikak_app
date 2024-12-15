@@ -2,8 +2,9 @@ import frappe
 
 from frappe import _
 from fikak_app.utils.global_utils import translate 
-from pypika import Case , functions as fn
+from pypika import Order, Case , functions as fn
 import math
+from datetime import datetime
 
 from fikak_app.external_requests.split_service_requests import call_split_bank_request_api
 
@@ -141,6 +142,7 @@ def create_bank_split_request(split_service_request_id , deed_id):
 
         result = call_split_bank_request_api(mortgage_data)
         if result.get("status"):
+            print(result.get("data"))
             bank_request = frappe.get_doc({
                 "doctype": "Split Bank Request",
                 "requester": frappe.session.user,
@@ -151,11 +153,11 @@ def create_bank_split_request(split_service_request_id , deed_id):
                 "responses" : [{
                     "negociated_due_amount": result.get("data").get("negociated_due_amount_for_update"),
                     "mortgage_number_months": result.get("data").get("mortgage_number_months"),
-                    "new_mortgage_end_date" : result.get("data").get("end_date_of_new_mortgage"),
+                    "new_mortgage_end_date" : datetime.strptime( result.get("data").get("end_date_of_new_mortgage"), "%d-%m-%Y").strftime("%Y-%m-%d"),
                     "mortgage_duration" : result.get("data").get("mortgage_duration"),
-                    "mortgage_start_payment_date" : result.get("data").get("mortgage_start_payment_date"),
+                    "mortgage_start_payment_date" : datetime.strptime( result.get("data").get("mortgage_start_payment_date"), "%d-%m-%Y").strftime("%Y-%m-%d"),
                     "mortgage_installement" : result.get("data").get("mortgage_installement"),
-                    # "type" : result.get("data").get("split_type"),
+                    "type" : result.get("data").get("split_type"),
                     "status" : "Waiting For Customer Validation",
                     "smr_id" : result.get("data").get("smr_id"),
                     "smr_bank_id" : result.get("data").get("smr_bank_id"),
@@ -229,6 +231,7 @@ def get_split_service_offers(split_service_request_id ,  global_filter = None , 
             bank_request_response_dt.smr_bank_id
         )
         .where(bank_request_dt.split_service_request == split_service_request_id)
+        .orderby(bank_request_response_dt.idx ,order = Order.asc)
     )
 
     if global_filter :
