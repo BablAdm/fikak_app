@@ -1,9 +1,8 @@
 
 
 import frappe
-import requests
 from fikak_app.external_requests.mortgage_service_requests import release_mortgage_request_api,register_mortgage_request_api,update_mortgage_request_api
-
+from frappe import _
 
 def create_mortgage_registration_request( split_bank_request_id):
     """
@@ -45,7 +44,6 @@ def create_mortgage_registration_request( split_bank_request_id):
         mortgage_request.smr_id = accepted_response.smr_id
         mortgage_request.smr_bank_id = accepted_response.smr_bank_id
         mortgage_request.offer_date = accepted_response.offer_date
-
         # Insert the new document
         mortgage_request.insert()
         frappe.db.commit()

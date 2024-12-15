@@ -2,9 +2,8 @@ import frappe
 
 from frappe import _
 from fikak_app.utils.global_utils import translate 
-from pypika import Case , functions as fn
+from pypika import Order, Case , functions as fn
 import math
-
 from datetime import datetime
 
 from fikak_app.external_requests.split_service_requests import call_split_bank_request_api
@@ -232,6 +231,7 @@ def get_split_service_offers(split_service_request_id ,  global_filter = None , 
             bank_request_response_dt.smr_bank_id
         )
         .where(bank_request_dt.split_service_request == split_service_request_id)
+        .orderby(bank_request_response_dt.idx ,order = Order.asc)
     )
 
     if global_filter :
