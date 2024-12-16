@@ -2,7 +2,7 @@ import frappe
 import requests
 from fikak_app.controllers.evaluation_request_controller import get_evaluator_settings
 
-def handle_evaluator_response_webhook(request_id, response = ""):
+def handle_evaluator_response_webhook(request_id, response = "",evaluationPriceTest = 0):
     try: 
         # Fetch Evaluator settings
         settings = get_evaluator_settings()
@@ -23,9 +23,16 @@ def handle_evaluator_response_webhook(request_id, response = ""):
         # evaluated_price = fetch_value_from_evaluator_response(result_json["data"]["evaluation"]) #result_json["data"]["evaluation"]["all_fields_from_reports"][0]
         evaluated_price = result_json.get("data").get("evaluation").get("market_average_price_m2")
         evaluated_price = evaluated_price if evaluated_price >0 else 1000
+
+        if( evaluationPriceTest != 0 ):
+            evaluated_price = evaluationPriceTest
+        
         # 2. Update evaluation request document status with done
         update_evaluation_request(request_id,evaluated_price, "Done")
+        
+        # TODO : Add Evaluation in deed history tabs
     
+        
         # Store the result in Evaluator Evaluation Result Doctype
         result_doc = frappe.get_doc({
             "doctype": "Evaluator Evaluation Hook Response",

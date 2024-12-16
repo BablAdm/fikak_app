@@ -52,10 +52,10 @@ def set_evaluation_as_paid(split_service_request):
 
 
 @frappe.whitelist()
-def simulate_evaluator_webhook(split_service_request):
+def simulate_evaluator_webhook(split_service_request,evaluationPriceTest=0):
     # Fetch the Evaluation Request Doctype document
     evaluation_request_dt = frappe.get_doc("Evaluation Request", {"request" : split_service_request})
-    return handle_evaluator_response_webhook(evaluation_request_dt.name)
+    return handle_evaluator_response_webhook(evaluation_request_dt.name,"",evaluationPriceTest)
 
 
 @frappe.whitelist()
