@@ -1,0 +1,14 @@
+{
+    "total_estimated_amount": 660000,
+    "update_mortgage_date": "12/12/2024",
+    "end_date_of_new_mortgage": "12-09-2034",
+    "mortgage_installement": 5500,
+    "mortgage_duration": 10,
+    "mortgage_number_months": "120",
+    "mortgage_start_payment_date": "16-12-2024",
+    "lba_id": "idlba",
+    "lbar_bank_id": "4196",
+    "new_mortgage_id": "7973",
+    "bank_equity_percent": 58,
+    "loan_amount": 382800
+}
