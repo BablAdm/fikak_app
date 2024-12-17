@@ -1,0 +1,112 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-16 13:33:36.129902",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "source",
+  "split_service_request",
+  "submission_date",
+  "column_break_mcdf",
+  "deed_id",
+  "requester",
+  "status",
+  "new_mortgage_info_section",
+  "new_mortgage_id",
+  "section_break_tjen",
+  "bank_offers"
+ ],
+ "fields": [
+  {
+   "fieldname": "source",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Source",
+   "options": "\nSplit Mortgage\nFree Deed",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.source == 'Split Mortgage'",
+   "fieldname": "split_service_request",
+   "fieldtype": "Link",
+   "label": "Split Service Request",
+   "mandatory_depends_on": "eval:doc.source == 'Split Mortgage'",
+   "options": "Split Service Request"
+  },
+  {
+   "fieldname": "submission_date",
+   "fieldtype": "Datetime",
+   "label": "Submission Date"
+  },
+  {
+   "fieldname": "column_break_mcdf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deed_id",
+   "fieldtype": "Link",
+   "label": "Deed Id",
+   "options": "WATHEQ Deed"
+  },
+  {
+   "fieldname": "requester",
+   "fieldtype": "Link",
+   "label": "Requester",
+   "options": "User"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nPending\nWaiting For Customer Validation\nNegociation\nAccepted\nRejected",
+   "reqd": 1
+  },
+  {
+   "fieldname": "new_mortgage_info_section",
+   "fieldtype": "Section Break",
+   "label": "New Mortgage Info"
+  },
+  {
+   "fieldname": "new_mortgage_id",
+   "fieldtype": "Data",
+   "label": "New Mortgage Id"
+  },
+  {
+   "fieldname": "section_break_tjen",
+   "fieldtype": "Section Break",
+   "label": "Offers"
+  },
+  {
+   "fieldname": "bank_offers",
+   "fieldtype": "Table",
+   "label": "Bank Offers",
+   "options": "Bank Loan Request Offer Item"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-16 14:40:29.877234",
+ "modified_by": "Administrator",
+ "module": "Loans Management",
+ "name": "Bank Loan Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
