@@ -10,3 +10,4 @@ Requests Management
 Payment Management
 Payments Management
 Evaluators Management
+Loans Management

@@ -142,7 +142,6 @@ def create_bank_split_request(split_service_request_id , deed_id):
 
         result = call_split_bank_request_api(mortgage_data)
         if result.get("status"):
-            print(result.get("data"))
             bank_request = frappe.get_doc({
                 "doctype": "Split Bank Request",
                 "requester": frappe.session.user,

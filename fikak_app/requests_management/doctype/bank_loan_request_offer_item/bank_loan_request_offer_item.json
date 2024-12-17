@@ -1,0 +1,95 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-16 14:35:48.074832",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "negociated_loan_amount",
+  "new_mortgage_end_date",
+  "mortgage_start_payment_date",
+  "mortgage_installement",
+  "status",
+  "column_break_wgjm",
+  "mortgage_number_months",
+  "mortgage_duration",
+  "smr_id",
+  "lba_bank_id",
+  "offer_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "new_mortgage_end_date",
+   "fieldtype": "Date",
+   "label": "New Mortgage End Date"
+  },
+  {
+   "fieldname": "mortgage_start_payment_date",
+   "fieldtype": "Date",
+   "label": "Mortgage Start Payment Date"
+  },
+  {
+   "fieldname": "mortgage_installement",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Mortgage Installement"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "\nPending\nWaiting For Customer Validation\nNegociation\nAccepted\nRejected"
+  },
+  {
+   "fieldname": "column_break_wgjm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mortgage_number_months",
+   "fieldtype": "Int",
+   "label": "Mortgage Number Months"
+  },
+  {
+   "fieldname": "mortgage_duration",
+   "fieldtype": "Int",
+   "label": "Mortgage Duration"
+  },
+  {
+   "fieldname": "smr_id",
+   "fieldtype": "Data",
+   "label": "LBA ID"
+  },
+  {
+   "fieldname": "offer_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Offer Date"
+  },
+  {
+   "fieldname": "negociated_loan_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Negociated Loan Amount",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "lba_bank_id",
+   "fieldtype": "Data",
+   "label": "LBA Bank ID"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-12-16 14:39:21.137088",
+ "modified_by": "Administrator",
+ "module": "Requests Management",
+ "name": "Bank Loan Request Offer Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
