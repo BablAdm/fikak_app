@@ -15,7 +15,7 @@ class EvaluationRequest(Document):
             and self._doc_before_save.status != "Done"
             and self.status == "Done"
         ):
-            update_split_service_request_status(self.request, "Evaluated", self.evaluation_price)
+            update_split_service_request_status(self.request, "Evaluated", self.evaluation_price , self.evaluation_source)
 
         # Handle status change to "Paid"
         if self.status == "Paid" and (

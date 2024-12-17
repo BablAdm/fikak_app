@@ -62,7 +62,7 @@ evaluationObject = {
 }
 
 @frappe.whitelist()
-def generate_evaluator_report(deed_id):
+def generate_evaluator_report(deed_id , source = "Split Service Request"):
     """
     Generate a report for the evaluator result .
     :param docname: The name of the Doctype record to fetch.
@@ -76,7 +76,7 @@ def generate_evaluator_report(deed_id):
             "message": "You are not authorized to view this deed"
         }
     try:
-        split_service_request = frappe.get_doc("Split Service Request", {"deed": deed_id, "requester": frappe.session.user})
+        split_service_request = frappe.get_doc(source, {"deed": deed_id, "requester": frappe.session.user})
         # Fetch the Evaluation Request Doctype document
         evaluation_request_dt = frappe.get_doc("Evaluation Request", {"request" : split_service_request.name})
 
