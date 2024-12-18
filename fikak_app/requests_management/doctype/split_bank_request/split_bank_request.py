@@ -6,16 +6,18 @@ from frappe.model.document import Document
 
 from fikak_app.controllers.split_service_controller import update_split_service_request_status
 from fikak_app.controllers.mortgage_service_controller import create_mortgage_registration_request
+
+
 class SplitBankRequest(Document):
 	
 
 	def after_insert(self):
-		update_split_service_request_status(self.split_service_request , 'Offer')
+		update_split_service_request_status(self.split_service_request , 'Offer' , evaluation_source = "Split Service Request")
 
 
 	def on_update(self):
 		if self._doc_before_save and self.status in ( "Accepted" , "Rejected") and self._doc_before_save.status != self.status:
-			update_split_service_request_status(self.split_service_request , self.status)
+			update_split_service_request_status(self.split_service_request , self.status , evaluation_source = "Split Service Request")
 		# Check for status change to "Accepted" and update the related request status
 		if (
             self._doc_before_save

@@ -19,8 +19,12 @@ def get_terms_and_conditions(type = "General"):
         }
     
 @frappe.whitelist(methods="POST")
-def submit_conditions(terms_and_conditions):
-    if frappe.db.exists("Terms And Conditions Submission", {"user" : frappe.session.user ,  "terms_and_conditions": terms_and_conditions}):
+def submit_conditions(terms_and_conditions , deed_id = None):
+    filters = {"terms_and_conditions": terms_and_conditions , "user": frappe.session.user}
+    if deed_id:
+        filters["deed_id"] = deed_id
+
+    if frappe.db.exists("Terms And Conditions Submission", filters):
         frappe.local.response.http_status_code = 200
         return {
             "status": True,
@@ -30,7 +34,8 @@ def submit_conditions(terms_and_conditions):
     frappe.get_doc({
         "doctype": "Terms And Conditions Submission",
         "terms_and_conditions": terms_and_conditions,
-        "user": frappe.session.user
+        "user": frappe.session.user,
+        "deed_id": deed_id
     }).insert(ignore_permissions=True)
     return {
         "status": True,

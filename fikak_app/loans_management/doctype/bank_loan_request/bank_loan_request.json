@@ -5,6 +5,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "loan_service_request",
   "source",
   "split_service_request",
   "submission_date",
@@ -83,11 +84,19 @@
    "fieldtype": "Table",
    "label": "Bank Offers",
    "options": "Bank Loan Request Offer Item"
+
+  },
+  {
+   "fieldname": "loan_service_request",
+   "fieldtype": "Link",
+   "label": "Loan Service Request",
+   "options": "Loan Service Request",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-16 14:40:29.877234",
+ "modified": "2024-12-17 20:20:46.330334",
  "modified_by": "Administrator",
  "module": "Loans Management",
  "name": "Bank Loan Request",

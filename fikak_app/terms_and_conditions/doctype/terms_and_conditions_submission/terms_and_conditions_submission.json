@@ -6,7 +6,9 @@
  "engine": "InnoDB",
  "field_order": [
   "user",
-  "terms_and_conditions"
+  "terms_and_conditions",
+  "deed_id",
+  "terms_type"
  ],
  "fields": [
   {
@@ -24,11 +26,23 @@
    "label": "Terms And Conditions",
    "options": "Terms And Conditions",
    "reqd": 1
+  },
+  {
+   "fieldname": "deed_id",
+   "fieldtype": "Link",
+   "label": "Deed Id",
+   "options": "WATHEQ Deed"
+  },
+  {
+   "fetch_from": "terms_and_conditions.type",
+   "fieldname": "terms_type",
+   "fieldtype": "Data",
+   "label": "Terms Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-06 19:38:38.976877",
+ "modified": "2024-12-17 14:38:32.491733",
  "modified_by": "Administrator",
  "module": "Terms And Conditions",
  "name": "Terms And Conditions Submission",
