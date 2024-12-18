@@ -5,7 +5,7 @@ import frappe
 from fikak_app.controllers.lba_controller import  check_lba_source
 from frappe import _
 from datetime import datetime
-from fikak_app.external_requests.split_service_requests import call_lba_bank_request_api
+from fikak_app.external_requests.split_service_requests import call_lba_bank_request_api , get_lba_bank_offer
 import math
 from pypika import Order, Case , functions as fn
 
@@ -77,6 +77,11 @@ def get_lba_service_result(lba_service_request_id):
                 "message": _("You are not authorized to view this split service request")
             }
         deed_doc = frappe.get_doc("WATHEQ Deed", lba_service_request.deed).as_dict()
+
+        fikak_settings = frappe.get_single("Fikak Settings")
+
+
+
         data = [
             {
                 "deed_id" : deed_doc.name,
@@ -92,7 +97,9 @@ def get_lba_service_result(lba_service_request_id):
                 "split_request_status" : lba_service_request.status,
                 "bursa_price" : lba_service_request.current_market_deed_price,
                 "equity_percent" : lba_service_request.customer_equity,
-                "loan_amount" : lba_service_request.new_loan
+                "loan_amount" : lba_service_request.max_new_loan,
+                "max_loan_percent" : fikak_settings.max_new_loan,
+                "waseera_fees" : fikak_settings.waseera_fees
             }
         ]
         return {
@@ -117,10 +124,8 @@ def get_lba_service_result(lba_service_request_id):
 
 
 @frappe.whitelist(methods=['POST'])
-def create_bank_lba_request(loan_service_request_id , deed_id):
-
+def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = None):
     try:
-
         loan_service_request = frappe.get_doc("Loan Service Request", loan_service_request_id)
         if loan_service_request.requester != frappe.session.user:
             frappe.local.response.http_status_code = 404
@@ -171,7 +176,7 @@ def create_bank_lba_request(loan_service_request_id , deed_id):
             "update": loan_service_request.split_service_update  # Only for demo
         }
         
-        result = call_lba_bank_request_api(mortgage_data)
+        result = get_lba_bank_offer(mortgage_data)
         if result.get("status"):
             bank_request = frappe.get_doc({
                 "doctype": "Bank Loan Request",
@@ -179,7 +184,7 @@ def create_bank_lba_request(loan_service_request_id , deed_id):
                 "loan_service_request": loan_service_request_id,
                 "deed_id": deed_id,
                 "submission_date": frappe.utils.now_datetime(),
-                "status": "Waiting For Customer Validation" , 
+                "status": "Pending" , 
                 "source" : lba_source["source"],
                 "split_service_request" : lba_source["split_request"],
                 "bank_offers" : [{
@@ -189,10 +194,12 @@ def create_bank_lba_request(loan_service_request_id , deed_id):
                     "mortgage_duration" : result.get("data").get("mortgage_duration"),
                     "mortgage_start_payment_date" : datetime.strptime( result.get("data").get("mortgage_start_payment_date"), "%d-%m-%Y").strftime("%Y-%m-%d"),
                     "mortgage_installement" : result.get("data").get("mortgage_installement"),
-                    "status" : "Waiting For Customer Validation",
-                    "lba_id" : result.get("data").get("smr_id"),
+                    "status" : "Pending",
+                    "lba_id" : result.get("data").get("lba_id"),
                     "lba_bank_id" : result.get("data").get("lba_bank_id"),
-                    "offer_date" : frappe.utils.now()
+                    "offer_date" : frappe.utils.now(),
+                    "requested_equity" : offer_data.get("equity") ,
+                    "requested_amount" : offer_data.get("negociatedAmount") ,
 
                 }]
             })

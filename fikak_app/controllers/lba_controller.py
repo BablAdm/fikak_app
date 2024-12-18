@@ -20,6 +20,7 @@ def insert_new_lba_request(deed_id):
         data["current_market_deed_price"] = split_service_doc.current_market_deed_price
         data["bank_equity"] = split_service_doc.bank_equity
         data["customer_equity"] = split_service_doc.customer_equity
+        data["max_new_loan"] = split_service_doc.new_loan
         data["status"] = "Eligible For Loan"
 
     lba_request = frappe.get_doc(data)
