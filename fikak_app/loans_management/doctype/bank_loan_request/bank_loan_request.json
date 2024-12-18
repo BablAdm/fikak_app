@@ -47,6 +47,8 @@
   {
    "fieldname": "deed_id",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Deed Id",
    "options": "WATHEQ Deed"
   },
@@ -60,6 +62,8 @@
    "default": "Pending",
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Status",
    "options": "\nPending\nWaiting For Customer Validation\nNegociation\nAccepted\nRejected",
    "reqd": 1
@@ -84,7 +88,6 @@
    "fieldtype": "Table",
    "label": "Bank Offers",
    "options": "Bank Loan Request Offer Item"
-
   },
   {
    "fieldname": "loan_service_request",
@@ -96,7 +99,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-17 20:20:46.330334",
+ "modified": "2024-12-19 00:03:26.621248",
  "modified_by": "Administrator",
  "module": "Loans Management",
  "name": "Bank Loan Request",
