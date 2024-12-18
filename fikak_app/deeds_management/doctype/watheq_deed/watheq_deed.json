@@ -65,7 +65,14 @@
   "interest_amount",
   "down_price",
   "purchase_date",
-  "is_first_home"
+  "is_first_home",
+  "column_break_fzfi",
+  "eligibility_check_customer_equity",
+  "eligibility_check_max_loan",
+  "last_bursa_price",
+  "split_service_customer_equity",
+  "split_service_max_loan",
+  "last_evaluator_price"
  ],
  "fields": [
   {
@@ -369,6 +376,40 @@
   {
    "fieldname": "section_break_lspj",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_fzfi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "eligibility_check_customer_equity",
+   "fieldtype": "Percent",
+   "label": "Eligibility Check Customer Equity"
+  },
+  {
+   "fieldname": "eligibility_check_max_loan",
+   "fieldtype": "Currency",
+   "label": "Eligibility Check Max Loan"
+  },
+  {
+   "fieldname": "split_service_customer_equity",
+   "fieldtype": "Percent",
+   "label": "Split Service Customer Equity"
+  },
+  {
+   "fieldname": "split_service_max_loan",
+   "fieldtype": "Currency",
+   "label": "Split Service Max Loan"
+  },
+  {
+   "fieldname": "last_bursa_price",
+   "fieldtype": "Currency",
+   "label": "Last Bursa Price"
+  },
+  {
+   "fieldname": "last_evaluator_price",
+   "fieldtype": "Currency",
+   "label": "Last Evaluator Price"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -386,7 +427,7 @@
    "link_fieldname": "deed"
   }
  ],
- "modified": "2024-12-12 14:18:29.695413",
+ "modified": "2024-12-18 14:54:04.102556",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Deed",
