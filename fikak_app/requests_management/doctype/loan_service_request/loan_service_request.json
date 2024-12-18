@@ -121,8 +121,8 @@
  "index_web_pages_for_search": 1,
  "links": [
   {
-   "link_doctype": "Split Bank Request",
-   "link_fieldname": "split_service_request"
+   "link_doctype": "Bank Loan Request",
+   "link_fieldname": "loan_service_request"
   },
   {
    "link_doctype": "Evaluation Request",
@@ -133,7 +133,7 @@
    "link_fieldname": "reference"
   }
  ],
- "modified": "2024-12-18 15:51:21.048215",
+ "modified": "2024-12-18 22:13:23.573098",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Loan Service Request",
