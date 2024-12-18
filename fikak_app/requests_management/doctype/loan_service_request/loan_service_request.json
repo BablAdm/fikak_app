@@ -17,6 +17,7 @@
   "pricing_section",
   "current_market_deed_price",
   "bank_equity",
+  "max_new_loan",
   "column_break_hflg",
   "new_loan",
   "customer_equity"
@@ -110,6 +111,11 @@
    "label": "Split Service Request",
    "mandatory_depends_on": "eval:doc.source == 'Split Mortgage'",
    "options": "Split Service Request"
+  },
+  {
+   "fieldname": "max_new_loan",
+   "fieldtype": "Currency",
+   "label": "Max New Loan"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -127,7 +133,7 @@
    "link_fieldname": "reference"
   }
  ],
- "modified": "2024-12-17 14:50:18.400050",
+ "modified": "2024-12-18 15:51:21.048215",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Loan Service Request",

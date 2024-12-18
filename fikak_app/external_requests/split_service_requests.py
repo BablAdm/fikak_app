@@ -66,3 +66,17 @@ def call_lba_bank_request_api(mortgage_data):
     except Exception as e:
         frappe.log_error(message=str(e), title="Evaluation API Error")
         return {"status": False, "message": str(e)}
+    
+
+
+def get_lba_bank_offer(mortgage_data):
+
+    return {"status": True,"data" :  {
+        "loan_amount" : mortgage_data.get("new_market_price") * (1-mortgage_data.get("bank_equity_percentage"))/100,
+        "mortgage_number_months" : 10 * 12,
+        "end_date_of_new_mortgage" : "12-12-2034",
+        "mortgage_duration" : 10,
+        "mortgage_start_payment_date" : "12-12-2024",
+        "mortgage_installement" :  (mortgage_data.get("new_market_price") * (1-mortgage_data.get("bank_equity_percentage"))/100) / (10 * 12),
+        "lba_bank_id" : "test0001"
+    } ,  "message": "Split Request Created successfully"}
