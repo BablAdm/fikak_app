@@ -84,6 +84,7 @@
    "fieldtype": "Table",
    "label": "Bank Offers",
    "options": "Bank Loan Request Offer Item"
+
   },
   {
    "fieldname": "loan_service_request",

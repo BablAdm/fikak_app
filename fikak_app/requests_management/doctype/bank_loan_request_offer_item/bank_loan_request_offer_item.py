@@ -1,11 +1,14 @@
 # Copyright (c) 2024, Waseera and contributors
 # For license information, please see license.txt
 
+
 import frappe
+
 from frappe.model.document import Document
 
 
 class BankLoanRequestOfferItem(Document):
+
 	
 
 	def on_update(self):
@@ -21,4 +24,5 @@ class BankLoanRequestOfferItem(Document):
 					})
 				
 				bank_split_request.save(ignore_permissions=True)
+
 
