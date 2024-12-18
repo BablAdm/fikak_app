@@ -2,6 +2,7 @@ import frappe
 import requests
 from fikak_app.controllers.evaluation_request_controller import get_evaluator_settings
 
+@frappe.whitelist(allow_guest=True)
 def handle_evaluator_response_webhook(request_id, response = "",evaluationPriceTest = 0):
     try: 
         # Fetch Evaluator settings

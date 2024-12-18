@@ -49,8 +49,8 @@ def get_payment_status(deed_id , checkout_id):
         if status != "Pending":
             update_evaluation_request_status(evaluation_request , status)
             update_hyperpay_request_status(hyperpay_request , status , response_data)
-            if status == "Paid":
-                update_split_service_status(hyperpay_request.reference , status)
+            # if status == "Paid":
+            #     update_split_service_status(hyperpay_request.reference , status)
         
         
         return {
@@ -127,7 +127,7 @@ def get_payment_methods():
 
 
 @frappe.whitelist(methods=['POST'])
-def initiate_widget_integration_payment(deed_id, split_service_request ,  currency="USD", payment_type="DB"):
+def initiate_widget_integration_payment(deed_id, request_id ,  currency="USD", payment_type="DB" , source = "Split Service Request"):
     """
     Initiates a WI payment request with HyperPay and logs the request and response in Frappe.
     Args:
@@ -138,7 +138,7 @@ def initiate_widget_integration_payment(deed_id, split_service_request ,  curren
     Returns:
         dict: Response from HyperPay
     """
-    payment_history = get_payment_params_by_split_request(split_service_request)
+    payment_history = get_payment_params_by_split_request(request_id , source = source)
     if payment_history:
         return {
             "status": "success",
@@ -170,13 +170,13 @@ def initiate_widget_integration_payment(deed_id, split_service_request ,  curren
         # Send the request to HyperPay
         response = requests.post(endpoint, data=payload, headers=headers)
         response_data = response.json()
-        response_data["callbackUrl"] = settings['callback_url'] + "?deed_id=" + deed_id
+        response_data["callbackUrl"] = settings['callback_url'] + "?deed_id=" + deed_id + "&source=" + ("split" if source == "Split Service Request" else "lba")
         if response.status_code != 200:
             frappe.local.response.http_status_code = 500
         
-        split_service_request_id = get_deed_active_split_service_request(deed_id)
+        split_service_request_id = get_deed_active_split_service_request(deed_id , source)
         insert_payment_history(split_service_request_id[0] , response_data['id'],
-                               response_data['integrity'], settings['entity_id'] , "Split Service Request"
+                               response_data['integrity'], settings['entity_id'] , source
                                  , response_data["callbackUrl"])
 
         return {
@@ -189,11 +189,11 @@ def initiate_widget_integration_payment(deed_id, split_service_request ,  curren
         frappe.log_error(frappe.get_traceback(), "HyperPay Payment Error")
         frappe.local.response.http_status_code = 500
         return {
-            "status": "error",
+            "status": False,
             "message": str(e),
         }
     
-def get_payment_params_by_split_request(request_id , filter_by_date = True):
+def get_payment_params_by_split_request(request_id , filter_by_date = True , source =  "Split Service Request"):
     
     # Calculate the timestamp for 10 minutes ago
     current_time = datetime.strptime(frappe.utils.now(), "%Y-%m-%d %H:%M:%S.%f")
@@ -201,7 +201,7 @@ def get_payment_params_by_split_request(request_id , filter_by_date = True):
     filters = {
         "reference": request_id,
         "requester" : frappe.session.user,
-        "source": "Split Service Request"
+        "source": source
     }
     if filter_by_date:
         filters["creation"] = [">=", ten_minutes_ago.strftime('%Y-%m-%d %H:%M:%S')]

@@ -21,6 +21,7 @@ class EvaluationRequest(Document):
         if self.status == "Paid" and (
             self._doc_before_save and self._doc_before_save.status != "Paid"
         ):
+            update_split_service_request_status(self.request, "Paid", self.evaluation_price , self.evaluation_source)
             self.process_evaluation_request()
 
     def process_evaluation_request(self):

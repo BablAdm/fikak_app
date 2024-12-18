@@ -35,7 +35,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Source",
-   "options": "Split Service Request"
+   "options": "Split Service Request\nLoan Service Request"
   },
   {
    "fieldname": "reference",
@@ -92,7 +92,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-30 20:04:31.226335",
+ "modified": "2024-12-17 21:40:25.662216",
  "modified_by": "Administrator",
  "module": "Payments Management",
  "name": "Hyperpay Request",

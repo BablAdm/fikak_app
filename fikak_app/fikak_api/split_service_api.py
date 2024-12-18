@@ -429,8 +429,8 @@ def get_active_deed_eligibility_request(deed_id , evaluation_source):
     return frappe.get_all("Eligibility Check Request Deed Item", {"deed": deed_id, "status": status , "is_active" : 1},["parent"] ,pluck = "parent",  order_by="creation desc" , limit=1)
 
 # TODO : Move to deed controller
-def get_deed_active_split_service_request(deed_id):
-    return frappe.get_all("Split Service Request", {"deed": deed_id},["name"], pluck="name", order_by="creation desc", limit=1)
+def get_deed_active_split_service_request(deed_id , source = "Split Service Request"):
+    return frappe.get_all(source, {"deed": deed_id , "is_active" : 1},["name"], pluck="name", order_by="creation desc", limit=1)
 
 def create_split_service_request(deed_id , eligibility_check_request):
     split_service_request = frappe.get_doc({
