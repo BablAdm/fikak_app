@@ -12,6 +12,7 @@
   "mortgage_installement",
   "status",
   "column_break_wgjm",
+  "offered_equity",
   "mortgage_number_months",
   "mortgage_duration",
   "smr_id",
@@ -101,12 +102,17 @@
    "fieldname": "requested_equity",
    "fieldtype": "Percent",
    "label": "Requested Equity"
+  },
+  {
+   "fieldname": "offered_equity",
+   "fieldtype": "Percent",
+   "label": "Offered Equity"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-18 14:58:24.260829",
+ "modified": "2024-12-19 00:07:25.495732",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Bank Loan Request Offer Item",

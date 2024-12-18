@@ -284,9 +284,20 @@ def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filt
     data = query.run(as_dict=True)
     data_len = len(data)
     data = data[offset:offset+page_size]
+    
+    fikak_settings = frappe.get_single("Fikak Settings")
+    loan_service_request_doc = frappe.get_doc("Loan Service Request", lba_service_request_id)
 
     return {
         "data" : data,
+        "settings": {
+            "bursa_price" : loan_service_request_doc.get("current_market_deed_price"),
+            "equity_percent" : loan_service_request_doc.get("customer_equity"),
+            "loan_amount" : loan_service_request_doc.get("max_new_loan"),
+            "max_loan_percent" : fikak_settings.max_new_loan,
+            "waseera_fees" : fikak_settings.waseera_fees
+
+        },
         "meta": {
             "current_page": offset,
             "total_items": data_len,
@@ -298,7 +309,7 @@ def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filt
 
 
 @frappe.whitelist(methods=["POST"])
-def update_bank_offer_status(bank_offer_id , bank_lba_request_id , status):
+def update_bank_offer_status(bank_offer_id , bank_lba_request_id , status , offer_data = None):
 #Status : Accepted , Rejected , Negociation
     try:
         bank_split_request = frappe.get_doc("Bank Loan Request" , bank_lba_request_id)
@@ -324,7 +335,19 @@ def update_bank_offer_status(bank_offer_id , bank_lba_request_id , status):
                 "message": _("You can't update this Bank Offer Status  , it must be Under customer Review")
             }
         bank_offer.status = status
+        
+
         bank_offer.save(ignore_permissions=True)
+
+        if status == "Negociation":
+            bank_split_request_new_doc = frappe.get_doc("Bank Loan Request", bank_lba_request_id)
+            bank_split_request_new_doc.status = "Negociation"
+            bank_split_request_new_doc.append("bank_offers", {
+                "status": "Pending" , 
+                "requested_equity" : offer_data.get("equity") ,
+                "requested_amount" : offer_data.get("negociatedAmount")
+            })
+            bank_split_request_new_doc.save(ignore_permissions=True)
 
         return {
             "status": True,

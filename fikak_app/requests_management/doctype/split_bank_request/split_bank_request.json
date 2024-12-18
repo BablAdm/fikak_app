@@ -111,8 +111,13 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-12-08 18:34:16.536906",
+ "links": [
+  {
+   "link_doctype": "Mortgage Registration Request",
+   "link_fieldname": "split_service_request"
+  }
+ ],
+ "modified": "2024-12-18 23:52:04.432268",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Bank Request",
