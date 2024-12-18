@@ -16,43 +16,58 @@ def handle_evaluator_response_webhook(request_id, response = "",evaluationPriceT
         }
         # TODO : should uncoment this and replace it by response from the evaluator
         result_response = requests.get(endpoint, headers=headers)
-        result_json = result_response.json()
+        try:
+            result_json = result_response.json()
+        except Exception as e:
+            result_json = {
+                "status": False,
+                "data" : {
+                    "request_id" : request_id,
+                    "status" : False,
+                    "internal_id" : "tesst",
+                    "evaluation" :{
+                        "date_of_evaluation": "2024/12/1",
+                        "market_average_price_m2": 94.07,
+                        "market_price": 48911.0,
+                        "report_url": "/reports/3c319f74-3d34-4286-9b1e-cefc81a65efb.pdf",
+                        "status": "Draft"
+                    }
+                },
+                "message": "Error parsing the response JSON."
+            }
         # Validate the result response
-        if not result_json.get("status"):
-            frappe.throw(f"API Result Error: {result_json.get('errorMessage')}")
-        # 1. get the amount from json and save evaluation doc 
-        # evaluated_price = fetch_value_from_evaluator_response(result_json["data"]["evaluation"]) #result_json["data"]["evaluation"]["all_fields_from_reports"][0]
-        evaluated_price = result_json.get("data").get("evaluation").get("market_average_price_m2")
-        evaluated_price = evaluated_price if evaluated_price >0 else 1000
+        if result_json.get("status"):
+            evaluated_price = result_json.get("data").get("evaluation").get("market_average_price_m2")
+            evaluated_price = evaluated_price if evaluated_price >0 else 1000
+            # Store the result in Evaluator Evaluation Result Doctype
+            
 
         if( evaluationPriceTest != 0 ):
             evaluated_price = evaluationPriceTest
         
         # 2. Update evaluation request document status with done
         update_evaluation_request(request_id,evaluated_price, "Done")
-        
+
         # TODO : Add Evaluation in deed history tabs
-    
-        
-        # Store the result in Evaluator Evaluation Result Doctype
         result_doc = frappe.get_doc({
-            "doctype": "Evaluator Evaluation Hook Response",
-            "request_id": result_json["data"]["request_id"],
-            "status": result_json["data"]["status"],
-            "internal_id": result_json["data"]["internal_id"],
-            "evaluation_data": frappe.as_json(result_json["data"]["evaluation"])
-        })
+                "doctype": "Evaluator Evaluation Hook Response",
+                "request_id": result_json["data"]["request_id"],
+                "status": result_json["data"]["status"],
+                "internal_id": result_json["data"]["internal_id"],
+                "evaluation_data": frappe.as_json(result_json["data"]["evaluation"])
+            })
+
         result_doc.insert(ignore_permissions=True)
         
         frappe.db.commit()
-
+        
         return {"status": "success", "message": "Evaluation processed successfully"}
     
 
     
     except Exception as e:
         frappe.log_error(message=str(e), title="Evaluation API Error")
-        return {"status": "error", "message": str(e)}
+        return {"status": False, "message": str(e)}
 
 evaluationObject = {
     "date_of_evaluation" : "تاريخ التقييم",
@@ -127,7 +142,7 @@ def update_evaluation_request(request_name,evaluated_price, new_status):
     """
     try:
         # Fetch the Evaluation Request document using the `request` field
-        evaluation_request_dt = frappe.get_doc("Evaluation Request", {"name": request_name})
+        evaluation_request_dt = frappe.get_doc("Evaluation Request", request_name)
 
         if not evaluation_request_dt:
             frappe.throw(f"No Evaluation Request found for request: {request_name}")
@@ -137,7 +152,7 @@ def update_evaluation_request(request_name,evaluated_price, new_status):
         # Update the status field
         evaluation_request_dt.evaluation_price = int(evaluated_price) * int(deed_doc.deed_area)
         evaluation_request_dt.status = new_status
-
+        
         evaluation_request_dt.save(ignore_permissions=True)  # Save with ignore permissions if necessary
         frappe.db.commit()
         return f"Status for Evaluation Request '{evaluation_request_dt.name}' updated to '{new_status}'."

@@ -16,7 +16,11 @@
   "mortgage_duration",
   "smr_id",
   "lba_bank_id",
-  "offer_date"
+  "offer_date",
+  "request_section",
+  "requested_amount",
+  "column_break_tgaf",
+  "requested_equity"
  ],
  "fields": [
   {
@@ -78,12 +82,31 @@
    "fieldname": "lba_bank_id",
    "fieldtype": "Data",
    "label": "LBA Bank ID"
+  },
+  {
+   "fieldname": "request_section",
+   "fieldtype": "Section Break",
+   "label": "Request"
+  },
+  {
+   "fieldname": "requested_amount",
+   "fieldtype": "Currency",
+   "label": "Requested Amount"
+  },
+  {
+   "fieldname": "column_break_tgaf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "requested_equity",
+   "fieldtype": "Percent",
+   "label": "Requested Equity"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-12-16 14:39:21.137088",
+ "modified": "2024-12-18 14:58:24.260829",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Bank Loan Request Offer Item",
