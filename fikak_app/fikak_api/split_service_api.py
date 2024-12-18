@@ -142,7 +142,6 @@ def create_bank_split_request(split_service_request_id , deed_id):
 
         result = call_split_bank_request_api(mortgage_data)
         if result.get("status"):
-            print(result.get("data"))
             bank_request = frappe.get_doc({
                 "doctype": "Split Bank Request",
                 "requester": frappe.session.user,
@@ -374,9 +373,9 @@ def get_deed_split_service_status(deed_id):
 
 
 @frappe.whitelist(methods=['POST'])
-def create_evaluation_request(deed_id):
+def create_evaluation_request(deed_id , evaluation_source = "Split Service Request"):
     try:
-        if frappe.db.exists("Evaluation Request", {"deed": deed_id, "status": "Pending"}):
+        if frappe.db.exists("Evaluation Request", {"deed": deed_id, "status": "Pending" , "evaluation_source" : evaluation_source}):
             return {
                 "status": True,
                 "message": "An active evaluation request already exists for this deed"
@@ -388,14 +387,18 @@ def create_evaluation_request(deed_id):
                 "status": False,
                 "message": "You are not authorized to create an evaluation request for this deed"
             }
-        current_request = get_active_deed_eligibility_request(deed_id)
+        current_request = get_active_deed_eligibility_request(deed_id , evaluation_source)
         if not current_request:
             frappe.local.response.http_status_code = 400
             return {
                 "status": False,
                 "message": "No active request found for this deed"
             }
-        split_service_request = create_split_service_request(deed_id , current_request[0])
+    
+        if evaluation_source == "Split Service Request":
+            split_service_request = create_split_service_request(deed_id , current_request[0])
+        else:
+            split_service_request = frappe.get_doc("Loan Service Request" , {"deed" : deed_id , "requester" : frappe.session.user , "is_active" : 1 })
 
         evaluation_request = frappe.get_doc({
             "doctype": "Evaluation Request",
@@ -403,7 +406,7 @@ def create_evaluation_request(deed_id):
             "request" : split_service_request.name,
             "deed": deed_id,
             "submission_date": frappe.utils.now_datetime(),
-            "evaluation_source" : "Split Service Request",
+            "evaluation_source" : evaluation_source,
             "status": "Pending"
         })
         evaluation_request.insert(ignore_permissions=True)
@@ -421,12 +424,13 @@ def create_evaluation_request(deed_id):
         }
 
 # TODO : Move to deed controller    
-def get_active_deed_eligibility_request(deed_id):
-    return frappe.get_all("Eligibility Check Request Deed Item", {"deed": deed_id, "status": "Eligible For Split" , "is_active" : 1},["parent"] ,pluck = "parent",  order_by="creation desc" , limit=1)
+def get_active_deed_eligibility_request(deed_id , evaluation_source):
+    status = "Eligible For Split" if evaluation_source == "Split Service Request" else "Eligible For Loan"
+    return frappe.get_all("Eligibility Check Request Deed Item", {"deed": deed_id, "status": status , "is_active" : 1},["parent"] ,pluck = "parent",  order_by="creation desc" , limit=1)
 
 # TODO : Move to deed controller
-def get_deed_active_split_service_request(deed_id):
-    return frappe.get_all("Split Service Request", {"deed": deed_id},["name"], pluck="name", order_by="creation desc", limit=1)
+def get_deed_active_split_service_request(deed_id , source = "Split Service Request"):
+    return frappe.get_all(source, {"deed": deed_id , "is_active" : 1},["name"], pluck="name", order_by="creation desc", limit=1)
 
 def create_split_service_request(deed_id , eligibility_check_request):
     split_service_request = frappe.get_doc({
