@@ -49,7 +49,7 @@
    "fieldname": "evaluation_source",
    "fieldtype": "Select",
    "label": "Evaluation Source",
-   "options": "Split Service Request"
+   "options": "Split Service Request\nLoan Service Request"
   },
   {
    "fieldname": "column_break_gqdj",
@@ -86,7 +86,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-30 20:04:02.190964",
+ "modified": "2024-12-17 13:59:30.752135",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Evaluation Request",
