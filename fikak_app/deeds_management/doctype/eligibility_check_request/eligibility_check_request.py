@@ -33,7 +33,7 @@ class EligibilityCheckRequest(Document):
 				status = item.get("status")
 				if(status == "NEW"):
 					status = "Pending"
-				update_deed_workflow(item.deed,service, status)
+				update_deed_workflow(item.deed,service, status,item)
 
 			# # Get the old status from the cached statuses
 			# old_status = self._cached_statuses.get(item.name)

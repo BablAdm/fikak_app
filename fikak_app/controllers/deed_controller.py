@@ -3,7 +3,7 @@ import frappe
 from frappe.utils import now
 
 
-def update_deed_workflow(deed_name ,service, status):
+def update_deed_workflow(deed_name ,service, status, result_dt = None):
     """
     Update the 'Deed' Doctype based on changes in 'Eligibility Check Request Deed Item'
     """	
@@ -23,6 +23,15 @@ def update_deed_workflow(deed_name ,service, status):
         "service": service,
         "status": status
     })
+    # 4. Should update the deed result info
+    if (status=="Eligible For Split" and result_dt != None ):
+        if (service == "Eligibility Check"):
+            deed_dt.eligibility_check_customer_equity = result_dt.customer_equity
+            deed_dt.eligibility_check_max_loan = result_dt.new_loan
+        if (service == "Split Service"):
+            deed_dt.split_service_customer_equity = result_dt.customer_equity
+            deed_dt.split_service_max_loan = result_dt.new_loan
 
+    
     # Save the changes to the Deed Doctype
     deed_dt.save(ignore_permissions=True)

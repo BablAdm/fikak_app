@@ -35,7 +35,7 @@ class SplitServiceRequest(Document):
 			else:
 				self.status="Not Eligible"
 			service = "Split Service"
-			update_deed_workflow(self.deed,service, self.status)
+			update_deed_workflow(self.deed,service, self.status,self)
 			self.save()
 		
 
