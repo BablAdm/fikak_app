@@ -8,7 +8,81 @@ from datetime import datetime
 from fikak_app.external_requests.split_service_requests import call_lba_bank_request_api , get_lba_bank_offer
 import math
 from pypika import Order, Case , functions as fn
+from fikak_app.utils.global_utils import translate 
 
+
+@frappe.whitelist(methods=["GET"])
+def get_lba_requests_list(global_filter = None , filter_by_request = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
+    
+    
+    if isinstance(offset, str):
+        offset = int(offset)
+    
+    if isinstance(page_size, str):
+        page_size = int(page_size)
+
+    watheq_deed_dt = frappe.qb.DocType("WATHEQ Deed")
+    loan_service_dt = frappe.qb.DocType("Loan Service Request")
+    deed_real_estate_details_dt = frappe.qb.DocType("WATHEQ Real Estate Details Item")
+    # Get the deeds that are not deleted
+    query = (
+        frappe.qb.from_(watheq_deed_dt)
+        .inner_join(deed_real_estate_details_dt)
+        .on(watheq_deed_dt.name == deed_real_estate_details_dt.parent)
+        .inner_join(loan_service_dt)
+        .on((watheq_deed_dt.name == loan_service_dt.deed) & (loan_service_dt.is_active == 1))
+        .select(
+            watheq_deed_dt.name.as_("deed_id"),
+            watheq_deed_dt.deed_number,
+            watheq_deed_dt.deed_area,
+            watheq_deed_dt.creation.as_("request_date"),
+            deed_real_estate_details_dt.location_description,
+            deed_real_estate_details_dt.city_name.as_("deed_city"),
+            deed_real_estate_details_dt.region_name.as_("deed_region"),
+            loan_service_dt.name.as_("request_id"),
+            loan_service_dt.status,
+            loan_service_dt.status.as_("status_label"),
+            loan_service_dt.current_market_deed_price.as_("bursa_price"),
+            loan_service_dt.customer_equity.as_("equity_percent")
+            
+        )
+        .where(watheq_deed_dt.deed_owner == frappe.session.user)  
+    )
+    # Apply the global filter
+    if global_filter:
+        query = query.where(
+             (fn.Lower(watheq_deed_dt.name).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(watheq_deed_dt.deed_number).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(watheq_deed_dt.deed_serial).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(watheq_deed_dt.deed_area).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(deed_real_estate_details_dt.city_name).like(
+            f"%{global_filter.lower()}%"))|
+             (fn.Lower(loan_service_dt.name).like(
+            f"%{global_filter.lower()}%"))
+        )
+    if kw.get("request_status_filter"):
+        query = query.where(loan_service_dt.status == kw.get("request_status_filter"))
+
+    if kw.get("filter_by_status"):
+        query = query.where(loan_service_dt.status == kw.get("filter_by_status"))
+
+    data_len = len(query.run(as_dict=True))
+    
+    data = query.offset(offset).limit(page_size).run(as_dict=True)
+
+    return {
+        "data" : translate(data , ["status"]),  
+        "meta": {
+            "current_page": int((offset/page_size)+1),
+            "total_items": data_len,
+            "items_per_page": page_size,
+            "total_pages": math.ceil(data_len / page_size)
+        },
+    }
 
 
 @frappe.whitelist(methods=['GET'])
