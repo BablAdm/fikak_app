@@ -3,12 +3,21 @@
 
 import frappe
 from frappe.model.document import Document
-
+from fikak_app.controllers.deed_controller import update_deed_workflow
 
 class LoanServiceRequest(Document):
 	
 
 	def on_update(self):
+
+		# If the status is updated we should update the deed workflow status
+		if self._doc_before_save==None or self._doc_before_save.status != self.status:
+			service = "Asset-Backed Loan"
+			status = self.status
+			if(status == "NEW"):
+				status = "Pending"
+ 
+			update_deed_workflow(self.deed,service, status, self)
 
 		# handle result after evaluation hook response
 		if self._doc_before_save and self._doc_before_save.status != "Evaluated" and self.status == "Evaluated":
@@ -17,6 +26,10 @@ class LoanServiceRequest(Document):
 				self.customer_equity = 1
 				self.max_new_loan = get_prices(self.current_market_deed_price)
 			self.status = "Eligible For Loan"
+			# TODO handel this  saved twice
+			service = "Asset-Backed Loan"
+			status = self.status
+			update_deed_workflow(self.deed,service, status, self)
 			self.save()
 
 

@@ -175,7 +175,9 @@ def get_bursa_price(region_code , city_code , district_code):
     headers = {
         "Content-Type": "application/json"
     }
-
+    # TODO : Remove this after Demo
+    return  5000
+    
     # Make the POST request
     response = requests.post(
         url,

@@ -161,9 +161,9 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
 
         mortgage_data = {
             "current_mortgage_id": "", #TODO: Get from deed mortgage info
-            "current_due_amount": loan_service_request.current_due_amount,
+            "current_due_amount": offer_data.get("negociatedAmount") ,## TODO : see with mohamed this value not exist loan_service_request.current_due_amount,
             "new_market_price": loan_service_request.current_market_deed_price,
-            "bank_equity_percentage": loan_service_request.bank_equity,
+            "bank_equity_percentage": offer_data.get("equity") ,
             "bank_holder": {
                 "cr": "",
                 "bank_name": ""
@@ -173,10 +173,10 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
             "smr_id": loan_service_request.name,
             "status": "New",  # Possible values: New, Old, Negotiation
             "wakala_number": "12345", #TODO: Get from settings
-            "update": loan_service_request.split_service_update  # Only for demo
+            "update": "0" # TODO : see with moh we create new loan_service_request.split_service_update  # Only for demo
         }
-        
-        result = get_lba_bank_offer(mortgage_data)
+        # TODO FAKE API : see the code of this request
+        result = get_lba_bank_offer(offer_data)
         if result.get("status"):
             bank_request = frappe.get_doc({
                 "doctype": "Bank Loan Request",
@@ -184,17 +184,18 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
                 "loan_service_request": loan_service_request_id,
                 "deed_id": deed_id,
                 "submission_date": frappe.utils.now_datetime(),
-                "status": "Pending" , 
+                "status": "Waiting For Customer Validation" , 
                 "source" : lba_source["source"],
                 "split_service_request" : lba_source["split_request"],
                 "bank_offers" : [{
                     "negociated_loan_amount": result.get("data").get("loan_amount"),
+                    "offered_equity" : result.get("data").get("offered_equity"),
                     "mortgage_number_months": result.get("data").get("mortgage_number_months"),
                     "new_mortgage_end_date" : datetime.strptime( result.get("data").get("end_date_of_new_mortgage"), "%d-%m-%Y").strftime("%Y-%m-%d"),
                     "mortgage_duration" : result.get("data").get("mortgage_duration"),
                     "mortgage_start_payment_date" : datetime.strptime( result.get("data").get("mortgage_start_payment_date"), "%d-%m-%Y").strftime("%Y-%m-%d"),
                     "mortgage_installement" : result.get("data").get("mortgage_installement"),
-                    "status" : "Pending",
+                    "status" : "Waiting For Customer Validation",
                     "lba_id" : result.get("data").get("lba_id"),
                     "lba_bank_id" : result.get("data").get("lba_bank_id"),
                     "offer_date" : frappe.utils.now(),
@@ -266,9 +267,9 @@ def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filt
             .else_(bank_request_response_dt.status).as_("bank_offer_status"),
             bank_request_response_dt.mortgage_start_payment_date,
             bank_request_response_dt.mortgage_installement,
-            bank_request_response_dt.type,
+            # bank_request_response_dt.type,
             bank_request_response_dt.mortgage_duration,
-            bank_request_response_dt.smr_bank_id
+            bank_request_response_dt.lba_bank_id
         )
         .where(bank_request_dt.loan_service_request == lba_service_request_id)
         .orderby(bank_request_response_dt.idx ,order = Order.asc)
