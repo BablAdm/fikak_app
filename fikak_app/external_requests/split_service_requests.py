@@ -18,7 +18,29 @@ def call_split_bank_request_api(mortgage_data):
         headers = {
             "Content-Type": "application/json",
         }
-        
+        ## TODO FAKE API TO REMOVE 
+        # Ensure values are numbers
+        new_market_price = float(mortgage_data["new_market_price"])
+        bank_equity_percentage = float(mortgage_data["bank_equity_percentage"])
+
+        # Perform calculations
+        percentage = bank_equity_percentage / 100
+        base_amount = new_market_price * percentage
+        total_estimated_amount = base_amount * 1.1
+        mortgage_installment = total_estimated_amount / (12 * 10) 
+        response_json = {
+                "negociated_due_amount_for_update": total_estimated_amount,
+                "update_mortgage_date": "09-12-2024",
+                "end_date_of_new_mortgage": "12-09-2034",
+                "mortgage_installement": mortgage_installment,
+                "mortgage_duration": 10,
+                "mortgage_number_months": 120,
+                "mortgage_start_payment_date": "09-12-2024",
+                "smr_id": "idsmrrequest1",
+                "smr_bank_id": "1438"
+            }
+        return {"status": True,"data" : response_json ,  "message": "Split Request Created successfully"}
+
         # Perform the first API call
         response = requests.post(endpoint,data=json.dumps(mortgage_data), headers=headers )
         response_json = response.json()
