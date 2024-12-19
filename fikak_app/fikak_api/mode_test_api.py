@@ -261,6 +261,101 @@ def insert_split_bank_request_item( deed_id, data):
 
 
 
+@frappe.whitelist()
+def insert_loan_bank_request_item( deed_id, data):
+    """
+    Inserts a new child item into 'Bank Loan Request Response Item' linked to a 'Bank Loan Request'.
+
+    :param deed_id: ID of the deed linked to the 'Loan Service Request'
+    :param data: Dictionary containing the fields for the child doctype
+    :return: Response with success or error message
+    """
+    try:
+        # before start we should check if mode test is enabled 
+        if(is_test_mode_enabled() == False):
+           return {"test_mode" : 0}
+        
+        # Fetch the most recent Loan Service Request linked to the deed_id using Frappe ORM
+        loan_request = frappe.get_all(
+            "Bank Loan Request",
+            filters={"deed_id": deed_id},
+            fields=["name", "submission_date"],
+            order_by="submission_date desc",
+            limit=1
+        )
+
+        if not loan_request:
+            return {
+                "status": False,
+                "message": "No Bank Loan Request found for the provided Deed ID"
+            }
+
+        loan_request_id = loan_request[0]["name"]
+
+        # Fetch the parent Loan Service Request document
+        loan_request_response_item = frappe.get_doc("Bank Loan Request Offer Item",{"parent" : loan_request_id , "status" : "Pending" } )
+
+
+        # Validate input data
+        required_fields = [
+            "negociated_due_amount", "new_mortgage_end_date","bank_equity_percent",
+            "mortgage_start_payment_date"
+        ]
+
+        for field in required_fields:
+            if field not in data:
+                    frappe.local.response.http_status_code = 404
+                    return {
+                        "status": False,
+                        "message": "Missing required field: {field}"
+                    }
+        loan_request_response_item.status = "Waiting For Customer Validation"
+        loan_request_response_item.negociated_loan_amount = int(data["negociated_due_amount"]) 
+        loan_request_response_item.offered_equity = int(data["bank_equity_percent"]) 
+        loan_request_response_item.new_mortgage_end_date = data["new_mortgage_end_date"]
+        loan_request_response_item.mortgage_start_payment_date = data["mortgage_start_payment_date"]
+        loan_request_response_item.mortgage_installement = (int(data["negociated_due_amount"]) / 10) / 12
+        loan_request_response_item.mortgage_number_months = data["mortgage_number_months"]
+        loan_request_response_item.mortgage_duration = 10
+        loan_request_response_item.offer_date = frappe.utils.now_datetime()
+        # TODO : loan_request_response_item.lba_bank_id = data["lba_bank_id"],
+        loan_request_response_item.save(ignore_permissions=True)
+
+        # Create a new child item
+        # child_item = {
+        #     "negociated_due_amount": data["negociated_due_amount"],
+        #     "new_mortgage_end_date": data["new_mortgage_end_date"],
+        #     "mortgage_start_payment_date": data["mortgage_start_payment_date"],
+        #     # "mortgage_installement": data["mortgage_installement"],
+        #      "type":"Update",
+        #     "status": "Waiting For Customer Validation",
+        #     "mortgage_number_months": 10,
+        #     "mortgage_duration": 10,
+        #     # "smr_id": data["smr_id"],
+        #     # "smr_bank_id": data["smr_bank_id"],
+        #     "offer_date": frappe.utils.now_datetime()
+        # }
+        # update status parent doctype
+        loan_request_response_dt = frappe.get_doc("Bank Loan Request", loan_request_id)
+        loan_request_response_dt.status="Waiting For Customer Validation"
+        loan_request_response_dt.save(ignore_permissions=True) 
+        
+        frappe.db.commit()
+
+        return {
+            "status": "success",
+            "message": _("Child item inserted successfully"),
+            "loan_request_id": loan_request_id
+        }
+
+    except Exception as e:
+        frappe.local.response.http_status_code = 404
+        return {
+            "status": False,
+            "message": str(e)
+        }
+
+
 def is_test_mode_enabled():
     """
     Fetches Test Mode From DEV MOD PROPS Doctype.

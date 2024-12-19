@@ -24,14 +24,14 @@ def update_deed_workflow(deed_name ,service, status, result_dt = None):
         "status": status
     })
     # 4. Should update the deed result info
-    if (status=="Eligible For Split" and result_dt != None ):
+    if ((status=="Eligible For Split" or status == "Eligible For Loan" ) and result_dt != None ):
         if (service == "Eligibility Check"):
             deed_dt.eligibility_check_customer_equity = result_dt.customer_equity
             deed_dt.eligibility_check_max_loan = result_dt.new_loan
             deed_dt.last_bursa_price = result_dt.current_market_deed_price
-        if (service == "Split Service"):
+        if (service == "Split Service" or service == "Asset-Backed Loan"):
             deed_dt.split_service_customer_equity = result_dt.customer_equity
-            deed_dt.split_service_max_loan = result_dt.new_loan
+            deed_dt.split_service_max_loan = result_dt.max_new_loan if service == "Asset-Backed Loan" else result_dt.new_loan
             deed_dt.last_evaluator_price = result_dt.current_market_deed_price
 
     
