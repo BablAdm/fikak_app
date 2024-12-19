@@ -335,7 +335,11 @@ def insert_loan_bank_request_item( deed_id, data):
         #     # "smr_bank_id": data["smr_bank_id"],
         #     "offer_date": frappe.utils.now_datetime()
         # }
-
+        # update status parent doctype
+        loan_request_response_dt = frappe.get_doc("Bank Loan Request", loan_request_id)
+        loan_request_response_dt.status="Waiting For Customer Validation"
+        loan_request_response_dt.save(ignore_permissions=True) 
+        
         frappe.db.commit()
 
         return {
