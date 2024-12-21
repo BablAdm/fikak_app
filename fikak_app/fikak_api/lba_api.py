@@ -5,7 +5,7 @@ import frappe
 from fikak_app.controllers.lba_controller import  check_lba_source
 from frappe import _
 from datetime import datetime
-from fikak_app.external_requests.split_service_requests import call_lba_bank_request_api , get_lba_bank_offer
+# from fikak_app.external_requests.split_service_requests import call_lba_bank_request_api , get_lba_bank_offer
 import math
 from pypika import Order, Case , functions as fn
 from fikak_app.utils.global_utils import translate 
@@ -250,43 +250,30 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
             "update": "0" # TODO : see with moh we create new loan_service_request.split_service_update  # Only for demo
         }
         # TODO FAKE API : see the code of this request
-        result = get_lba_bank_offer(offer_data)
-        if result.get("status"):
-            bank_request = frappe.get_doc({
-                "doctype": "Bank Loan Request",
-                "requester": frappe.session.user,
-                "loan_service_request": loan_service_request_id,
-                "deed_id": deed_id,
-                "submission_date": frappe.utils.now_datetime(),
-                "status": "Waiting For Customer Validation" , 
-                "source" : lba_source["source"],
-                "split_service_request" : lba_source["split_request"],
-                "bank_offers" : [{
-                    "negociated_loan_amount": result.get("data").get("loan_amount"),
-                    "offered_equity" : result.get("data").get("offered_equity"),
-                    "mortgage_number_months": result.get("data").get("mortgage_number_months"),
-                    "new_mortgage_end_date" : datetime.strptime( result.get("data").get("end_date_of_new_mortgage"), "%d-%m-%Y").strftime("%Y-%m-%d"),
-                    "mortgage_duration" : result.get("data").get("mortgage_duration"),
-                    "mortgage_start_payment_date" : datetime.strptime( result.get("data").get("mortgage_start_payment_date"), "%d-%m-%Y").strftime("%Y-%m-%d"),
-                    "mortgage_installement" : result.get("data").get("mortgage_installement"),
-                    "status" : "Waiting For Customer Validation",
-                    "lba_id" : result.get("data").get("lba_id"),
-                    "lba_bank_id" : result.get("data").get("lba_bank_id"),
-                    "offer_date" : frappe.utils.now(),
-                    "requested_equity" : offer_data.get("equity") ,
-                    "requested_amount" : offer_data.get("negociatedAmount") ,
+        # result = get_lba_bank_offer(mortgage_data)
+        # if result.get("status"):
+        bank_request = frappe.get_doc({
+            "doctype": "Bank Loan Request",
+            "requester": frappe.session.user,
+            "loan_service_request": loan_service_request_id,
+            "deed_id": deed_id,
+            "submission_date": frappe.utils.now_datetime(),
+            "status": "Pending" ,
+            "source" : lba_source["source"],
+            "split_service_request" : lba_source["split_request"],
+            "bank_offers" : [{
+                "status" : "Pending" ,
+                "requested_equity" : offer_data.get("equity") ,
+                "requested_amount" : offer_data.get("negociatedAmount") ,
 
-                }]
-            })
-            bank_request.insert(ignore_permissions=True)
-            frappe.db.commit()
-        else:
-            frappe.local.response.http_status_code = 500
-            return result
+            }]
+        })
+        bank_request.insert(ignore_permissions=True)
+        frappe.db.commit()
+        
         return {
             "status": True,
             "data" : {
-                "result" : result,
                 "bank_request" : bank_request
             },
             "message": "Bank request created successfully"
@@ -300,11 +287,8 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
             "message": str(e)
         }
 
-
-
 @frappe.whitelist(methods=['GET'])
 def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filter_by_request = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
-    
     
     if isinstance(offset, str):
         offset = int(offset)
@@ -331,6 +315,9 @@ def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filt
             watheq_deed.deed_serial,
             watheq_deed.deed_area,
             bank_request_dt.submission_date.as_("bank_request_submission_date"),
+            bank_request_response_dt.offered_equity,
+            bank_request_response_dt.requested_amount,
+            bank_request_response_dt.requested_equity,
             bank_request_response_dt.name.as_('offer_id'),
             bank_request_response_dt.negociated_loan_amount,
             bank_request_response_dt.mortgage_number_months,
@@ -414,20 +401,21 @@ def update_bank_offer_status(bank_offer_id , bank_lba_request_id , status , offe
 
         bank_offer.save(ignore_permissions=True)
 
+        bank_split_request_new_doc = frappe.get_doc("Bank Loan Request", bank_lba_request_id)
+        bank_split_request_new_doc.status = status
+            
         if status == "Negociation":
-            bank_split_request_new_doc = frappe.get_doc("Bank Loan Request", bank_lba_request_id)
-            bank_split_request_new_doc.status = "Negociation"
             bank_split_request_new_doc.append("bank_offers", {
                 "status": "Pending" , 
                 "requested_equity" : offer_data.get("equity") ,
                 "requested_amount" : offer_data.get("negociatedAmount")
             })
-            bank_split_request_new_doc.save(ignore_permissions=True)
+        bank_split_request_new_doc.save(ignore_permissions=True)
 
         return {
             "status": True,
             "data" : bank_offer,
-            "message" : _("Your Bank Offer Status Updated Successfully , we will notify you with the result")
+            "message" : _("bank_request_created" if status not in ("Accepted" , "Rejected") else "bank_request_updated")
         }
     
     except Exception as e:
