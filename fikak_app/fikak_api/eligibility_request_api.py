@@ -150,7 +150,6 @@ def get_bursa_price(region_code , city_code , district_code):
     # Init Data
     region_code = f"{int(region_code):02}"
     city_code = f"{region_code}{int(city_code):05}"
-    return 1000
     
     # API URL
     url = "http://dev-api.waseera.sa:8082/moj/od/get_price"  # Replace with your API endpoint
