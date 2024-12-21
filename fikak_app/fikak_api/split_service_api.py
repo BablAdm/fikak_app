@@ -288,7 +288,7 @@ def update_bank_offer_status(bank_offer_id , bank_split_request_id , status):
         return {
             "status": True,
             "data" : bank_offer,
-            "message" : _("Your Bank Offer Status Updated Successfully , we will notify you with the result")
+            "message" : _("bank_request_created" if status not in ("Accepted" , "Rejected") else "bank_request_updated")
         }
     
     except Exception as e:
