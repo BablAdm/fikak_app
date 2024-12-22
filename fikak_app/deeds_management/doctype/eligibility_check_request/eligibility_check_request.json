@@ -1,0 +1,68 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-18 20:52:04.551064",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "submission_date",
+  "user",
+  "wizard_step",
+  "requested_deeds"
+ ],
+ "fields": [
+  {
+   "fieldname": "submission_date",
+   "fieldtype": "Datetime",
+   "label": "Submission Date"
+  },
+  {
+   "fieldname": "wizard_step",
+   "fieldtype": "Int",
+   "label": "Wizard Step"
+  },
+  {
+   "fieldname": "requested_deeds",
+   "fieldtype": "Table",
+   "label": "Requested Deeds",
+   "options": "Eligibility Check Request Deed Item"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Split Service Request",
+   "link_fieldname": "eligibility_check_request"
+  }
+ ],
+ "modified": "2024-12-12 14:15:56.912882",
+ "modified_by": "Administrator",
+ "module": "Deeds Management",
+ "name": "Eligibility Check Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

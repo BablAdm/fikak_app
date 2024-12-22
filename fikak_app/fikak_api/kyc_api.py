@@ -6,7 +6,7 @@ from operator import itemgetter
 from itertools import groupby
 import ast
 from frappe import _
-from fikak_app.fikak_api.global_utils import translate
+from fikak_app.utils.global_utils import translate
 
 @frappe.whitelist(methods=['GET'])
 def get_kyc_questions(kyc_id = None):

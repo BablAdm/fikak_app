@@ -4,8 +4,14 @@ from frappe import _
 import requests
 import json
 
-from . import global_utils
-from . import fake_api
+from fikak_app.fikak_api.fake_api import get_deed_data
+
+from fikak_app.utils.global_utils import  generate_request_id
+
+
+from fikak_app.fikak_api.eligibility_request_api import create_elgibility_request
+from fikak_app.api import check_kyc_submitted
+from pypika import Order
 
 def create_new_watheq_request_deed(deed_id , national_id ,  endpoint , app_id , app_key):
     try:
@@ -54,30 +60,38 @@ def create_new_watheq_request(national_id ,deed_id , request_id):
     return request
 
 @frappe.whitelist(methods=["GET"])
-def get_deed_data(deed_id):
+def get_deed_data(deed_id,create_request=0):
     try:
+        if isinstance(create_request, str):
+            create_request = int(create_request)
         user_data = frappe.get_doc("User" , frappe.session.user)
         national_id = user_data.get("username")
 
         if frappe.db.exists("WATHEQ Deed" , {'deed_number' : deed_id , "deed_owner" : frappe.session.user}):
-            deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id , "deed_owner" : frappe.session.user})
-            ## TODO : We should check if the user has the right to see this deed
-            # check if user_data["owner_details"].contains ( user_data["national_id"])
-            return deed_data
+            deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : deed_id , "deed_owner" : frappe.session.user}).as_dict()
+            eligibility_check_details =  get_deed_request_details(deed_data.name)
+            if eligibility_check_details:
+                deed_data.update(eligibility_check_details)
+            
+        else:
+            watheq_settings = frappe.get_single('WATHEQ Settings')
+            # Check if we are using api or fake date
+            if watheq_settings.is_enabled:
+                # Create watheq request
+                response = create_new_watheq_request_deed(deed_id, national_id , watheq_settings.api_url , watheq_settings.get_password('app_id') ,watheq_settings.get_password('app_key'))
+                responseData = response[1].get("data")
+            else :
+                # save global result for traking 
+                responseData = fake_api.get_deed_data()
 
-        watheq_settings = frappe.get_single('WATHEQ Settings')
-        # Check if we are using api or fake date
-        if watheq_settings.is_enabled:
-            # Create watheq request
-            response = create_new_watheq_request_deed(deed_id, national_id , watheq_settings.api_url , watheq_settings.get_password('app_id') ,watheq_settings.get_password('app_key'))
-            responseData = response[1].get("data")
-        else :
-            # save global result for traking 
-            responseData = fake_api.get_deed_data()
-
-        #  Create watheq Request/Response obj
-        insert_watheq_request_callback(national_id,deed_id, responseData)
-        deed_data = insert_deed(responseData)
+            #  Create watheq Request/Response obj
+            insert_watheq_request_callback(national_id,deed_id, responseData)
+            deed_data = insert_deed(responseData)
+        
+                # We should create the request if create_eligibility_request = true
+        
+        if(create_request == 1):
+            create_elgibility_request([deed_data.name] , deed_source = "WATHEQ Deed")
 
         return deed_data
         
@@ -88,10 +102,65 @@ def get_deed_data(deed_id):
             "message": str(e)
         }
 
+
+def get_deed_request_details(deed_id):
+    eligibility_dt = frappe.qb.DocType("Eligibility Check Request")
+    eligibility_deed_item_dt = frappe.qb.DocType("Eligibility Check Request Deed Item")
+
+    query = (
+        frappe.qb.from_(eligibility_dt)
+        .inner_join(eligibility_deed_item_dt)
+        .on(eligibility_dt.name == eligibility_deed_item_dt.parent)
+        .select(
+            eligibility_dt.name.as_("request_id"),
+            eligibility_dt.wizard_step.as_("wizard_step"),
+            eligibility_deed_item_dt.status.as_("workflow_state")
+        ).where((eligibility_deed_item_dt.deed == deed_id) & (eligibility_deed_item_dt.is_active == 1) & (eligibility_dt.user == frappe.session.user))
+    )
+    res = query.run(as_dict=True)
+    if res:
+        return res[0]
+    return None
+
+def get_deed_request_details_by_status(deed_id = None , request_id = None):
+    eligibility_dt = frappe.qb.DocType("Eligibility Check Request")
+    eligibility_deed_item_dt = frappe.qb.DocType("Eligibility Check Request Deed Item")
+
+    query = (
+        frappe.qb.from_(eligibility_dt)
+        .inner_join(eligibility_deed_item_dt)
+        .on(eligibility_dt.name == eligibility_deed_item_dt.parent)
+        .select(
+            eligibility_dt.name.as_("request_id"),
+            eligibility_deed_item_dt.deed.as_("deed_number"),
+            eligibility_dt.wizard_step.as_("wizard_step"),
+            eligibility_deed_item_dt.status.as_("workflow_state")
+        )
+        .where(eligibility_dt.user == frappe.session.user)
+        .orderby(eligibility_deed_item_dt.creation ,order = Order.desc)
+    )
+    if deed_id:
+        query = query.where(eligibility_deed_item_dt.deed == deed_id)
+    elif request_id:
+        query = query.where(eligibility_dt.name == request_id)
+    else:
+        query = query.where((eligibility_deed_item_dt.is_active == 1))
+    
+    
+
+    res = query.run(as_dict=True)
+    if request_id :
+        res[0]['number_of_deeds'] = len(res)
+
+    if res:
+        return res[0]
+    return None
+
+
  
 
 def insert_watheq_request_callback(national_id,deed_id,response_data):
-    request_id = global_utils.generate_request_id()
+    request_id = generate_request_id()
     # Convert the JSON dictionary to a JSON string
     json_string = json.dumps(response_data)
     doc = frappe.get_doc({
@@ -104,7 +173,7 @@ def insert_watheq_request_callback(national_id,deed_id,response_data):
 
     # Insert or update the document
     try:
-        doc.insert()
+        doc.insert(ignore_permissions=True)
         frappe.db.commit()  # Save changes to the database
     except Exception as e:
         frappe.db.rollback()  # Rollback if there's an error
@@ -115,7 +184,10 @@ def insert_deed(data):
     # Create the parent Deed document
     try:
         if frappe.db.exists("WATHEQ Deed" , {"deed_number" : data["deedDetails"]["deedNumber"] , "deed_owner" : frappe.session.user}):
-            deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : data["deedDetails"]["deedNumber"]})            
+            deed_data = frappe.get_doc("WATHEQ Deed" , {"deed_number" : data["deedDetails"]["deedNumber"]})
+            eligibility_check_details =  get_deed_request_details(deed_data.name)
+            if eligibility_check_details:
+                deed_data.update(eligibility_check_details)           
         else :
             deed_data = frappe.new_doc("WATHEQ Deed")
             deed_data.deed_owner = frappe.session.user
@@ -215,35 +287,45 @@ def insert_deed(data):
                     "west_limit_length": property["realEstateBorderDetails"]["westLimitLength"],
                     "west_limit_length_char": property["realEstateBorderDetails"]["westLimitLengthChar"],
                     })
+            
             deed_data.save(ignore_permissions=True)
+            deed_data = deed_data.as_dict()
             frappe.db.commit()
+            # deed_data.workflow_state = "NEW"
+            # deed_data.wizard_step = 2
+            # deed_data.request_id = eligibility_request.name
         return deed_data
     except Exception as e:
         frappe.throw(str(e))
 
+@frappe.whitelist(methods=['GET'])
+def get_user_eligibility_check_steps(deed_id = None , request_id = None):
+    document = get_deed_request_details_by_status(deed_id , request_id)
+    if document:
+        return {
+            "wizard_step": document["wizard_step"],
+            "request_id": document["request_id"],
+            
+        }
+    return {
+        "is_kyc_submitted" : check_kyc_submitted(frappe.session.user)
+    }
 
 # Fetch the first deed created by the current user with status 
 @frappe.whitelist(methods=['GET'])
-def get_user_last_deed(status):
-    
-    document = frappe.get_all(
-        "WATHEQ Deed",  
-        filters={
-            "deed_owner": frappe.session.user,  # Filter by current user
-            "workflow_state": status         # Filter by status
-        },
-        fields=["*"],
-        order_by="modified desc",  # Sort by modification date in descending order
-        limit=1                    # Get only the first document
-    )
-
-    # Return the full document if it exists
+def get_user_last_active_deed(status = None , deed_id = None , request_id = None):
+    document = get_deed_request_details_by_status(deed_id , request_id)
     if document:
-        return document[0]
-    else:
-        return None
-
-
+        deed_data = frappe.get_doc("WATHEQ Deed" , document["deed_number"]).as_dict()
+        deed_data.number_of_deeds = document["number_of_deeds"] if "number_of_deeds" in document else 1
+        deed_data.workflow_state = status
+        deed_data.wizard_step = document["wizard_step"]
+        deed_data.request_id = document["request_id"]
+        return deed_data
+    if deed_id:
+        create_elgibility_request([deed_id] , deed_source = "WATHEQ Deed")
+        return get_user_last_active_deed(status , deed_id)
+    return None
 
 # Fetch all Deeds Eligibility Request created by the current user with status
 @frappe.whitelist(methods=['GET'])

@@ -35,7 +35,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Integrations Settings",
-   "link_count": 2,
+   "link_count": 4,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -59,9 +59,29 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Hyperpay Settings",
+   "link_count": 0,
+   "link_to": "Hyperpay Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Evaluator Settings",
+   "link_count": 0,
+   "link_to": "Evaluator Evaluation Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-11-05 15:52:05.298748",
+ "modified": "2024-11-30 20:02:30.630982",
  "modified_by": "Administrator",
  "module": "Fikak Settings",
  "name": "Core",

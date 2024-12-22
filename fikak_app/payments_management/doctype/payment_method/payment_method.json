@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-27 14:25:28.967395",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "method_name",
+  "method_code",
+  "description",
+  "is_enabled",
+  "image",
+  "method_order"
+ ],
+ "fields": [
+  {
+   "fieldname": "method_name",
+   "fieldtype": "Data",
+   "label": "Method Name",
+   "unique": 1
+  },
+  {
+   "fieldname": "method_code",
+   "fieldtype": "Data",
+   "label": "Method Code",
+   "unique": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_enabled",
+   "fieldtype": "Check",
+   "label": "Is Enabled?"
+  },
+  {
+   "fieldname": "method_order",
+   "fieldtype": "Int",
+   "label": "Order",
+   "non_negative": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-27 15:20:24.868822",
+ "modified_by": "Administrator",
+ "module": "Payments Management",
+ "name": "Payment Method",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

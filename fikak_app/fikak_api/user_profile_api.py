@@ -154,7 +154,7 @@ def update_user_profile_data(user_data):
         "message": "User profile data updated successfully"
    }
 
-@frappe.whitelist(allow_guest=False)
+@frappe.whitelist(methods=['POST'])
 def update_user_password(old_password, new_password , email = None):
     """
     Updates the current user's password.

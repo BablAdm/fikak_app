@@ -1,0 +1,498 @@
+import frappe
+
+from frappe import _
+from fikak_app.utils.global_utils import translate 
+from pypika import Order, Case , functions as fn
+import math
+from datetime import datetime
+
+from fikak_app.external_requests.split_service_requests import call_split_bank_request_api
+
+@frappe.whitelist(methods=["GET"])
+def get_split_requests_list(global_filter = None , filter_by_request = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
+    
+    
+    if isinstance(offset, str):
+        offset = int(offset)
+    
+    if isinstance(page_size, str):
+        page_size = int(page_size)
+
+    watheq_deed_dt = frappe.qb.DocType("WATHEQ Deed")
+    split_service_dt = frappe.qb.DocType("Split Service Request")
+    deed_real_estate_details_dt = frappe.qb.DocType("WATHEQ Real Estate Details Item")
+    # Get the deeds that are not deleted
+    query = (
+        frappe.qb.from_(watheq_deed_dt)
+        .inner_join(deed_real_estate_details_dt)
+        .on(watheq_deed_dt.name == deed_real_estate_details_dt.parent)
+        .inner_join(split_service_dt)
+        .on((watheq_deed_dt.name == split_service_dt.deed) & (split_service_dt.is_active == 1))
+        .select(
+            watheq_deed_dt.name.as_("deed_id"),
+            watheq_deed_dt.deed_number,
+            watheq_deed_dt.deed_area,
+            watheq_deed_dt.creation.as_("request_date"),
+            deed_real_estate_details_dt.location_description,
+            deed_real_estate_details_dt.city_name.as_("deed_city"),
+            deed_real_estate_details_dt.region_name.as_("deed_region"),
+            split_service_dt.name.as_("request_id"),
+            split_service_dt.status,
+            split_service_dt.status.as_("status_label"),
+            split_service_dt.split_eligibility,
+            split_service_dt.current_market_deed_price.as_("bursa_price"),
+            split_service_dt.customer_equity.as_("equity_percent")
+            
+        )
+        .where(watheq_deed_dt.deed_owner == frappe.session.user)  
+    )
+    # Apply the global filter
+    if global_filter:
+        query = query.where(
+             (fn.Lower(watheq_deed_dt.name).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(watheq_deed_dt.deed_number).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(watheq_deed_dt.deed_serial).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(watheq_deed_dt.deed_area).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(deed_real_estate_details_dt.city_name).like(
+            f"%{global_filter.lower()}%"))|
+             (fn.Lower(split_service_dt.name).like(
+            f"%{global_filter.lower()}%"))
+        )
+    if kw.get("request_status_filter"):
+        query = query.where(split_service_dt.status == kw.get("request_status_filter"))
+
+    if kw.get("filter_by_status"):
+        query = query.where(split_service_dt.status == kw.get("filter_by_status"))
+
+    data_len = len(query.run(as_dict=True))
+    
+    data = query.offset(offset).limit(page_size).run(as_dict=True)
+
+    return {
+        "data" : translate(data , ["status"]),  
+        "meta": {
+            "current_page": int((offset/page_size)+1),
+            "total_items": data_len,
+            "items_per_page": page_size,
+            "total_pages": math.ceil(data_len / page_size)
+        },
+    }
+
+
+@frappe.whitelist(methods=['POST'])
+def create_bank_split_request(split_service_request_id , deed_id):
+
+    try:
+
+        split_service_request = frappe.get_doc("Split Service Request", split_service_request_id)
+        if split_service_request.requester != frappe.session.user:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": "You are not authorized to create a bank request for this split service request"
+            }
+        deed = frappe.get_doc("WATHEQ Deed", deed_id)
+        if deed.deed_owner != frappe.session.user:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": "You are not authorized to create a bank request for this deed"
+            }
+        if split_service_request.status != "Eligible For Split":
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": "This split service request is not approved"
+            }
+        if split_service_request.split_eligibility == False:
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": "This split service request is not eligible for split"
+            }
+        if split_service_request.is_active == 0:
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": "This split service request is not active"
+            }
+        
+        person_data = frappe.get_doc("Person Data", frappe.session.user)
+
+        mortgage_data = {
+            "current_mortgage_id": "", #TODO: Get from deed mortgage info
+            "current_due_amount": split_service_request.current_due_amount,
+            "new_market_price": split_service_request.current_market_deed_price,
+            "bank_equity_percentage": split_service_request.bank_equity,
+            "bank_holder": {
+                "cr": "",
+                "bank_name": ""
+            },
+            "deed_number": deed.deed_number,
+            "owner_national_id": person_data.nin,
+            "smr_id": split_service_request.name,
+            "status": "New",  # Possible values: New, Old, Negotiation
+            "wakala_number": "12345", #TODO: Get from settings
+            "update": split_service_request.split_service_update  # Only for demo
+        }
+
+        result = call_split_bank_request_api(mortgage_data)
+        if result.get("status"):
+            bank_request = frappe.get_doc({
+                "doctype": "Split Bank Request",
+                "requester": frappe.session.user,
+                "split_service_request": split_service_request_id,
+                "deed_id": deed_id,
+                "submission_date": frappe.utils.now_datetime(),
+                "status": "Waiting For Customer Validation" , 
+                "responses" : [{
+                    "negociated_due_amount": result.get("data").get("negociated_due_amount_for_update"),
+                    "mortgage_number_months": result.get("data").get("mortgage_number_months"),
+                    "new_mortgage_end_date" : datetime.strptime( result.get("data").get("end_date_of_new_mortgage"), "%d-%m-%Y").strftime("%Y-%m-%d"),
+                    "mortgage_duration" : result.get("data").get("mortgage_duration"),
+                    "mortgage_start_payment_date" : datetime.strptime( result.get("data").get("mortgage_start_payment_date"), "%d-%m-%Y").strftime("%Y-%m-%d"),
+                    "mortgage_installement" : result.get("data").get("mortgage_installement"),
+                    "type" : result.get("data").get("split_type"),
+                    "status" : "Waiting For Customer Validation",
+                    "smr_id" : result.get("data").get("smr_id"),
+                    "smr_bank_id" : result.get("data").get("smr_bank_id"),
+                    "offer_date" : frappe.utils.now()
+
+                }]
+            })
+            bank_request.insert(ignore_permissions=True)
+            frappe.db.commit()
+        else:
+            frappe.local.response.http_status_code = 500
+            return result
+        return {
+            "status": True,
+            "data" : {
+                "result" : result,
+                "bank_request" : bank_request
+            },
+            "message": "Bank request created successfully"
+        }
+
+    
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status": False,
+            "message": str(e)
+        }
+
+@frappe.whitelist(methods=['GET'])
+def get_split_service_offers(split_service_request_id ,  global_filter = None , filter_by_request = None , offset = 0 , page_size = 10 , order_direction = -1 , order_by = "creation" , **kw):
+    
+    
+    if isinstance(offset, str):
+        offset = int(offset)
+    
+    if isinstance(page_size, str):
+        page_size = int(page_size)
+    
+    bank_request_dt = frappe.qb.DocType("Split Bank Request")
+    bank_request_response_dt = frappe.qb.DocType("Split Bank Request Response Item")
+    watheq_deed = frappe.qb.DocType("WATHEQ Deed")
+
+    query = (
+        frappe.qb.from_(bank_request_dt)
+        .inner_join(bank_request_response_dt)
+        .on(bank_request_dt.name == bank_request_response_dt.parent)
+        .inner_join(watheq_deed)
+        .on(bank_request_dt.deed_id == watheq_deed.name)
+        .select(
+            bank_request_dt.name.as_("bank_request_id"),
+            Case()
+            .when(bank_request_dt.status == "Waiting For Customer Validation", "Customer Review")
+            .else_(bank_request_dt.status).as_("bank_request_status"),
+            watheq_deed.deed_number,
+            watheq_deed.deed_serial,
+            watheq_deed.deed_area,
+            bank_request_dt.submission_date.as_("bank_request_submission_date"),
+            bank_request_response_dt.name.as_('offer_id'),
+            bank_request_response_dt.negociated_due_amount,
+            bank_request_response_dt.mortgage_number_months,
+            bank_request_response_dt.offer_date,
+            bank_request_response_dt.new_mortgage_end_date,
+            Case()
+            .when(bank_request_response_dt.status == "Waiting For Customer Validation", "Customer Review")
+            .else_(bank_request_response_dt.status).as_("bank_offer_status"),
+            bank_request_response_dt.mortgage_start_payment_date,
+            bank_request_response_dt.mortgage_installement,
+            bank_request_response_dt.type,
+            bank_request_response_dt.mortgage_duration,
+            bank_request_response_dt.smr_bank_id
+        )
+        .where(bank_request_dt.split_service_request == split_service_request_id)
+        .orderby(bank_request_response_dt.idx ,order = Order.asc)
+    )
+
+    if global_filter :
+        query = query.where(
+            (fn.Lower(bank_request_response_dt.status).like(
+            f"%{global_filter.lower()}%"))|
+            (fn.Lower(bank_request_response_dt.type).like(
+            f"%{global_filter.lower()}%"))
+            )
+    data = query.run(as_dict=True)
+    data_len = len(data)
+    data = data[offset:offset+page_size]
+
+    return {
+        "data" : data,
+        "meta": {
+            "current_page": offset,
+            "total_items": data_len,
+            "items_per_page": page_size,
+            "total_pages": math.ceil(data_len / page_size)
+        },
+        "message" : _("Bank offers retrieved successfully")
+    }
+
+
+@frappe.whitelist(methods=["POST"])
+def update_bank_offer_status(bank_offer_id , bank_split_request_id , status):
+#Status : Accepted , Rejected , Negociation
+    try:
+        bank_split_request = frappe.get_doc("Split Bank Request" , bank_split_request_id)
+        if bank_split_request.status != "Waiting For Customer Validation":
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": _("You can't update this Bank Offer Status  , it must be Under customer Review")
+            }
+
+        if frappe.session.user != bank_split_request.requester:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": _("You can't update this Bank Offer Status  , You are not authorized to update this bank offer")
+            }
+        
+        bank_offer = frappe.get_doc("Split Bank Request Response Item" , bank_offer_id)
+        if bank_offer.status != "Waiting For Customer Validation":
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": _("You can't update this Bank Offer Status  , it must be Under customer Review")
+            }
+        bank_offer.status = status
+        bank_offer.save(ignore_permissions=True)
+
+        return {
+            "status": True,
+            "data" : bank_offer,
+            "message" : _("bank_request_created" if status not in ("Accepted" , "Rejected") else "bank_request_updated")
+        }
+    
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status" : False,
+            "message" : str(e)
+        }
+
+
+@frappe.whitelist()
+def get_split_service_offers_by_deed(deed_id):
+    """
+    Retrieves the last inserted 'Split Bank Request Response Item' for the most recent 'Split Service Request' by deed_id.
+    
+    :param deed_id: ID of the deed linked to the 'Split Service Request'
+    :return: Dictionary containing the last response item or an error message if no data is found
+    """
+    # Fetch the most recent Split Service Request linked to the deed_id
+    split_request = frappe.get_all(
+        "Split Service Request",
+        filters={"deed": deed_id},
+        fields=["name", "submission_date"],
+        order_by="submission_date desc",
+        limit=1
+    )
+
+    if not split_request:
+        frappe.local.response.http_status_code = 400
+        return {
+            "status": False,
+            "message": "There is no split request for current deed"
+        }
+
+    split_request_id = split_request[0]["name"]
+
+    return get_split_service_offers(split_request_id)
+
+
+@frappe.whitelist(methods=['GET'])
+def get_deed_split_service_status(deed_id):
+    try:
+        deed = frappe.get_doc("WATHEQ Deed", deed_id)
+        if deed.deed_owner != frappe.session.user:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": "You are not authorized to view this deed"
+            }
+        try:
+            split_service_request = frappe.get_doc("Split Service Request", {"deed": deed_id, "requester": frappe.session.user})
+            evaluation_request = frappe.get_doc("Evaluation Request", {"request" : split_service_request.name})
+            return {
+                "status": True,
+                "data" : {
+                    "split_service_status" : split_service_request.status,
+                    "split_service_request" : split_service_request.name,
+                    "evaluation_request_status" : evaluation_request.status,
+                    "evaluation_request" : evaluation_request.name
+                },
+                "message": "Split service request retrieved successfully"
+            }
+        except frappe.DoesNotExistError:
+            return {
+                "status": False,
+                "data" : {
+                    "split_service_status" : False, 
+                    "split_service_request" : False,
+                    "evaluation_request_status" : False,
+                    "evaluation_request" : False
+
+                },
+                "message": "No split service request found for this deed"
+            }
+        
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status": False,
+            "message": str(e)
+        }
+
+
+@frappe.whitelist(methods=['POST'])
+def create_evaluation_request(deed_id , evaluation_source = "Split Service Request"):
+    try:
+        if frappe.db.exists("Evaluation Request", {"deed": deed_id, "status": "Pending" , "evaluation_source" : evaluation_source}):
+            return {
+                "status": True,
+                "message": "An active evaluation request already exists for this deed"
+            }
+        deed = frappe.get_doc("WATHEQ Deed", deed_id)
+        if deed.deed_owner != frappe.session.user:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": "You are not authorized to create an evaluation request for this deed"
+            }
+        current_request = get_active_deed_eligibility_request(deed_id , evaluation_source)
+        if not current_request:
+            frappe.local.response.http_status_code = 400
+            return {
+                "status": False,
+                "message": "No active request found for this deed"
+            }
+    
+        if evaluation_source == "Split Service Request":
+            split_service_request = create_split_service_request(deed_id , current_request[0])
+        else:
+            split_service_request = frappe.get_doc("Loan Service Request" , {"deed" : deed_id , "requester" : frappe.session.user , "is_active" : 1 })
+
+        evaluation_request = frappe.get_doc({
+            "doctype": "Evaluation Request",
+            "requester": frappe.session.user,
+            "request" : split_service_request.name,
+            "deed": deed_id,
+            "submission_date": frappe.utils.now_datetime(),
+            "evaluation_source" : evaluation_source,
+            "status": "Pending"
+        })
+        evaluation_request.insert(ignore_permissions=True)
+        frappe.db.commit()
+        return {
+            "status": True,
+            "data" : split_service_request,
+            "message": "Evaluation request created successfully"
+        }
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status": False,
+            "message": str(e)
+        }
+
+# TODO : Move to deed controller    
+def get_active_deed_eligibility_request(deed_id , evaluation_source):
+    status = "Eligible For Split" if evaluation_source == "Split Service Request" else "Eligible For Loan"
+    return frappe.get_all("Eligibility Check Request Deed Item", {"deed": deed_id, "status": status , "is_active" : 1},["parent"] ,pluck = "parent",  order_by="creation desc" , limit=1)
+
+# TODO : Move to deed controller
+def get_deed_active_split_service_request(deed_id , source = "Split Service Request"):
+    return frappe.get_all(source, {"deed": deed_id , "is_active" : 1},["name"], pluck="name", order_by="creation desc", limit=1)
+
+def create_split_service_request(deed_id , eligibility_check_request):
+    split_service_request = frappe.get_doc({
+        "doctype": "Split Service Request",
+        "requester": frappe.session.user,
+        "deed": deed_id,
+        "submission_date": frappe.utils.now_datetime(),
+        "status": "Pending",
+        "eligibility_check_request" : eligibility_check_request
+    })
+    split_service_request.insert(ignore_permissions=True)
+    frappe.db.commit()
+    return split_service_request
+
+
+
+@frappe.whitelist(methods=['GET'])
+def get_split_service_result(split_service_request_id):
+    try:
+        
+        split_service_request = frappe.get_doc("Split Service Request", split_service_request_id).as_dict()
+        
+        if frappe.session.user != split_service_request.requester:
+            frappe.local.response.http_status_code = 404
+            return {
+                "status": False,
+                "message": _("You are not authorized to view this split service request")
+            }
+        deed_doc = frappe.get_doc("WATHEQ Deed", split_service_request.deed).as_dict()
+        data = [
+            {
+                "deed_id" : deed_doc.name,
+                "deed_number" : deed_doc.deed_number,
+                "deed_serial" : deed_doc.deed_serial,
+                "deed_area" : deed_doc.deed_area,
+                # "deed_status" : deed_doc.status,
+                "last_price_registred" : deed_doc.deed_price,
+                "is_real_estate_mortgaged" : deed_doc.is_real_estate_mortgaged,
+                "deed_city" : deed_doc.real_estate_details[0]["city_name"],
+                "deed_region" : deed_doc.real_estate_details[0]["region_name"],
+                "status" : "Eligible For Split" if split_service_request.split_eligibility else "Not Eligible",
+                "split_request_status" : split_service_request.status,
+                "split_eligibility" : split_service_request.split_eligibility,
+                "bursa_price" : split_service_request.current_market_deed_price,
+                "equity_percent" : split_service_request.customer_equity,
+                "loan_amount" : split_service_request.new_loan
+            }
+        ]
+        return {
+            "status": True,
+            "data" : data,
+            "meta": {
+                "current_page": 1,
+                "total_items": 1,
+                "items_per_page": 1,
+                "total_pages": 1
+            },
+            "message": _("Split service request retrieved successfully")
+        }
+    except Exception as e:
+        frappe.local.response.http_status_code = 500
+        return {
+            "status": False,
+            "message": str(e)
+        }

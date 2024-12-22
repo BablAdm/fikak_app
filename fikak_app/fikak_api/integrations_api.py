@@ -2,13 +2,14 @@
 import frappe
 from frappe import _
 import requests
-import uuid
 
 from datetime import datetime , timedelta
 import frappe.utils
 import jwt
 
 from frappe.utils.password import update_password
+from fikak_app.utils.global_utils import  generate_request_id
+
 
 REQUEST_ERRORS = {
     "422-031-046" : "طلب غير صالح: تم إرسال بيانات غير صالحة",
@@ -97,26 +98,17 @@ def generate_nafath_transaction(national_id):
             "message": str(e)
         }
 
-def generate_request_id():
-    # Generate a UUID
-    uuid_part = str(uuid.uuid4())
-    
-    # Get the current date-time as a formatted string (year, month, day, hour, minute, second, microsecond)
-    datetime_part = datetime.now().strftime('%Y%m%d%H%M%S%f')
-    
-    # Combine UUID with the formatted date-time string
-    request_id = f"{uuid_part}{datetime_part}"
-    
-    return request_id
-
 @frappe.whitelist(allow_guest = True)
-def nafath_callback(token , transId , requestId , national_id = None):
+def nafath_callback(transId , token = None , response = None , status = None , ServiceName = None, requestId = None , national_id = None):
     try:
+        token = token if token else response
+
         decoded_token = decode_jwt_token(token)
         callback_id = insert_callback(token , decoded_token)
         if decoded_token.get('error'):
             return decoded_token
-        
+        if response:
+            return True
         if national_id:
             decoded_token['PersonId'] = national_id
         if decoded_token.get("status") == "REJECTED":
@@ -160,8 +152,6 @@ def check_request_status(national_id , tansaction_id , random ):
         has_more_than_3_min , passing_time = is_request_older_than_3_minutes(request_record)
         if has_more_than_3_min:
             request_status = check_request(national_id , tansaction_id, random)
-            print("more than 3 minutes")
-            print(request_status)
             if request_status[1]['status'] and request_status[1]['data']['status'] == "EXPIRED":
                 update_request_status(tansaction_id , request_record.request_id , "EXPIRED")
                 status = "EXPIRED"

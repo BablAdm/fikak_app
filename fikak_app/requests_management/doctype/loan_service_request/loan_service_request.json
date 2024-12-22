@@ -1,0 +1,159 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-17 13:56:57.969071",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "source",
+  "eligibility_check_request",
+  "requester",
+  "submission_date",
+  "column_break_hooc",
+  "split_service_request",
+  "deed",
+  "status",
+  "is_active",
+  "pricing_section",
+  "current_market_deed_price",
+  "bank_equity",
+  "max_new_loan",
+  "column_break_hflg",
+  "new_loan",
+  "customer_equity"
+ ],
+ "fields": [
+  {
+   "fieldname": "eligibility_check_request",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Eligibility Check Request",
+   "options": "Eligibility Check Request"
+  },
+  {
+   "fieldname": "requester",
+   "fieldtype": "Link",
+   "label": "Requester",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "submission_date",
+   "fieldtype": "Datetime",
+   "label": "Submission Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_hooc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deed",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Deed",
+   "options": "WATHEQ Deed",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nEligible For Loan\nOffer\nAccepted\nRejected",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active?"
+  },
+  {
+   "fieldname": "pricing_section",
+   "fieldtype": "Section Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "current_market_deed_price",
+   "fieldtype": "Currency",
+   "label": "Current Market Deed Price"
+  },
+  {
+   "fieldname": "column_break_hflg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_loan",
+   "fieldtype": "Currency",
+   "label": "New Loan"
+  },
+  {
+   "fieldname": "bank_equity",
+   "fieldtype": "Percent",
+   "label": "Bank Equity"
+  },
+  {
+   "fieldname": "customer_equity",
+   "fieldtype": "Percent",
+   "label": "Customer Equity"
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Select",
+   "label": "Source",
+   "options": "\nSplit Mortgage\nFree Deed"
+  },
+  {
+   "depends_on": "eval:doc.source == 'Split Mortgage'",
+   "fieldname": "split_service_request",
+   "fieldtype": "Link",
+   "label": "Split Service Request",
+   "mandatory_depends_on": "eval:doc.source == 'Split Mortgage'",
+   "options": "Split Service Request"
+  },
+  {
+   "fieldname": "max_new_loan",
+   "fieldtype": "Currency",
+   "label": "Max New Loan"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Bank Loan Request",
+   "link_fieldname": "loan_service_request"
+  },
+  {
+   "link_doctype": "Evaluation Request",
+   "link_fieldname": "request"
+  },
+  {
+   "link_doctype": "Hyperpay Request",
+   "link_fieldname": "reference"
+  }
+ ],
+ "modified": "2024-12-18 22:13:23.573098",
+ "modified_by": "Administrator",
+ "module": "Requests Management",
+ "name": "Loan Service Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

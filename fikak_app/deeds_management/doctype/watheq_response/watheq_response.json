@@ -8,7 +8,8 @@
   "request_id",
   "deed_id",
   "national_id",
-  "response"
+  "response",
+  "status"
  ],
  "fields": [
   {
@@ -30,11 +31,18 @@
    "fieldname": "national_id",
    "fieldtype": "Data",
    "label": "National ID"
+  },
+  {
+   "default": "WAITING",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "WAITING\nCOMPLETED\nREJECTED\nEXPIRED"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-04 14:20:06.594223",
+ "modified": "2024-11-26 10:34:30.509229",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Response",

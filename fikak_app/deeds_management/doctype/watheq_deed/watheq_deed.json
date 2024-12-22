@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "hash",
  "creation": "2024-11-04 08:30:49.588161",
@@ -54,9 +55,24 @@
   "realestatedetails_tab",
   "real_estate_details",
   "eligibilitystats_tab",
-  "wizard_step",
-  "workflow_state",
-  "selected_services"
+  "service",
+  "column_break_egob",
+  "service_status",
+  "section_break_lspj",
+  "statuses",
+  "pricing_tab",
+  "deed_price",
+  "interest_amount",
+  "down_price",
+  "purchase_date",
+  "is_first_home",
+  "column_break_fzfi",
+  "eligibility_check_customer_equity",
+  "eligibility_check_max_loan",
+  "last_bursa_price",
+  "split_service_customer_equity",
+  "split_service_max_loan",
+  "last_evaluator_price"
  ],
  "fields": [
   {
@@ -295,38 +311,123 @@
   {
    "fieldname": "eligibilitystats_tab",
    "fieldtype": "Tab Break",
-   "label": "Waseera Workflow"
-  },
-  {
-   "default": "2",
-   "fieldname": "wizard_step",
-   "fieldtype": "Int",
-   "label": "Wizard Step",
-   "options": "0\n1\n2\n3\n4"
-  },
-  {
-   "default": "NEW",
-   "fieldname": "workflow_state",
-   "fieldtype": "Select",
-   "label": "Workflow State",
-   "options": "NEW\nPENDING\nELIGIBLE\nNOT-ELIGIBLE"
-  },
-  {
-   "fieldname": "selected_services",
-   "fieldtype": "Select",
-   "label": "Selected Services",
-   "options": "Mortgage split\nAsset-Backed Loan\nInvestments"
+   "label": "Status Tracking"
   },
   {
    "fieldname": "deed_owner",
    "fieldtype": "Link",
    "label": "Deed Owner",
    "options": "User"
+  },
+  {
+   "fieldname": "pricing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "deed_price",
+   "fieldtype": "Currency",
+   "label": "Deed Price"
+  },
+  {
+   "fieldname": "interest_amount",
+   "fieldtype": "Currency",
+   "label": "Interest Amount"
+  },
+  {
+   "fieldname": "down_price",
+   "fieldtype": "Currency",
+   "label": "Down Price"
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Date",
+   "label": "Purchase Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_first_home",
+   "fieldtype": "Check",
+   "label": "Is First Home?"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "service_status",
+   "fieldtype": "Select",
+   "label": "Service Status",
+   "options": "\nPending\nEligible For Split\nEligible For Loan\nNot Eligible\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nOffer\nAccepted\nRejected"
+  },
+  {
+   "fieldname": "service",
+   "fieldtype": "Select",
+   "label": "Service",
+   "options": "\nEligibility Check\nSplit Service\nAsset-Backed Loan"
+  },
+  {
+   "fieldname": "statuses",
+   "fieldtype": "Table",
+   "label": "Status Track",
+   "options": "Watheq Deed Status Item"
+  },
+  {
+   "fieldname": "column_break_egob",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_lspj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_fzfi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "eligibility_check_customer_equity",
+   "fieldtype": "Percent",
+   "label": "Eligibility Check Customer Equity"
+  },
+  {
+   "fieldname": "eligibility_check_max_loan",
+   "fieldtype": "Currency",
+   "label": "Eligibility Check Max Loan"
+  },
+  {
+   "fieldname": "split_service_customer_equity",
+   "fieldtype": "Percent",
+   "label": "Split Service Customer Equity"
+  },
+  {
+   "fieldname": "split_service_max_loan",
+   "fieldtype": "Currency",
+   "label": "Split Service Max Loan"
+  },
+  {
+   "fieldname": "last_bursa_price",
+   "fieldtype": "Currency",
+   "label": "Last Bursa Price"
+  },
+  {
+   "fieldname": "last_evaluator_price",
+   "fieldtype": "Currency",
+   "label": "Last Evaluator Price"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-11-13 17:52:21.322660",
+ "links": [
+  {
+   "link_doctype": "Split Bank Request",
+   "link_fieldname": "deed_id"
+  },
+  {
+   "link_doctype": "Split Service Request",
+   "link_fieldname": "deed"
+  },
+  {
+   "link_doctype": "Evaluation Request",
+   "link_fieldname": "deed"
+  }
+ ],
+ "modified": "2024-12-18 14:54:04.102556",
  "modified_by": "Administrator",
  "module": "Deeds Management",
  "name": "WATHEQ Deed",

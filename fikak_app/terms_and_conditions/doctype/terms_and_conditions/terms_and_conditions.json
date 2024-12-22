@@ -23,7 +23,8 @@
    "fieldtype": "Text Editor",
    "in_list_view": 1,
    "label": "Conditions",
-   "reqd": 1
+   "reqd": 1,
+   "translatable": 1
   },
   {
    "default": "1",
@@ -36,13 +37,13 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "\nGeneral\nEligibility Request",
+   "options": "\nGeneral\nEligibility Request\nSplit Service\nAsset-Backed Loan",
    "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-10 11:40:11.029711",
+ "modified": "2024-12-17 14:37:25.238935",
  "modified_by": "Administrator",
  "module": "Terms And Conditions",
  "name": "Terms And Conditions",

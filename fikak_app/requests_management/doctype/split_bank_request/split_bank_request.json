@@ -1,0 +1,142 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-08 17:28:33.403337",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "split_service_request",
+  "requester",
+  "submission_date",
+  "column_break_hicr",
+  "deed_id",
+  "status",
+  "current_mortgage_info_section",
+  "mortgage_id",
+  "due_amount",
+  "bank_holder",
+  "column_break_bqqw",
+  "new_market_price",
+  "bank_equity_percentage",
+  "bank_responses_section",
+  "responses"
+ ],
+ "fields": [
+  {
+   "fieldname": "split_service_request",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Split Service Request",
+   "options": "Split Service Request",
+   "reqd": 1
+  },
+  {
+   "fieldname": "requester",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Requester",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "submission_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Submission Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_hicr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deed_id",
+   "fieldtype": "Link",
+   "label": "Deed Id",
+   "options": "WATHEQ Deed"
+  },
+  {
+   "fieldname": "current_mortgage_info_section",
+   "fieldtype": "Section Break",
+   "label": "Current Mortgage Info"
+  },
+  {
+   "fieldname": "mortgage_id",
+   "fieldtype": "Data",
+   "label": "Mortgage ID"
+  },
+  {
+   "fieldname": "due_amount",
+   "fieldtype": "Currency",
+   "label": "Due Amount"
+  },
+  {
+   "fieldname": "bank_holder",
+   "fieldtype": "Link",
+   "label": "Bank Holder",
+   "options": "Bank Provider"
+  },
+  {
+   "fieldname": "column_break_bqqw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "new_market_price",
+   "fieldtype": "Currency",
+   "label": "New Market Price"
+  },
+  {
+   "fieldname": "bank_equity_percentage",
+   "fieldtype": "Percent",
+   "label": "Bank Equity Percentage"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nPending\nWaiting For Customer Validation\nNegociation\nAccepted\nRejected",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bank_responses_section",
+   "fieldtype": "Section Break",
+   "label": "Bank Responses"
+  },
+  {
+   "fieldname": "responses",
+   "fieldtype": "Table",
+   "label": "responses",
+   "options": "Split Bank Request Response Item"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Mortgage Registration Request",
+   "link_fieldname": "split_service_request"
+  }
+ ],
+ "modified": "2024-12-18 23:52:04.432268",
+ "modified_by": "Administrator",
+ "module": "Requests Management",
+ "name": "Split Bank Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
