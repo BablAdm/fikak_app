@@ -91,7 +91,7 @@ def get_eligibility_request_deed_data(deed_id, request_id=0):
             "total_interest_payment": deed.total_interest_payment,
             "total_principal_payment": deed.total_principal_payment,
             "deed_price": deed_dt.deed_price,
-            "deed_price": deed_dt.deed_price,
+            "down_price": deed_dt.down_price,
             "interest_amount": deed_dt.interest_amount,
         }
 
