@@ -11,7 +11,9 @@
   "max_new_loan",
   "waseera_fees",
   "evaluation_payment_section",
-  "evaluation_amount"
+  "is_formula_price_enabled",
+  "evaluation_amount",
+  "formula_code"
  ],
  "fields": [
   {
@@ -38,12 +40,24 @@
    "fieldname": "evaluation_amount",
    "fieldtype": "Currency",
    "label": "Evaluation Amount"
+  },
+  {
+   "fieldname": "formula_code",
+   "fieldtype": "Long Text",
+   "label": "Formula Code"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_formula_price_enabled",
+   "fieldtype": "Check",
+   "label": "Is Formula Price Enabled",
+   "options": "0\n1"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-27 14:18:49.137291",
+ "modified": "2024-12-22 17:14:04.621053",
  "modified_by": "Administrator",
  "module": "Fikak Settings",
  "name": "Fikak Settings",

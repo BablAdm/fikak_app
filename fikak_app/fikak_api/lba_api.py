@@ -2,13 +2,15 @@
 
 
 import frappe
-from fikak_app.controllers.lba_controller import  check_lba_source
+from fikak_app.controllers.lba_controller import  check_lba_source , create_banks_loan_request
 from frappe import _
 from datetime import datetime
 # from fikak_app.external_requests.split_service_requests import call_lba_bank_request_api , get_lba_bank_offer
 import math
 from pypika import Order, Case , functions as fn
 from fikak_app.utils.global_utils import translate 
+from fikak_app.external_requests.split_service_requests import call_lba_banks_request_api
+
 
 
 @frappe.whitelist(methods=["GET"])
@@ -230,9 +232,9 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
                 "status": False,
                 "message": "This split service request is not active"
             }
-        
+        # USED FOR FAKE API : see the code of this request   
+        # result = get_lba_bank_offer(mortgage_data)
         person_data = frappe.get_doc("Person Data", frappe.session.user)
-
         mortgage_data = {
             "current_mortgage_id": "", #TODO: Get from deed mortgage info
             "current_due_amount": offer_data.get("negociatedAmount") ,## TODO : see with mohamed this value not exist loan_service_request.current_due_amount,
@@ -249,28 +251,11 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
             "wakala_number": "12345", #TODO: Get from settings
             "update": "0" # TODO : see with moh we create new loan_service_request.split_service_update  # Only for demo
         }
-        # TODO FAKE API : see the code of this request
-        # result = get_lba_bank_offer(mortgage_data)
-        # if result.get("status"):
-        bank_request = frappe.get_doc({
-            "doctype": "Bank Loan Request",
-            "requester": frappe.session.user,
-            "loan_service_request": loan_service_request_id,
-            "deed_id": deed_id,
-            "submission_date": frappe.utils.now_datetime(),
-            "status": "Pending" ,
-            "source" : lba_source["source"],
-            "split_service_request" : lba_source["split_request"],
-            "bank_offers" : [{
-                "status" : "Pending" ,
-                "requested_equity" : offer_data.get("equity") ,
-                "requested_amount" : offer_data.get("negociatedAmount") ,
+        # Create many requests to banks in order to get offers
+        banks_responses = call_lba_banks_request_api(mortgage_data)
+        # Create the bank loan request doctype with all offers
+        bank_request = create_banks_loan_request(loan_service_request_id,deed_id,lba_source,offer_data, banks_responses)
 
-            }]
-        })
-        bank_request.insert(ignore_permissions=True)
-        frappe.db.commit()
-        
         return {
             "status": True,
             "data" : {
@@ -322,6 +307,7 @@ def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filt
             bank_request_response_dt.negociated_loan_amount,
             bank_request_response_dt.mortgage_number_months,
             bank_request_response_dt.offer_date,
+            bank_request_response_dt.bank,
             bank_request_response_dt.new_mortgage_end_date,
             Case()
             .when(bank_request_response_dt.status == "Waiting For Customer Validation", "Customer Review")
