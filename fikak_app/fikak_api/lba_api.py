@@ -307,6 +307,7 @@ def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filt
             bank_request_response_dt.negociated_loan_amount,
             bank_request_response_dt.mortgage_number_months,
             bank_request_response_dt.offer_date,
+            bank_request_response_dt.bank,
             bank_request_response_dt.new_mortgage_end_date,
             Case()
             .when(bank_request_response_dt.status == "Waiting For Customer Validation", "Customer Review")
