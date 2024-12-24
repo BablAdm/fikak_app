@@ -8,7 +8,9 @@
  "field_order": [
   "bank_code",
   "bank_name",
-  "logo"
+  "logo",
+  "is_loan_proposal_enabled",
+  "loan_proposal_end_point"
  ],
  "fields": [
   {
@@ -30,11 +32,22 @@
    "in_list_view": 1,
    "label": "Bank Code",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_loan_proposal_enabled",
+   "fieldtype": "Check",
+   "label": "Is Loan Proposal Enabled"
+  },
+  {
+   "fieldname": "loan_proposal_end_point",
+   "fieldtype": "Data",
+   "label": "Loan Proposal End Point"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-06 11:52:36.752173",
+ "modified": "2024-12-24 09:31:19.952549",
  "modified_by": "Administrator",
  "module": "Banking Management",
  "name": "Bank Provider",
