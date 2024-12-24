@@ -231,24 +231,24 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
                 "message": "This split service request is not active"
             }
         
-        person_data = frappe.get_doc("Person Data", frappe.session.user)
+        # person_data = frappe.get_doc("Person Data", frappe.session.user)
 
-        mortgage_data = {
-            "current_mortgage_id": "", #TODO: Get from deed mortgage info
-            "current_due_amount": offer_data.get("negociatedAmount") ,## TODO : see with mohamed this value not exist loan_service_request.current_due_amount,
-            "new_market_price": loan_service_request.current_market_deed_price,
-            "bank_equity_percentage": offer_data.get("equity") ,
-            "bank_holder": {
-                "cr": "",
-                "bank_name": ""
-            },
-            "deed_number": deed.deed_number,
-            "owner_national_id": person_data.nin,
-            "smr_id": loan_service_request.name,
-            "status": "New",  # Possible values: New, Old, Negotiation
-            "wakala_number": "12345", #TODO: Get from settings
-            "update": "0" # TODO : see with moh we create new loan_service_request.split_service_update  # Only for demo
-        }
+        # mortgage_data = {
+        #     "current_mortgage_id": "", #TODO: Get from deed mortgage info
+        #     "current_due_amount": offer_data.get("negociatedAmount") ,## TODO : see with mohamed this value not exist loan_service_request.current_due_amount,
+        #     "new_market_price": loan_service_request.current_market_deed_price,
+        #     "bank_equity_percentage": offer_data.get("equity") ,
+        #     "bank_holder": {
+        #         "cr": "",
+        #         "bank_name": ""
+        #     },
+        #     "deed_number": deed.deed_number,
+        #     "owner_national_id": person_data.nin,
+        #     "smr_id": loan_service_request.name,
+        #     "status": "New",  # Possible values: New, Old, Negotiation
+        #     "wakala_number": "12345", #TODO: Get from settings
+        #     "update": "0" # TODO : see with moh we create new loan_service_request.split_service_update  # Only for demo
+        # }
         # TODO FAKE API : see the code of this request
         # result = get_lba_bank_offer(mortgage_data)
         # if result.get("status"):
@@ -263,8 +263,8 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
             "split_service_request" : lba_source["split_request"],
             "bank_offers" : [{
                 "status" : "Pending" ,
-                "requested_equity" : offer_data.get("equity") ,
-                "requested_amount" : offer_data.get("negociatedAmount") ,
+                "requested_equity" : offer_data.get("equity") if offer_data else 100,
+                "requested_amount" : offer_data.get("negociatedAmount")  if offer_data else 0 ,
 
             }]
         })
@@ -281,6 +281,7 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
 
     
     except Exception as e:
+        print("ssssssfffffffffffffffffffffff   "  , str(e))
         frappe.local.response.http_status_code = 500
         return {
             "status": False,

@@ -87,7 +87,6 @@ def get_split_requests_list(global_filter = None , filter_by_request = None , of
 def create_bank_split_request(split_service_request_id , deed_id):
 
     try:
-
         split_service_request = frappe.get_doc("Split Service Request", split_service_request_id)
         if split_service_request.requester != frappe.session.user:
             frappe.local.response.http_status_code = 404
@@ -340,6 +339,8 @@ def get_deed_split_service_status(deed_id):
             }
         try:
             split_service_request = frappe.get_doc("Split Service Request", {"deed": deed_id, "requester": frappe.session.user})
+            lba_service_request = frappe.db.exists("Loan Service Request", {"split_service_request": split_service_request.name, "requester": frappe.session.user})
+
             evaluation_request = frappe.get_doc("Evaluation Request", {"request" : split_service_request.name})
             return {
                 "status": True,
@@ -347,7 +348,9 @@ def get_deed_split_service_status(deed_id):
                     "split_service_status" : split_service_request.status,
                     "split_service_request" : split_service_request.name,
                     "evaluation_request_status" : evaluation_request.status,
-                    "evaluation_request" : evaluation_request.name
+                    "evaluation_request" : evaluation_request.name,
+                    "payment_type" : evaluation_request.payment_type,
+                    "lba_service_request" : lba_service_request
                 },
                 "message": "Split service request retrieved successfully"
             }
@@ -358,7 +361,9 @@ def get_deed_split_service_status(deed_id):
                     "split_service_status" : False, 
                     "split_service_request" : False,
                     "evaluation_request_status" : False,
-                    "evaluation_request" : False
+                    "evaluation_request" : False,
+                    "payment_type" : False,
+                    "lba_service_request" : False
 
                 },
                 "message": "No split service request found for this deed"
@@ -373,7 +378,7 @@ def get_deed_split_service_status(deed_id):
 
 
 @frappe.whitelist(methods=['POST'])
-def create_evaluation_request(deed_id , evaluation_source = "Split Service Request"):
+def create_evaluation_request(deed_id , evaluation_source = "Split Service Request" , payment_type = "Before Loan"):
     try:
         if frappe.db.exists("Evaluation Request", {"deed": deed_id, "status": "Pending" , "evaluation_source" : evaluation_source}):
             return {
@@ -396,7 +401,7 @@ def create_evaluation_request(deed_id , evaluation_source = "Split Service Reque
             }
     
         if evaluation_source == "Split Service Request":
-            split_service_request = create_split_service_request(deed_id , current_request[0])
+            split_service_request = create_split_service_request(deed_id , current_request[0] , payment_type)
         else:
             split_service_request = frappe.get_doc("Loan Service Request" , {"deed" : deed_id , "requester" : frappe.session.user , "is_active" : 1 })
 
@@ -405,6 +410,8 @@ def create_evaluation_request(deed_id , evaluation_source = "Split Service Reque
             "requester": frappe.session.user,
             "request" : split_service_request.name,
             "deed": deed_id,
+            "payment_type" : payment_type,
+            "status" : "Pending" if payment_type == "Before Loan" else "Pay Later",
             "submission_date": frappe.utils.now_datetime(),
             "evaluation_source" : evaluation_source,
             "status": "Pending"
@@ -432,13 +439,14 @@ def get_active_deed_eligibility_request(deed_id , evaluation_source):
 def get_deed_active_split_service_request(deed_id , source = "Split Service Request"):
     return frappe.get_all(source, {"deed": deed_id , "is_active" : 1},["name"], pluck="name", order_by="creation desc", limit=1)
 
-def create_split_service_request(deed_id , eligibility_check_request):
+def create_split_service_request(deed_id , eligibility_check_request , payment_type):
     split_service_request = frappe.get_doc({
         "doctype": "Split Service Request",
         "requester": frappe.session.user,
         "deed": deed_id,
+        "payment_type" : payment_type,
+        "status" : "Pending" if payment_type == "Before Loan" else "Pay Later",
         "submission_date": frappe.utils.now_datetime(),
-        "status": "Pending",
         "eligibility_check_request" : eligibility_check_request
     })
     split_service_request.insert(ignore_permissions=True)

@@ -3,7 +3,7 @@
 
 from frappe.model.document import Document
 import frappe
-from fikak_app.controllers.split_service_controller import update_split_service_request_status
+from fikak_app.controllers.split_service_controller import update_split_service_request_status , approve_auto_stpes
 from fikak_app.external_requests.evaluation_requests import create_evaluation_request
 
 
@@ -16,13 +16,18 @@ class EvaluationRequest(Document):
             and self.status == "Done"
         ):
             update_split_service_request_status(self.request, "Evaluated", self.evaluation_price , self.evaluation_source)
+            if self.evaluation_source == "Split Service Request":
+                approve_auto_stpes(self.request , self.deed)
 
         # Handle status change to "Paid"
-        if self.status == "Paid" and (
+        if (self.status == "Paid" and (
             self._doc_before_save and self._doc_before_save.status != "Paid"
-        ):
-            update_split_service_request_status(self.request, "Paid", self.evaluation_price , self.evaluation_source)
+        )) or (self.status == "Pay Later" and (
+            self._doc_before_save and self._doc_before_save.status != "Pay Later")):
+            if self.status == "Paid": 
+                update_split_service_request_status(self.request, "Paid", self.evaluation_price , self.evaluation_source)
             self.process_evaluation_request()
+            
 
     def process_evaluation_request(self):
         """Processes the evaluation request by preparing the request parameters

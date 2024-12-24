@@ -10,6 +10,7 @@
   "eligibity_check",
   "max_new_loan",
   "waseera_fees",
+  "split_auto_validation",
   "evaluation_payment_section",
   "evaluation_amount"
  ],
@@ -38,12 +39,18 @@
    "fieldname": "evaluation_amount",
    "fieldtype": "Currency",
    "label": "Evaluation Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "split_auto_validation",
+   "fieldtype": "Check",
+   "label": "Split Auto Validation"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-27 14:18:49.137291",
+ "modified": "2024-12-24 12:31:58.337859",
  "modified_by": "Administrator",
  "module": "Fikak Settings",
  "name": "Fikak Settings",
