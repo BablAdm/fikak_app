@@ -284,6 +284,7 @@ def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filt
     bank_request_dt = frappe.qb.DocType("Bank Loan Request")
     bank_request_response_dt = frappe.qb.DocType("Bank Loan Request Offer Item")
     watheq_deed = frappe.qb.DocType("WATHEQ Deed")
+    bank_dt = frappe.qb.DocType("Bank Provider")
 
     query = (
         frappe.qb.from_(bank_request_dt)
@@ -291,6 +292,8 @@ def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filt
         .on(bank_request_dt.name == bank_request_response_dt.parent)
         .inner_join(watheq_deed)
         .on(bank_request_dt.deed_id == watheq_deed.name)
+        .inner_join(bank_dt)
+        .on(bank_request_response_dt.bank == bank_dt.name)        
         .select(
             bank_request_dt.name.as_("bank_request_id"),
             Case()
@@ -307,7 +310,8 @@ def get_lba_service_offers(lba_service_request_id ,  global_filter = None , filt
             bank_request_response_dt.negociated_loan_amount,
             bank_request_response_dt.mortgage_number_months,
             bank_request_response_dt.offer_date,
-            bank_request_response_dt.bank,
+            bank_dt.name,
+            bank_dt.logo,
             bank_request_response_dt.new_mortgage_end_date,
             Case()
             .when(bank_request_response_dt.status == "Waiting For Customer Validation", "Customer Review")
