@@ -393,13 +393,25 @@ def update_bank_offer_status(bank_offer_id , bank_lba_request_id , status , offe
 
         bank_split_request_new_doc = frappe.get_doc("Bank Loan Request", bank_lba_request_id)
         bank_split_request_new_doc.status = status
-            
+
+
+
         if status == "Negociation":
             bank_split_request_new_doc.append("bank_offers", {
                 "status": "Pending" , 
                 "requested_equity" : offer_data.get("equity") ,
-                "requested_amount" : offer_data.get("negociatedAmount")
+                "requested_amount" : offer_data.get("negociatedAmount"),
+                "bank": bank_offer.bank ,
             })
+        # TODO : if the status = accept so refuse all other response
+        if status == "Accepted":
+            # Loop through the bank_offers child table
+            for offer in bank_split_request_new_doc.bank_offers:
+                # Update the status if it is neither "none" nor "accept"
+                if offer.status == "Waiting For Customer Validation":
+                    offer.status = "Rejected"
+
+        # Save the document after updating the child table       
         bank_split_request_new_doc.save(ignore_permissions=True)
 
         return {
