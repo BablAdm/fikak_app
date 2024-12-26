@@ -3,6 +3,7 @@ import requests
 import json
 from datetime import datetime , timedelta
 from fikak_app.fikak_api.split_service_api import get_deed_active_split_service_request
+from fikak_app.controllers.customer_price import get_evaluation_price_from_formula
 
 @frappe.whitelist(methods=['GET'])
 def get_payment_status(deed_id , checkout_id):
@@ -151,7 +152,11 @@ def initiate_widget_integration_payment(deed_id, request_id ,  currency="USD", p
 
     # Fetch HyperPay settings
     settings = get_hyperpay_settings()
-    amount = frappe.db.get_single_value("Fikak Settings", "evaluation_amount")
+    #amount = frappe.db.get_single_value("Fikak Settings", "evaluation_amount")
+    # Fetch new amount from formula
+    amount = get_evaluation_price_from_formula()
+    
+
     amount = amount if amount else 1000
     endpoint = f"{settings['base_url']}/v1/checkouts"
     headers = {
