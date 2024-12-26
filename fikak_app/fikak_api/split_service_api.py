@@ -350,7 +350,8 @@ def get_deed_split_service_status(deed_id):
                     "evaluation_request_status" : evaluation_request.status,
                     "evaluation_request" : evaluation_request.name,
                     "payment_type" : evaluation_request.payment_type,
-                    "lba_service_request" : lba_service_request
+                    "lba_service_request" : lba_service_request,
+                    "is_paid" : evaluation_request.is_paid
                 },
                 "message": "Split service request retrieved successfully"
             }
@@ -363,7 +364,8 @@ def get_deed_split_service_status(deed_id):
                     "evaluation_request_status" : False,
                     "evaluation_request" : False,
                     "payment_type" : False,
-                    "lba_service_request" : False
+                    "lba_service_request" : False,
+                    "is_paid" : False
 
                 },
                 "message": "No split service request found for this deed"
@@ -404,7 +406,7 @@ def create_evaluation_request(deed_id , evaluation_source = "Split Service Reque
             split_service_request = create_split_service_request(deed_id , current_request[0] , payment_type)
         else:
             split_service_request = frappe.get_doc("Loan Service Request" , {"deed" : deed_id , "requester" : frappe.session.user , "is_active" : 1 })
-
+            split_service_request.status = "Pay Later" if payment_type == "After Loan" else "Pending"
         evaluation_request = frappe.get_doc({
             "doctype": "Evaluation Request",
             "requester": frappe.session.user,
@@ -413,8 +415,7 @@ def create_evaluation_request(deed_id , evaluation_source = "Split Service Reque
             "payment_type" : payment_type,
             "status" : "Pending" if payment_type == "Before Loan" else "Pay Later",
             "submission_date": frappe.utils.now_datetime(),
-            "evaluation_source" : evaluation_source,
-            "status": "Pending"
+            "evaluation_source" : evaluation_source
         })
         evaluation_request.insert(ignore_permissions=True)
         frappe.db.commit()

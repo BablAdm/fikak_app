@@ -147,6 +147,7 @@ def process_request(request_id , offset , page_size):
     
 
 def get_bursa_price(region_code , city_code , district_code):
+    return 7000
     # Init Data
     region_code = f"{int(region_code):02}"
     city_code = f"{region_code}{int(city_code):05}"

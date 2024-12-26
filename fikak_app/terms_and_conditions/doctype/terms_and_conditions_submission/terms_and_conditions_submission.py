@@ -12,6 +12,8 @@ class TermsAndConditionsSubmission(Document):
 
 	def after_insert(self):
 		# Update the status of the Split Bank Request
+		print("gggggggggggggggggggggggggggggggg  ,  " , self.terms_type )
 		if self.terms_type == "Asset-Backed Loan":
+			print("sssssssssssssssssssss")
 			insert_new_lba_request(self.deed_id)
 

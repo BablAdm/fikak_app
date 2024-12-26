@@ -27,9 +27,7 @@ class LoanServiceRequest(Document):
 				self.max_new_loan = get_prices(self.current_market_deed_price)
 			self.status = "Eligible For Loan"
 			# TODO handel this  saved twice
-			service = "Asset-Backed Loan"
-			status = self.status
-			update_deed_workflow(self.deed,service, status, self)
+			update_deed_workflow(self.deed, "Asset-Backed Loan", self.status, self)
 			self.save()
 
 

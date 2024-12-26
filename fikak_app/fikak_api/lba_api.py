@@ -112,7 +112,9 @@ def get_deed_lba_status(deed_id):
                     "lba_source" : lba_source,
                     "lba_service_request" : lba_service_request.name,
                     "evaluation_request_status" : evaluation_request.status,
-                    "evaluation_request" : evaluation_request.name
+                    "evaluation_request" : evaluation_request.name,
+                    "payment_type" : evaluation_request.payment_type,
+                    "is_paid" : evaluation_request.is_paid
                     
                 },
                 "message": "Lba service request retrieved successfully"
@@ -125,7 +127,9 @@ def get_deed_lba_status(deed_id):
                     "lba_service_request" : False,
                     "lba_source" : lba_source,
                     "evaluation_request_status" : False,
-                    "evaluation_request" : False
+                    "evaluation_request" : False,
+                    "payment_type" : False,
+                    "is_paid" : False
 
                 },
                 "message": "No lba service request found for this deed"
@@ -196,9 +200,6 @@ def get_lba_service_result(lba_service_request_id):
             "message": str(e)
         }
     
-
-
-
 @frappe.whitelist(methods=['POST'])
 def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = None):
     try:
@@ -237,9 +238,9 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
         person_data = frappe.get_doc("Person Data", frappe.session.user)
         mortgage_data = {
             "current_mortgage_id": "", #TODO: Get from deed mortgage info
-            "current_due_amount": offer_data.get("negociatedAmount") ,## TODO : see with mohamed this value not exist loan_service_request.current_due_amount,
+            "current_due_amount": offer_data.get("negociatedAmount") if offer_data else 0 ,## TODO : see with mohamed this value not exist loan_service_request.current_due_amount,
             "new_market_price": loan_service_request.current_market_deed_price,
-            "bank_equity_percentage": offer_data.get("equity") ,
+            "bank_equity_percentage": offer_data.get("equity") if offer_data else 0,
             "bank_holder": {
                 "cr": "",
                 "bank_name": ""
@@ -266,7 +267,6 @@ def create_bank_lba_request(loan_service_request_id , deed_id , offer_data = Non
 
     
     except Exception as e:
-        print("ssssssfffffffffffffffffffffff   "  , str(e))
         frappe.local.response.http_status_code = 500
         return {
             "status": False,
