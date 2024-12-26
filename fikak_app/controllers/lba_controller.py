@@ -2,7 +2,7 @@
 
 import frappe
 from datetime import datetime
-
+from frappe import _
 
 def insert_new_lba_request(deed_id):
     # Insert a new LBA request
@@ -61,8 +61,6 @@ def create_split_service_request(deed_id , eligibility_check_request):
 def get_lba_evaluation_by_split_service(split_service_request ):
     return frappe.get_doc("Evaluation Request" , {"request" : split_service_request, "source" : "Split Service Request"})
 
-
-
 def create_banks_loan_request(loan_service_request_id, deed_id, lba_source,requested_offer_data, banks_response):
     """
     Creates a Bank Loan Request document and inserts banks offers into the bank_offers child table.
@@ -84,8 +82,8 @@ def create_banks_loan_request(loan_service_request_id, deed_id, lba_source,reque
                 response_offer = bank_response["response"]["data"]
                 bank_offers.append({
                     "status": "Waiting For Customer Validation",
-                    "requested_equity" : requested_offer_data.get("equity") ,
-                    "requested_amount" : requested_offer_data.get("negociatedAmount"),
+                    "requested_equity" : requested_offer_data.get("equity") if requested_offer_data else 0 ,
+                    "requested_amount" : requested_offer_data.get("negociatedAmount") if requested_offer_data else 0,
                     "negociated_loan_amount": int(response_offer["loan_amount"]),
                     "offered_equity": int(response_offer["bank_equity_percent"]),
                     "new_mortgage_end_date": datetime.strptime( response_offer.get("end_date_of_new_mortgage"), "%d-%m-%Y").strftime("%Y-%m-%d"),
@@ -105,7 +103,7 @@ def create_banks_loan_request(loan_service_request_id, deed_id, lba_source,reque
             "loan_service_request": loan_service_request_id,
             "deed_id": deed_id,
             "submission_date": frappe.utils.now_datetime(),
-            "status": "Pending",
+            "status": "Waiting For Customer Validation",
             "source": lba_source.get("source"),
             "split_service_request": lba_source.get("split_request"),
             "bank_offers": bank_offers  # Add the prepared bank offers
@@ -126,3 +124,9 @@ def create_banks_loan_request(loan_service_request_id, deed_id, lba_source,reque
         frappe.throw(_("An error occurred while creating the Bank Loan Request."))
 
 
+def approve_lba_auto_stpes(lba_request_id , deed_id):
+    from fikak_app.fikak_api.lba_api import create_bank_lba_request
+    lba_request = frappe.get_doc("Loan Service Request" , lba_request_id)
+    fikak_settings = frappe.get_single("Fikak Settings")
+    if fikak_settings.split_auto_validation:
+        create_bank_lba_request(lba_request.name , deed_id)

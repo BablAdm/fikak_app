@@ -13,6 +13,8 @@
   "deed",
   "request",
   "status",
+  "payment_type",
+  "is_paid",
   "evaluation_result_section",
   "evaluation_price"
  ],
@@ -30,7 +32,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Pending\nPaid\nNot paid\nDone"
+   "options": "Pending\nPay Later\nPaid\nNot paid\nDone"
   },
   {
    "fieldname": "description",
@@ -82,11 +84,32 @@
    "label": "Deed",
    "options": "WATHEQ Deed",
    "reqd": 1
+  },
+  {
+   "fieldname": "payment_type",
+   "fieldtype": "Select",
+   "label": "Payment Type",
+   "options": "\nBefore Loan\nAfter Loan"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_paid",
+   "fieldtype": "Check",
+   "label": "Is Paid ?"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-12-17 13:59:30.752135",
+ "links": [
+  {
+   "link_doctype": "Evaluator Evaluation Request",
+   "link_fieldname": "request_id"
+  },
+  {
+   "link_doctype": "Evaluator Evaluation Hook Response",
+   "link_fieldname": "request_id"
+  }
+ ],
+ "modified": "2024-12-26 12:41:19.027571",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Evaluation Request",

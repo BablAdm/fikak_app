@@ -13,6 +13,7 @@
   "deed",
   "status",
   "is_active",
+  "payment_type",
   "pricing_section",
   "current_market_deed_price",
   "total_interest_payment",
@@ -38,7 +39,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Pending\nWaiting For Payment\nPaid\nWaiting For Evaluation\nEvaluated\nEligible For Loan\nEligible For Split\nNot Eligible\nOffer\nAccepted\nRejected",
+   "options": "Pending\nWaiting For Payment\nPay Later\nPaid\nWaiting For Evaluation\nEvaluated\nEligible For Loan\nEligible For Split\nNot Eligible\nOffer\nAccepted\nRejected",
    "reqd": 1
   },
   {
@@ -127,6 +128,12 @@
   {
    "fieldname": "column_break_hooc",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_type",
+   "fieldtype": "Select",
+   "label": "Payment Type",
+   "options": "\nBefore Loan\nAfter Loan"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -142,9 +149,13 @@
   {
    "link_doctype": "Hyperpay Request",
    "link_fieldname": "reference"
+  },
+  {
+   "link_doctype": "Mortgage Registration Request",
+   "link_fieldname": "split_service_request"
   }
  ],
- "modified": "2024-12-12 14:14:43.267496",
+ "modified": "2024-12-24 13:44:53.431730",
  "modified_by": "Administrator",
  "module": "Requests Management",
  "name": "Split Service Request",
