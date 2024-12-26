@@ -10,9 +10,6 @@ def update_deed_workflow(deed_name ,service, status, result_dt = None):
 	## 1. get deed doctype
     deed_dt = frappe.get_doc("WATHEQ Deed", deed_name)
 
-    if not deed_dt:
-        frappe.throw(f"Deed with name '{deed_name}' not found.")
-
     # 2.Update the Deed status and services
     deed_dt.service_status = status
     deed_dt.service = service

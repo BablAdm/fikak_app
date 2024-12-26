@@ -39,9 +39,10 @@ def handle_evaluator_response_webhook(request_id, response = "",evaluationPriceT
         evaluated_price = 1000
         if result_json.get("status"):
             evaluated_price = result_json.get("data").get("evaluation").get("market_average_price_m2")
-
-
+        
+        
         # 2. Update evaluation request document status with done
+        
         update_evaluation_request(request_id,evaluated_price, "Done" , evaluationPriceTest)
 
         # TODO : Add Evaluation in deed history tabs
@@ -62,6 +63,7 @@ def handle_evaluator_response_webhook(request_id, response = "",evaluationPriceT
 
     
     except Exception as e:
+        frappe.local.response.http_status_code = 500
         frappe.log_error(message=str(e), title="Evaluation API Error")
         return {"status": False, "message": str(e)}
 

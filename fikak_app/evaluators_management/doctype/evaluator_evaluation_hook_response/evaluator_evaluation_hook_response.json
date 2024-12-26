@@ -13,8 +13,9 @@
  "fields": [
   {
    "fieldname": "request_id",
-   "fieldtype": "Data",
-   "label": "Request Id"
+   "fieldtype": "Link",
+   "label": "Request Id",
+   "options": "Evaluation Request"
   },
   {
    "fieldname": "status",
@@ -34,7 +35,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-28 09:51:16.781492",
+ "modified": "2024-12-24 13:15:36.800915",
  "modified_by": "Administrator",
  "module": "Evaluators Management",
  "name": "Evaluator Evaluation Hook Response",
