@@ -34,7 +34,6 @@ class EvaluationRequest(Document):
             self.process_evaluation_request()
             if self.evaluation_source == "Loan Service Request":
                 update_split_service_request_status(self.request, "Pay Later", self.evaluation_price , self.evaluation_source)
-        
         else:
             update_split_service_request_status(self.request, "Waiting For Payment", self.evaluation_price , self.evaluation_source)
 
