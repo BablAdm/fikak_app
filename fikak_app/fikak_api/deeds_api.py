@@ -61,6 +61,7 @@ def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 
             watheq_deed_dt.is_real_estate_mortgaged,
             watheq_deed_dt.service,
             watheq_deed_dt.service_status,
+            watheq_deed_dt.service_status_label,
             deed_real_estate_details_dt.city_name.as_("deed_city"),
             deed_real_estate_details_dt.region_name.as_("deed_region"),
             deed_item_dt.parent.as_("request_id"),
@@ -123,7 +124,7 @@ def get_deeds_list(global_filter = None , filter_by_request = None , offset = 0 
     data = query.offset(offset).limit(page_size).run(as_dict=True)
     
     return {
-        "data" : translate(data , ["status"]),  
+        "data" : translate(data , ["status" , "service_status"]),  
         "meta": {
             "current_page": int((offset/page_size)+1),
             "total_items": data_len,
