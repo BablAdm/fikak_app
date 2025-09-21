@@ -32,10 +32,12 @@ def set_evaluation_as_paid(request_id ,  source = "Split Service Request"):
         evaluation_request_dt = frappe.get_doc("Evaluation Request", {"request": request_id,"evaluation_source":source})
         
         evaluation_request_dt.status = "Paid"
+        evaluation_request_dt.is_paid = 1
         evaluation_request_dt.save(ignore_permissions=True)
         doctype = "Split Service Request" if source == "Split Service Request" else "Loan Service Request"
         split_service_dt = frappe.get_doc(doctype, request_id)
         split_service_dt.status = "Paid"
+        
         split_service_dt.save(ignore_permissions=True)
         frappe.db.commit()
       
@@ -92,6 +94,7 @@ def get_eligibility_request_deed_data(deed_id, request_id=0):
             "total_principal_payment": deed.total_principal_payment,
             "deed_price": deed_dt.deed_price,
             "down_price": deed_dt.down_price,
+            "interest_amount": deed_dt.interest_amount,
         }
 
     except DoesNotExistError:

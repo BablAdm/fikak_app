@@ -36,17 +36,14 @@ def handle_evaluator_response_webhook(request_id, response = "",evaluationPriceT
                 "message": "Error parsing the response JSON."
             }
         # Validate the result response
+        evaluated_price = 1000
         if result_json.get("status"):
             evaluated_price = result_json.get("data").get("evaluation").get("market_average_price_m2")
-            evaluated_price = evaluated_price if evaluated_price >0 else 1000
-            # Store the result in Evaluator Evaluation Result Doctype
-            
-
-        if( evaluationPriceTest != 0 ):
-            evaluated_price = evaluationPriceTest
+        
         
         # 2. Update evaluation request document status with done
-        update_evaluation_request(request_id,evaluated_price, "Done")
+        
+        update_evaluation_request(request_id,evaluated_price, "Done" , evaluationPriceTest)
 
         # TODO : Add Evaluation in deed history tabs
         result_doc = frappe.get_doc({
@@ -66,6 +63,7 @@ def handle_evaluator_response_webhook(request_id, response = "",evaluationPriceT
 
     
     except Exception as e:
+        frappe.local.response.http_status_code = 500
         frappe.log_error(message=str(e), title="Evaluation API Error")
         return {"status": False, "message": str(e)}
 
@@ -132,7 +130,7 @@ def generate_evaluator_report(deed_id , source = "Split Service Request"):
         return {"status": "error", "message": str(e)}
 
 
-def update_evaluation_request(request_name,evaluated_price, new_status):
+def update_evaluation_request(request_name,evaluated_price, new_status,evaluationPriceTest = 0 ):
     """
     Update the status field on the Evaluation Request by searching with the request name.
 
@@ -150,9 +148,12 @@ def update_evaluation_request(request_name,evaluated_price, new_status):
  
         deed_doc = frappe.get_doc("WATHEQ Deed", evaluation_request_dt.deed)
         # Update the status field
-        evaluation_request_dt.evaluation_price = int(evaluated_price) * int(deed_doc.deed_area)
-        evaluation_request_dt.status = new_status
+        if( evaluationPriceTest != 0 ):
+            evaluation_request_dt.evaluation_price = int(evaluationPriceTest)
+        else:
+            evaluation_request_dt.evaluation_price = int(evaluated_price) * int(deed_doc.deed_area)
         
+        evaluation_request_dt.status = new_status
         evaluation_request_dt.save(ignore_permissions=True)  # Save with ignore permissions if necessary
         frappe.db.commit()
         return f"Status for Evaluation Request '{evaluation_request_dt.name}' updated to '{new_status}'."

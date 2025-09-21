@@ -58,7 +58,73 @@ def call_split_bank_request_api(mortgage_data):
         return {"status": False, "message": str(e)}
     
 
-def call_lba_bank_request_api(mortgage_data):
+
+import frappe
+from frappe import _
+
+def call_lba_banks_request_api(mortgage_data):
+    """
+    Fetches all bank providers with loan proposal enabled and sends the mortgage data
+    to each bank's loan proposal endpoint.
+
+    Args:
+        mortgage_data (dict): Data to send to the banks for loan proposals.
+
+    Returns:
+        list: A list of responses from all bank providers.
+    """
+    global_result = []
+
+    # Fetch bank providers with loan proposal enabled
+    bank_providers = frappe.get_all(
+        "Bank Provider",
+        filters={"is_loan_proposal_enabled": 1},
+        fields=["name","bank_name", "bank_code","logo","loan_proposal_end_point"]
+    )
+
+    if not bank_providers:
+        frappe.log_error(_("No bank providers with loan proposals enabled."), "Bank API Error")
+        return []
+
+    for bank in bank_providers:
+        try:
+            endpoint = bank.get("loan_proposal_end_point")
+
+            # Call the bank API
+            response = call_lba_bank_request_api(mortgage_data, endpoint)
+
+            # Append the response to the global result list
+            global_result.append({
+                "bank":bank.name,
+                "bank_code": bank.bank_code,
+                "bank_name": bank.bank_name,
+                "logo": bank.logo,
+                "endpoint": endpoint,
+                "response": response
+            })
+
+        except Exception as e:
+            # Log the error for debugging
+            frappe.log_error(
+                title=_("Failed to call bank API for {0}").format(bank.name),
+                message=str(e)
+            )
+            global_result.append({
+                "bank_code": bank.bank_code,
+                "bank_name": bank.bank_name,
+                "logo": bank.logo,
+                "endpoint": endpoint,
+                "response": {
+                    "error": str(e),
+                    "success": False
+                }
+            })
+
+    return global_result
+
+
+
+def call_lba_bank_request_api(mortgage_data,endpoint=""):
     """
     Create a request for evaluator .
     Returns:
@@ -67,8 +133,9 @@ def call_lba_bank_request_api(mortgage_data):
     try:
 
         # Fetch Evaluator settings
+        if(endpoint == None or endpoint == ""):
+            endpoint = "http://dev-api.waseera.sa/smr/api/v1/loanBackedByAsset"
         
-        endpoint = "http://dev-api.waseera.sa/smr/api/v1/loanBackedByAsset"
         headers = {
             "Content-Type": "application/json",
         }
