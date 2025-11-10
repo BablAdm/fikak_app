@@ -1,0 +1,101 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "KYC",
+  "enabled": 1,
+  "end_date": "2024-11-11",
+  "high_risk_percentage": 10.0,
+  "kyc_title": "MAIN KYC",
+  "medium_risk_percentage": 30.0,
+  "modified": "2024-11-12 15:36:44.185506",
+  "name": "MAIN KYC",
+  "no_risk_percentage": 20.0,
+  "questions": [
+   {
+    "kyc_question": "Your job",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Do you have any outstanding judgments or liens?",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Do you have any past due accounts?",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "General investment objectives",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Have you ever declared bankruptcy?",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Number of Credit Inquiries in the Last 6 Months:",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Annual Income",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Preferred Term of Loan (if applicable):",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Purpose of Credit Request:",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Amount Requested:",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "The client's ability to bear risks",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Current Employer",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Employment Status",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   },
+   {
+    "kyc_question": "Years Of Working",
+    "parent": "MAIN KYC",
+    "parentfield": "questions",
+    "parenttype": "KYC"
+   }
+  ],
+  "start_date": "2024-11-04"
+ }
+]

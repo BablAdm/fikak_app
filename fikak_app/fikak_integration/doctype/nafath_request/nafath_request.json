@@ -12,8 +12,9 @@
   "request_id",
   "transaction_id",
   "random",
-  "status",
-  "nafath_callback"
+  "nafath_callback",
+  "payment_status",
+  "status"
  ],
  "fields": [
   {
@@ -44,22 +45,27 @@
    "read_only": 1
   },
   {
-   "default": "WAITING",
    "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "WAITING\nCOMPLETED\nREJECTED\nEXPIRED"
+   "fieldtype": "Data",
+   "label": "Status"
   },
   {
    "fieldname": "nafath_callback",
    "fieldtype": "Link",
    "label": "NAFATH Callback",
    "options": "NAFATH Callback"
+  },
+  {
+   "default": "WAITING",
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "WAITING\nCOMPLETED\nREJECTED\nEXPIRED"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-27 11:43:57.235532",
+ "modified": "2024-11-26 12:29:49.912568",
  "modified_by": "Administrator",
  "module": "Fikak Integration",
  "name": "NAFATH Request",

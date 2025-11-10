@@ -1,0 +1,16 @@
+{{setVar 'bank_equity_percent' (int 0 100)}}
+{{setVar 'total_estimated_amount' (multiply (multiply (add (body 'new_market_price') 0) (divide (add (body 'customer_equity_percentage') 0) 100)) 1.1)}}
+{
+    "total_estimated_amount":  {{getVar 'total_estimated_amount'}},
+    "update_mortgage_date": "12/12/2024",
+    "end_date_of_new_mortgage": "{{dateTimeShift date='09-12-2024' format='dd-MM-YYYY' years=10 months=0 days=0 }}",
+    "mortgage_installement": {{divide (multiply (multiply (add (body 'new_market_price') 0) (divide (add (body 'customer_equity_percentage') 0) 100)) 1.1) (multiply 12 10)}},
+    "mortgage_duration": 10,
+    "mortgage_number_months": "{{multiply 12 10}}",
+    "mortgage_start_payment_date": "{{now 'dd-MM-YYYY'}}",
+    "lba_id": "{{body 'lba_id'}}",
+    "lbar_bank_id": "{{int 1000 9999}}",
+    "new_mortgage_id": "{{int 1000 9999}}",
+    "bank_equity_percent": {{getVar 'bank_equity_percent'}},
+    "loan_amount": {{multiply (getVar 'total_estimated_amount') (divide (getVar 'bank_equity_percent') 100)}}
+}

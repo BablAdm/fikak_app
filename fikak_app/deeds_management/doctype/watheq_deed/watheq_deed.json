@@ -1,0 +1,453 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2024-11-04 08:30:49.588161",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "deeddetails_section",
+  "deed_owner",
+  "deed_number",
+  "deed_serial",
+  "deed_date",
+  "column_break_tmey",
+  "deed_text",
+  "courtdetails_section",
+  "deed_source",
+  "column_break_cgqw",
+  "deed_city",
+  "informations_tab",
+  "status_section",
+  "deed_status",
+  "deedinfo_section",
+  "deed_area",
+  "deed_area_text",
+  "column_break_algm",
+  "is_real_estate_constrained",
+  "is_real_estate_halted",
+  "is_real_estate_mortgaged",
+  "is_real_estate_testamented",
+  "owners_tab",
+  "owner_details",
+  "limits_details_tab",
+  "deedlimitsdetails__n_s__section",
+  "north_limit_name",
+  "north_limit_description",
+  "north_limit_length",
+  "north_limit_length_char",
+  "column_break_jytu",
+  "south_limit_name",
+  "south_limit_description",
+  "south_limit_length",
+  "south_limit_length_char",
+  "section_break_halc",
+  "east_limit_name",
+  "east_limit_description",
+  "east_limit_length",
+  "east_limit_lengthchar",
+  "column_break_hebv",
+  "west_limit_name",
+  "west_limit_description",
+  "west_limit_length",
+  "west_limit_length_char",
+  "realestatedetails_tab",
+  "real_estate_details",
+  "eligibilitystats_tab",
+  "service",
+  "column_break_egob",
+  "service_status",
+  "section_break_lspj",
+  "statuses",
+  "pricing_tab",
+  "deed_price",
+  "interest_amount",
+  "down_price",
+  "purchase_date",
+  "is_first_home",
+  "column_break_fzfi",
+  "eligibility_check_customer_equity",
+  "eligibility_check_max_loan",
+  "last_bursa_price",
+  "split_service_customer_equity",
+  "split_service_max_loan",
+  "last_evaluator_price"
+ ],
+ "fields": [
+  {
+   "fieldname": "deeddetails_section",
+   "fieldtype": "Section Break",
+   "label": "Deed Details"
+  },
+  {
+   "fieldname": "deed_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Deed Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "deed_serial",
+   "fieldtype": "Data",
+   "label": "Deed Serial"
+  },
+  {
+   "fieldname": "deed_date",
+   "fieldtype": "Data",
+   "label": "Deed Date"
+  },
+  {
+   "fieldname": "column_break_tmey",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deed_text",
+   "fieldtype": "Small Text",
+   "label": "Deed Text"
+  },
+  {
+   "fieldname": "courtdetails_section",
+   "fieldtype": "Section Break",
+   "label": "Court Details"
+  },
+  {
+   "fieldname": "deed_source",
+   "fieldtype": "Data",
+   "label": "Deed Court Source"
+  },
+  {
+   "fieldname": "column_break_cgqw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deed_city",
+   "fieldtype": "Data",
+   "label": "Deed Court City"
+  },
+  {
+   "fieldname": "informations_tab",
+   "fieldtype": "Tab Break",
+   "label": "Informations"
+  },
+  {
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Status"
+  },
+  {
+   "fieldname": "deed_status",
+   "fieldtype": "Data",
+   "label": "Deed Status"
+  },
+  {
+   "fieldname": "deedinfo_section",
+   "fieldtype": "Section Break",
+   "label": "Deed Info"
+  },
+  {
+   "fieldname": "deed_area",
+   "fieldtype": "Data",
+   "label": "Deed Area"
+  },
+  {
+   "fieldname": "deed_area_text",
+   "fieldtype": "Data",
+   "label": "Deed Area Text"
+  },
+  {
+   "fieldname": "column_break_algm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_real_estate_constrained",
+   "fieldtype": "Check",
+   "label": "Is Real Estate Constrained"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_real_estate_halted",
+   "fieldtype": "Check",
+   "label": "Is Real Estate Halted"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_real_estate_mortgaged",
+   "fieldtype": "Check",
+   "label": "Is Real Estate Mortgaged"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_real_estate_testamented",
+   "fieldtype": "Check",
+   "label": "Is Real Estate Testamented"
+  },
+  {
+   "fieldname": "owners_tab",
+   "fieldtype": "Tab Break",
+   "label": "Owners"
+  },
+  {
+   "fieldname": "owner_details",
+   "fieldtype": "Table",
+   "label": "Owner Details",
+   "options": "WATHEQ Deed Owner Item"
+  },
+  {
+   "fieldname": "limits_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Limits Details"
+  },
+  {
+   "fieldname": "deedlimitsdetails__n_s__section",
+   "fieldtype": "Section Break",
+   "label": "Deed Limits Details ( N /S )"
+  },
+  {
+   "fieldname": "north_limit_name",
+   "fieldtype": "Data",
+   "label": "North Limit Name"
+  },
+  {
+   "fieldname": "north_limit_description",
+   "fieldtype": "Data",
+   "label": "North Limit Description"
+  },
+  {
+   "fieldname": "north_limit_length",
+   "fieldtype": "Data",
+   "label": "North Limit Length"
+  },
+  {
+   "fieldname": "north_limit_length_char",
+   "fieldtype": "Data",
+   "label": "North Limit Length Char"
+  },
+  {
+   "fieldname": "column_break_jytu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "south_limit_name",
+   "fieldtype": "Data",
+   "label": "South Limit Name"
+  },
+  {
+   "fieldname": "south_limit_description",
+   "fieldtype": "Data",
+   "label": "South Limit Description"
+  },
+  {
+   "fieldname": "south_limit_length",
+   "fieldtype": "Data",
+   "label": "South Limit Length"
+  },
+  {
+   "fieldname": "south_limit_length_char",
+   "fieldtype": "Data",
+   "label": "South Limit Length Char"
+  },
+  {
+   "fieldname": "section_break_halc",
+   "fieldtype": "Section Break",
+   "label": "Deed Limits Details ( E / W )"
+  },
+  {
+   "fieldname": "east_limit_name",
+   "fieldtype": "Data",
+   "label": "East Limit Name"
+  },
+  {
+   "fieldname": "east_limit_description",
+   "fieldtype": "Data",
+   "label": "East Limit Description"
+  },
+  {
+   "fieldname": "east_limit_length",
+   "fieldtype": "Data",
+   "label": "East Limit Length"
+  },
+  {
+   "fieldname": "east_limit_lengthchar",
+   "fieldtype": "Data",
+   "label": "East Limit LengthChar"
+  },
+  {
+   "fieldname": "column_break_hebv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "west_limit_name",
+   "fieldtype": "Data",
+   "label": "West Limit Name"
+  },
+  {
+   "fieldname": "west_limit_description",
+   "fieldtype": "Data",
+   "label": "West Limit Description"
+  },
+  {
+   "fieldname": "west_limit_length",
+   "fieldtype": "Data",
+   "label": "West Limit Length"
+  },
+  {
+   "fieldname": "west_limit_length_char",
+   "fieldtype": "Data",
+   "label": "West Limit Length Char"
+  },
+  {
+   "fieldname": "realestatedetails_tab",
+   "fieldtype": "Tab Break",
+   "label": "Real Estate Details"
+  },
+  {
+   "fieldname": "real_estate_details",
+   "fieldtype": "Table",
+   "label": "Real Estate Details",
+   "options": "WATHEQ Real Estate Details Item"
+  },
+  {
+   "fieldname": "eligibilitystats_tab",
+   "fieldtype": "Tab Break",
+   "label": "Status Tracking"
+  },
+  {
+   "fieldname": "deed_owner",
+   "fieldtype": "Link",
+   "label": "Deed Owner",
+   "options": "User"
+  },
+  {
+   "fieldname": "pricing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Pricing"
+  },
+  {
+   "fieldname": "deed_price",
+   "fieldtype": "Currency",
+   "label": "Deed Price"
+  },
+  {
+   "fieldname": "interest_amount",
+   "fieldtype": "Currency",
+   "label": "Interest Amount"
+  },
+  {
+   "fieldname": "down_price",
+   "fieldtype": "Currency",
+   "label": "Down Price"
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Date",
+   "label": "Purchase Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_first_home",
+   "fieldtype": "Check",
+   "label": "Is First Home?"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "service_status",
+   "fieldtype": "Select",
+   "label": "Service Status",
+   "options": "\nPending\nEligible For Split\nEligible For Loan\nNot Eligible\nWaiting For Payment\nPay Later\nPaid\nWaiting For Evaluation\nEvaluated\nOffer\nAccepted\nRejected"
+  },
+  {
+   "fieldname": "service",
+   "fieldtype": "Select",
+   "label": "Service",
+   "options": "\nEligibility Check\nSplit Service\nAsset-Backed Loan"
+  },
+  {
+   "fieldname": "statuses",
+   "fieldtype": "Table",
+   "label": "Status Track",
+   "options": "Watheq Deed Status Item"
+  },
+  {
+   "fieldname": "column_break_egob",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_lspj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_fzfi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "eligibility_check_customer_equity",
+   "fieldtype": "Percent",
+   "label": "Eligibility Check Customer Equity"
+  },
+  {
+   "fieldname": "eligibility_check_max_loan",
+   "fieldtype": "Currency",
+   "label": "Eligibility Check Max Loan"
+  },
+  {
+   "fieldname": "split_service_customer_equity",
+   "fieldtype": "Percent",
+   "label": "Split Service Customer Equity"
+  },
+  {
+   "fieldname": "split_service_max_loan",
+   "fieldtype": "Currency",
+   "label": "Split Service Max Loan"
+  },
+  {
+   "fieldname": "last_bursa_price",
+   "fieldtype": "Currency",
+   "label": "Last Bursa Price"
+  },
+  {
+   "fieldname": "last_evaluator_price",
+   "fieldtype": "Currency",
+   "label": "Last Evaluator Price"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Split Bank Request",
+   "link_fieldname": "deed_id"
+  },
+  {
+   "link_doctype": "Split Service Request",
+   "link_fieldname": "deed"
+  },
+  {
+   "link_doctype": "Evaluation Request",
+   "link_fieldname": "deed"
+  }
+ ],
+ "modified": "2024-12-24 13:02:41.002817",
+ "modified_by": "Administrator",
+ "module": "Deeds Management",
+ "name": "WATHEQ Deed",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

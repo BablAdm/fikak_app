@@ -1,0 +1,171 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-11 17:01:25.616665",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "request_info_section",
+  "split_service_request",
+  "split_bank_request",
+  "requester",
+  "column_break_crob",
+  "deed_id",
+  "submission_date",
+  "status",
+  "mortgage_info_section",
+  "mortgage_id",
+  "bank_holder",
+  "due_amount",
+  "end_date",
+  "start_payment_date",
+  "installement",
+  "type",
+  "column_break_gyiw",
+  "number_months",
+  "duration",
+  "smr_id",
+  "smr_bank_id",
+  "offer_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "request_info_section",
+   "fieldtype": "Section Break",
+   "label": "Request Info"
+  },
+  {
+   "fieldname": "split_service_request",
+   "fieldtype": "Link",
+   "label": "Split Service Request",
+   "options": "Split Service Request"
+  },
+  {
+   "fieldname": "split_bank_request",
+   "fieldtype": "Link",
+   "label": "Split Bank Request",
+   "options": "Split Bank Request"
+  },
+  {
+   "fieldname": "requester",
+   "fieldtype": "Link",
+   "label": "Requester",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_crob",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "deed_id",
+   "fieldtype": "Link",
+   "label": "Deed Id",
+   "options": "WATHEQ Deed"
+  },
+  {
+   "fieldname": "submission_date",
+   "fieldtype": "Datetime",
+   "label": "Submission Date"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nPending\nRealesed\nRegistred"
+  },
+  {
+   "fieldname": "mortgage_info_section",
+   "fieldtype": "Section Break",
+   "label": "Mortgage Info"
+  },
+  {
+   "fieldname": "mortgage_id",
+   "fieldtype": "Data",
+   "label": "Mortgage ID"
+  },
+  {
+   "fieldname": "bank_holder",
+   "fieldtype": "Link",
+   "label": "Bank Holder",
+   "options": "Bank Provider"
+  },
+  {
+   "fieldname": "due_amount",
+   "fieldtype": "Currency",
+   "label": "Due Amount"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "start_payment_date",
+   "fieldtype": "Date",
+   "label": "Start Payment Date"
+  },
+  {
+   "fieldname": "installement",
+   "fieldtype": "Currency",
+   "label": "Installement"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type"
+  },
+  {
+   "fieldname": "column_break_gyiw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "number_months",
+   "fieldtype": "Int",
+   "label": "Number Months"
+  },
+  {
+   "fieldname": "duration",
+   "fieldtype": "Int",
+   "label": "Duration"
+  },
+  {
+   "fieldname": "smr_id",
+   "fieldtype": "Data",
+   "label": "SMR ID"
+  },
+  {
+   "fieldname": "offer_date",
+   "fieldtype": "Date",
+   "label": "Offer Date"
+  },
+  {
+   "fieldname": "smr_bank_id",
+   "fieldtype": "Data",
+   "label": "SMR Bank ID"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-12 12:15:52.672893",
+ "modified_by": "Administrator",
+ "module": "Requests Management",
+ "name": "Mortgage Registration Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

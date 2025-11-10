@@ -1,0 +1,11 @@
+{
+    "negociated_due_amount_for_update": 759000.0000000001,
+    "update_mortgage_date": "09-12-2024",
+    "end_date_of_new_mortgage": "12-09-2034",
+    "mortgage_installement": 6325.000000000001,
+    "mortgage_duration": 10,
+    "mortgage_number_months": 120,
+    "mortgage_start_payment_date": "09-12-2024",
+    "smr_id": "idsmrrequest1",
+    "smr_bank_id": "1438"
+}

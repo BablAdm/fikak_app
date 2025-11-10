@@ -7,22 +7,64 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "active_kyc"
+  "eligibity_check",
+  "max_new_loan",
+  "waseera_fees",
+  "split_auto_validation",
+  "evaluation_payment_section",
+  "is_formula_price_enabled",
+  "evaluation_amount",
+  "formula_code"
  ],
  "fields": [
   {
-   "fieldname": "active_kyc",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Active KYC",
-   "options": "KYC",
-   "reqd": 1
+   "fieldname": "eligibity_check",
+   "fieldtype": "Percent",
+   "label": "Eligibity Check Percent (%)"
+  },
+  {
+   "fieldname": "max_new_loan",
+   "fieldtype": "Percent",
+   "label": "Max New Loan Percent (%)"
+  },
+  {
+   "fieldname": "waseera_fees",
+   "fieldtype": "Percent",
+   "label": "Waseera Fees Percent (%)"
+  },
+  {
+   "fieldname": "evaluation_payment_section",
+   "fieldtype": "Section Break",
+   "label": "Evaluation Payment"
+  },
+  {
+   "fieldname": "evaluation_amount",
+   "fieldtype": "Currency",
+   "label": "Evaluation Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "split_auto_validation",
+   "fieldtype": "Check",
+   "label": "Split Auto Validation"
+  },
+  {
+   "fieldname": "formula_code",
+   "fieldtype": "Long Text",
+   "label": "Formula Code"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_formula_price_enabled",
+   "fieldtype": "Check",
+   "label": "Is Formula Price Enabled",
+   "options": "0\n1"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-10-28 11:58:43.035232",
+ "modified": "2024-12-24 18:40:28.893360",
  "modified_by": "Administrator",
  "module": "Fikak Settings",
  "name": "Fikak Settings",

@@ -1,0 +1,47 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-05 16:23:05.950755",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "consent_id",
+  "expiry_date",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "consent_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Consent ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Expiry Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "ACTIVE\nREVOKED"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-05 16:25:22.672814",
+ "modified_by": "Administrator",
+ "module": "Banking Management",
+ "name": "Bank Account Details Consent Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

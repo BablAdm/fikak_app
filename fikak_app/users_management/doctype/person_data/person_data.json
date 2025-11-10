@@ -35,9 +35,10 @@
   "building_number",
   "post_code",
   "district",
+  "country",
   "customer_data_tab",
   "income_source",
-  "martial_status",
+  "marital_status",
   "column_break_y4rlc",
   "income_range"
  ],
@@ -54,14 +55,6 @@
    "label": "User Type",
    "options": "B2C User",
    "reqd": 1
-  },
-  {
-   "fieldname": "first_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "First Name",
-   "reqd": 1,
-   "translatable": 1
   },
   {
    "fieldname": "second_name",
@@ -194,12 +187,6 @@
    "label": "Customer Data"
   },
   {
-   "fieldname": "martial_status",
-   "fieldtype": "Select",
-   "label": "Martial Status",
-   "options": "\nWidowed\nSingle\nMarried\nWidowed\nDivorced"
-  },
-  {
    "fieldname": "income_range",
    "fieldtype": "Currency",
    "label": "Income Range"
@@ -213,11 +200,31 @@
   {
    "fieldname": "column_break_y4rlc",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "marital_status",
+   "fieldtype": "Select",
+   "label": "Marital Status",
+   "options": "\nWidowed\nSingle\nMarried\nWidowed\nDivorced"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Country"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "First Name",
+   "reqd": 1,
+   "translatable": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-28 02:05:11.494470",
+ "modified": "2024-12-09 14:14:21.461169",
  "modified_by": "Administrator",
  "module": "Users Management",
  "name": "Person Data",

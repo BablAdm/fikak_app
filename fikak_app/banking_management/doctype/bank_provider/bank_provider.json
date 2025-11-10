@@ -1,0 +1,73 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:bank_name",
+ "creation": "2024-11-05 16:19:42.337034",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "bank_code",
+  "bank_name",
+  "logo",
+  "is_loan_proposal_enabled",
+  "loan_proposal_end_point"
+ ],
+ "fields": [
+  {
+   "fieldname": "logo",
+   "fieldtype": "Attach Image",
+   "label": "Logo"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bank Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "bank_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bank Code",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_loan_proposal_enabled",
+   "fieldtype": "Check",
+   "label": "Is Loan Proposal Enabled"
+  },
+  {
+   "fieldname": "loan_proposal_end_point",
+   "fieldtype": "Data",
+   "label": "Loan Proposal End Point"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-24 09:31:19.952549",
+ "modified_by": "Administrator",
+ "module": "Banking Management",
+ "name": "Bank Provider",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

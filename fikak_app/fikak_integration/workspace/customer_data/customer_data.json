@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"WbdBuQsL9N\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer Data</span>\",\"col\":12}},{\"id\":\"xRv91YZZ8s\",\"type\":\"card\",\"data\":{\"card_name\":\"Nafath Requests\",\"col\":4}},{\"id\":\"r8IEJ7l948\",\"type\":\"card\",\"data\":{\"card_name\":\"Customers\",\"col\":4}}]",
+ "content": "[{\"id\":\"WbdBuQsL9N\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Customer Data</span>\",\"col\":12}},{\"id\":\"xRv91YZZ8s\",\"type\":\"card\",\"data\":{\"card_name\":\"Nafath Requests\",\"col\":4}},{\"id\":\"r8IEJ7l948\",\"type\":\"card\",\"data\":{\"card_name\":\"Customers\",\"col\":4}},{\"id\":\"PL-iQV6SJE\",\"type\":\"card\",\"data\":{\"card_name\":\"Banking\",\"col\":4}}]",
  "creation": "2024-10-28 12:01:28.461972",
  "custom_blocks": [],
  "docstatus": 0,
@@ -59,9 +59,48 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Banking",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Consent Request",
+   "link_count": 0,
+   "link_to": "TARABUT Intent Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "TARABUT Callback",
+   "link_count": 0,
+   "link_to": "TARABUT Callback",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bank Account Details",
+   "link_count": 0,
+   "link_to": "Bank Account Details",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-10-28 12:16:03.171547",
+ "modified": "2024-11-30 20:02:30.894258",
  "modified_by": "Administrator",
  "module": "Fikak Integration",
  "name": "Customer Data",
@@ -71,7 +110,7 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 3.0,
+ "sequence_id": 4.0,
  "shortcuts": [],
  "title": "Customer Data"
 }

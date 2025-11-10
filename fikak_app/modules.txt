@@ -4,3 +4,10 @@ Users Management
 KYC Management
 Fikak Settings
 Deeds Management
+Banking Management
+Terms And Conditions
+Requests Management
+Payment Management
+Payments Management
+Evaluators Management
+Loans Management

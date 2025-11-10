@@ -1,0 +1,60 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-03 20:32:12.782060",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "development",
+  "user_id_watheq",
+  "user_id_bank",
+  "enable_mode_test"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "development",
+   "fieldtype": "Check",
+   "label": "Development"
+  },
+  {
+   "fieldname": "user_id_watheq",
+   "fieldtype": "Data",
+   "label": "User ID WATHEQ"
+  },
+  {
+   "fieldname": "user_id_bank",
+   "fieldtype": "Data",
+   "label": "User ID BANK"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_mode_test",
+   "fieldtype": "Check",
+   "label": "Enable Mode Test"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-12-01 22:01:47.141041",
+ "modified_by": "Administrator",
+ "module": "Fikak App",
+ "name": "DEV MOD PROPS",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
