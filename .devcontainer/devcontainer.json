@@ -1,0 +1,4 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {"ghcr.io/tiwaojo/features/mcap-cli:1": {latest}}
+}
