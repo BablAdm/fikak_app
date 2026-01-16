@@ -25,20 +25,30 @@
 #    You can learn more about setting IAM permissions at
 #    https://cloud.google.com/iam/docs/manage-access-other-resources
 #
-# 3. Change the values in the "env" block to match your values.
+# 3. Configure the values in the "env" block below:
+#    - Set these as GitHub repository variables (Settings > Secrets and variables > Actions > Variables)
+#    - Or replace the values directly in this file (not recommended for sensitive data)
+#
+#    Required values:
+#    - PROJECT_ID: Your Google Cloud project ID
+#    - REGION: GCP region (e.g., us-central1, europe-west1, asia-east1)
+#    - SERVICE: Your Cloud Run service name
+#    - WORKLOAD_IDENTITY_PROVIDER: Full path to your Workload Identity Provider
+#
+#    Example: ${{ vars.GCP_PROJECT_ID }} or hardcode 'my-actual-project-id'
 
 name: 'Build and Deploy to Cloud Run'
 
 on:
   push:
     branches:
-      - '"main"'
+      - main
 
 env:
-  PROJECT_ID: 'my-project' # TODO: update to your Google Cloud project ID
-  REGION: 'us-central1' # TODO: update to your region
-  SERVICE: 'my-service' # TODO: update to your service name
-  WORKLOAD_IDENTITY_PROVIDER: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider' # TODO: update to your workload identity provider
+  PROJECT_ID: 'my-project' # TODO: Replace with your GCP project ID or use ${{ vars.GCP_PROJECT_ID }}
+  REGION: 'us-central1' # TODO: Replace with your GCP region or use ${{ vars.GCP_REGION }}
+  SERVICE: 'fikak-app' # TODO: Replace with your Cloud Run service name or use ${{ vars.CLOUD_RUN_SERVICE }}
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider' # TODO: Replace with your Workload Identity Provider path or use ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
 
 jobs:
   deploy:
