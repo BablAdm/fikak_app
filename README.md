@@ -1,8 +1,55 @@
 # Fikak App
 
-A full-stack application with comprehensive API integrations including authentication, database, file storage, and external APIs.
+A complete full-stack financial services application with eligibility assessment, KYC workflows, banking integrations, and multi-language support.
 
-## Features
+## 🚀 Complete Integration Setup (New!)
+
+This repository now includes a **complete integration** of all Fikak App components:
+
+- ✅ **fikak-ui**: Next.js 14 frontend with React 18 (EN/AR/FR languages)
+- ✅ **Frappe Framework**: Python ERP backend with custom fikak_app
+- ✅ **Full Infrastructure**: Docker Compose orchestration for production-ready deployment
+
+### Quick Start (3 Commands)
+
+```bash
+# 1. Run automated setup
+./setup.sh
+
+# 2. Install custom Frappe app
+./install-fikak-app.sh
+
+# 3. Open browser → http://localhost
+# Login: Administrator / admin
+```
+
+### Documentation
+
+- 📖 **[USER_TESTING_GUIDE.md](USER_TESTING_GUIDE.md)** - For end-user testing (start here!)
+- 🛠️ **[COMPLETE_SETUP.md](COMPLETE_SETUP.md)** - Complete deployment guide
+- 🧪 **[TESTING.md](TESTING.md)** - Detailed API testing instructions
+
+### What's Included
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| Frontend | Next.js 14 + React 18 | User interface with multi-language |
+| Backend | Frappe Framework v15 | ERP system with custom APIs |
+| Database | MariaDB 10.6 | Persistent data storage |
+| Cache | Redis 6.2 | Session and queue management |
+| Proxy | Nginx | Reverse proxy and routing |
+| Workers | RQ | Background job processing |
+
+### Access Points
+
+- **Main App**: http://localhost
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/api/method
+- **Frappe Desk**: http://localhost:8000/app
+
+---
+
+## Features (Original FastAPI Backend - Available)
 
 ### Backend (FastAPI)
 - **JWT Authentication** - Secure user registration and login with JWT tokens
