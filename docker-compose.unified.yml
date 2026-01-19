@@ -1,0 +1,261 @@
+# Fikak App - Unified Docker Compose Setup
+# This orchestrates Frappe backend + fikak-ui frontend + all dependencies
+
+version: '3.8'
+
+services:
+  # ==================== Database Services ====================
+
+  mariadb:
+    image: mariadb:10.6
+    container_name: fikak_mariadb
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-admin123}
+      MYSQL_DATABASE: fikak_db
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - fikak_network
+    healthcheck:
+      test: mysqladmin ping -h localhost --password=$$MYSQL_ROOT_PASSWORD
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "3306:3306"
+
+  # ==================== Cache & Queue Services ====================
+
+  redis_cache:
+    image: redis:6.2-alpine
+    container_name: fikak_redis_cache
+    networks:
+      - fikak_network
+    volumes:
+      - redis_cache_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis_queue:
+    image: redis:6.2-alpine
+    container_name: fikak_redis_queue
+    networks:
+      - fikak_network
+    volumes:
+      - redis_queue_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ==================== Frappe Backend Services ====================
+
+  frappe_configurator:
+    image: frappe/erpnext:v15.18.0
+    container_name: fikak_configurator
+    restart: "no"
+    command:
+      - |
+        ls -1 apps > sites/apps.txt;
+        bench set-config -g db_host mariadb;
+        bench set-config -gp db_port 3306;
+        bench set-config -g redis_cache "redis://redis_cache:6379";
+        bench set-config -g redis_queue "redis://redis_queue:6379";
+        bench set-config -g developer_mode 1;
+        bench set-config -g allow_tests true;
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      REDIS_CACHE: "redis://redis_cache:6379"
+      REDIS_QUEUE: "redis://redis_queue:6379"
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    networks:
+      - fikak_network
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis_cache:
+        condition: service_healthy
+      redis_queue:
+        condition: service_healthy
+
+  frappe_backend:
+    image: frappe/erpnext:v15.18.0
+    container_name: fikak_backend
+    restart: unless-stopped
+    command:
+      - bash
+      - -c
+      - >
+        bench start
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      REDIS_CACHE: "redis://redis_cache:6379"
+      REDIS_QUEUE: "redis://redis_queue:6379"
+      FRAPPE_SITE_NAME_HEADER: ${FRAPPE_SITE_NAME:-localhost}
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+      - assets:/home/frappe/frappe-bench/sites/assets
+    networks:
+      - fikak_network
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    depends_on:
+      frappe_configurator:
+        condition: service_completed_successfully
+    healthcheck:
+      test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/8000' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  frappe_queue_short:
+    image: frappe/erpnext:v15.18.0
+    container_name: fikak_queue_short
+    restart: unless-stopped
+    command:
+      - bench
+      - worker
+      - --queue
+      - short,default
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      REDIS_CACHE: "redis://redis_cache:6379"
+      REDIS_QUEUE: "redis://redis_queue:6379"
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    networks:
+      - fikak_network
+    depends_on:
+      frappe_configurator:
+        condition: service_completed_successfully
+
+  frappe_queue_long:
+    image: frappe/erpnext:v15.18.0
+    container_name: fikak_queue_long
+    restart: unless-stopped
+    command:
+      - bench
+      - worker
+      - --queue
+      - long,default,short
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      REDIS_CACHE: "redis://redis_cache:6379"
+      REDIS_QUEUE: "redis://redis_queue:6379"
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    networks:
+      - fikak_network
+    depends_on:
+      frappe_configurator:
+        condition: service_completed_successfully
+
+  frappe_scheduler:
+    image: frappe/erpnext:v15.18.0
+    container_name: fikak_scheduler
+    restart: unless-stopped
+    command:
+      - bench
+      - schedule
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      REDIS_CACHE: "redis://redis_cache:6379"
+      REDIS_QUEUE: "redis://redis_queue:6379"
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    networks:
+      - fikak_network
+    depends_on:
+      frappe_configurator:
+        condition: service_completed_successfully
+
+  # ==================== Frontend Service ====================
+
+  fikak_ui:
+    build:
+      context: ./workspace/fikak-ui
+      dockerfile: Dockerfile
+    container_name: fikak_ui
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_FRAPPE_BASE_URL: http://frappe_backend:8000
+      NEXT_PUBLIC_IS_DEV: "1"
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    networks:
+      - fikak_network
+    depends_on:
+      frappe_backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==================== Reverse Proxy (Optional) ====================
+
+  nginx_proxy:
+    image: nginx:alpine
+    container_name: fikak_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - fikak_network
+    depends_on:
+      - frappe_backend
+      - fikak_ui
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+# ==================== Networks ====================
+
+networks:
+  fikak_network:
+    driver: bridge
+    name: fikak_network
+
+# ==================== Volumes ====================
+
+volumes:
+  mariadb_data:
+    name: fikak_mariadb_data
+  redis_cache_data:
+    name: fikak_redis_cache_data
+  redis_queue_data:
+    name: fikak_redis_queue_data
+  sites:
+    name: fikak_sites
+  logs:
+    name: fikak_logs
+  assets:
+    name: fikak_assets
