@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
+import logging
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -59,6 +60,8 @@ def internal_error(error):
     }), 500
 
 if __name__ == '__main__':
-    print(f"Starting Fikak App server on {HOST}:{PORT}")
-    print(f"Debug mode: {DEBUG}")
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    logger.info(f"Starting Fikak App server on {HOST}:{PORT}")
+    logger.info(f"Debug mode: {DEBUG}")
     app.run(host=HOST, port=PORT, debug=DEBUG)
