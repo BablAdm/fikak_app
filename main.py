@@ -14,7 +14,7 @@ app = Flask(__name__)
 # For production, set specific origins: ALLOWED_ORIGINS=https://example.com,https://app.example.com
 allowed_origins_str = os.getenv('ALLOWED_ORIGINS', '')
 if allowed_origins_str:
-    allowed_origins = allowed_origins_str.split(',')
+    allowed_origins = [origin.strip() for origin in allowed_origins_str.split(',') if origin.strip()]
     CORS(app, origins=allowed_origins)
 else:
     # No CORS enabled by default for security
