@@ -69,14 +69,22 @@ def items():
         })
 
     elif request.method == 'POST':
-        data = request.get_json()
+        try:
+            data = request.get_json(silent=True)
+        except Exception:
+            return jsonify({'error': 'Invalid JSON'}), 400
+
         if not data or 'name' not in data:
+            return jsonify({'error': 'name field is required'}), 400
+
+        name = data.get('name', '').strip() if isinstance(data.get('name'), str) else ''
+        if not name:
             return jsonify({'error': 'name field is required'}), 400
 
         item = {
             'id': data_store['next_id'],
-            'name': data['name'],
-            'description': data.get('description', ''),
+            'name': name,
+            'description': str(data.get('description', '')).strip() if isinstance(data.get('description'), str) else '',
             'created_at': datetime.now(timezone.utc).isoformat()
         }
         data_store['items'].append(item)
@@ -125,7 +133,7 @@ def not_found(error):
 @app.errorhandler(500)
 def internal_error(error):
     """Handle 500 errors"""
-    logger.error(f"Internal error: {error}")
+    logger.error("Internal server error occurred")
     return jsonify({'error': 'Internal server error'}), 500
 
 
