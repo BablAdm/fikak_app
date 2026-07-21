@@ -154,7 +154,15 @@ if __name__ == '__main__':
     # Development server only - use gunicorn in production (see Dockerfile)
     # NOTE: This Flask development server should NEVER be used in production.
     # For production deployments, the Dockerfile uses Gunicorn with proper security settings.
-    port = int(os.environ.get('PORT', 8080))
+    try:
+        port = int(os.environ.get('PORT', '8080'))
+    except (ValueError, TypeError):
+        port = 8080
+        logger.warning("Invalid PORT environment variable, using default 8080")
+
+    if port < 1 or port > 65535:
+        port = 8080
+        logger.warning("PORT out of valid range, using default 8080")
 
     logger.info(f"Starting Fikak Application on port {port}")
     # Always disable debug mode - development server is not for production use
