@@ -11,7 +11,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc && \
+    apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
@@ -21,12 +21,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
-
 # Create a non-root user
-RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app
+RUN useradd -m -u 1000 appuser
+
+# Copy application code with ownership
+COPY --chown=appuser:appuser . .
 
 # Switch to non-root user
 USER appuser
@@ -36,7 +35,8 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8080/health', timeout=2)"
+    CMD curl -fsS http://localhost:8080/health || exit 1
 
-# Run the application with gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "--threads", "4", "--timeout", "60", "--access-logfile", "-", "--error-logfile", "-", "app:app"]
+# Run the application with gunicorn
+# Note: Using 1 worker for demo app with in-memory store. In production, use persistent storage and scale workers.
+CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 1 --threads 2 --timeout 60 --access-logfile - --error-logfile - app:app"]

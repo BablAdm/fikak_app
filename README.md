@@ -140,15 +140,22 @@ docker rm fikak_app
 
 ## Production Deployment
 
-The application uses Gunicorn as the WSGI server for production deployments. It's configured with:
-- 2 workers
-- 4 threads per worker
+The application uses Gunicorn as the WSGI server for production deployments.
+
+**Note:** This demo app uses an in-memory data store and is configured with 1 worker to ensure consistency. In a production environment:
+- Use a persistent database (PostgreSQL, MongoDB, etc.) instead of in-memory storage
+- Scale to multiple workers as needed
+- Implement proper session management and distributed caching
+
+Current configuration:
+- 1 worker (single process for demo consistency)
+- 2 threads per worker
 - 60-second timeout
-- Health check every 30 seconds
+- Health check every 30 seconds with curl
 
 ## Project Structure
 
-```
+```text
 fikak_app/
 ├── app.py                 # Main application file
 ├── requirements.txt       # Python dependencies

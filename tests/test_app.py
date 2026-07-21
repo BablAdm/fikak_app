@@ -14,6 +14,7 @@ def client():
         # Reset data store before each test
         data_store['items'] = []
         data_store['requests_count'] = 0
+        data_store['next_id'] = 1
         yield client
 
 

@@ -4,7 +4,7 @@ Fikak Application - A simple Flask web application for testing
 import os
 import logging
 from flask import Flask, jsonify, request
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Configure logging
 logging.basicConfig(
@@ -16,9 +16,11 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # Store for demo purposes (in-memory)
+# Note: In production, use a real database. This demo is single-worker only (see Dockerfile).
 data_store = {
     'items': [],
-    'requests_count': 0
+    'requests_count': 0,
+    'next_id': 1
 }
 
 
@@ -29,7 +31,7 @@ def home():
     return jsonify({
         'message': 'Welcome to Fikak Application',
         'status': 'running',
-        'timestamp': datetime.utcnow().isoformat(),
+        'timestamp': datetime.now(timezone.utc).isoformat(),
         'version': '1.0.0',
         'total_requests': data_store['requests_count']
     })
@@ -40,7 +42,7 @@ def health():
     """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
-        'timestamp': datetime.utcnow().isoformat()
+        'timestamp': datetime.now(timezone.utc).isoformat()
     }), 200
 
 
@@ -61,12 +63,13 @@ def items():
             return jsonify({'error': 'name field is required'}), 400
 
         item = {
-            'id': len(data_store['items']) + 1,
+            'id': data_store['next_id'],
             'name': data['name'],
             'description': data.get('description', ''),
-            'created_at': datetime.utcnow().isoformat()
+            'created_at': datetime.now(timezone.utc).isoformat()
         }
         data_store['items'].append(item)
+        data_store['next_id'] += 1
         logger.info(f"Created new item: {item['name']}")
 
         return jsonify(item), 201
@@ -98,7 +101,7 @@ def stats():
     return jsonify({
         'total_items': len(data_store['items']),
         'total_requests': data_store['requests_count'],
-        'timestamp': datetime.utcnow().isoformat()
+        'timestamp': datetime.now(timezone.utc).isoformat()
     })
 
 
