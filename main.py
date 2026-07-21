@@ -9,7 +9,10 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+# Configure CORS with specific origins for production
+# TODO: Set ALLOWED_ORIGINS environment variable with comma-separated origins
+allowed_origins = os.getenv('ALLOWED_ORIGINS', '*').split(',')
+CORS(app, origins=allowed_origins if allowed_origins != ['*'] else '*')
 
 # Configuration
 PORT = int(os.getenv('PORT', 5000))
@@ -34,7 +37,12 @@ def health():
 @app.route('/api/test', methods=['GET', 'POST'])
 def test():
     if request.method == 'POST':
-        data = request.get_json()
+        data = request.get_json(silent=True)
+        if data is None:
+            return jsonify({
+                'status': 'error',
+                'message': 'Invalid JSON payload'
+            }), 400
         return jsonify({
             'status': 'success',
             'message': 'POST request received',
