@@ -120,10 +120,11 @@ def internal_error(error):
 
 if __name__ == '__main__':
     # Development server only - use gunicorn in production (see Dockerfile)
+    # NOTE: This Flask development server should NEVER be used in production.
+    # For production deployments, the Dockerfile uses Gunicorn with proper security settings.
     port = int(os.environ.get('PORT', 8080))
-    # Debug mode should only be enabled in development, defaults to False
-    debug = os.environ.get('DEBUG', 'False').lower() == 'true' and os.environ.get('ENV', 'production') == 'development'
 
     logger.info(f"Starting Fikak Application on port {port}")
-    # Bind to localhost (127.0.0.1) for development, not 0.0.0.0
-    app.run(host='127.0.0.1', port=port, debug=debug)
+    # Always disable debug mode - development server is not for production use
+    # Use Dockerfile with Gunicorn for any actual deployment (see Dockerfile)
+    app.run(host='127.0.0.1', port=port, debug=False)
