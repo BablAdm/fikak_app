@@ -70,7 +70,7 @@ def items():
         }
         data_store['items'].append(item)
         data_store['next_id'] += 1
-        logger.info(f"Created new item: {item['name']}")
+        logger.info(f"Created new item with ID {item['id']}")
 
         return jsonify(item), 201
 
@@ -91,7 +91,7 @@ def item_detail(item_id):
         if not item:
             return jsonify({'error': 'Item not found'}), 404
         data_store['items'].remove(item)
-        logger.info(f"Deleted item: {item_id}")
+        logger.info(f"Item deleted successfully")
         return jsonify({'message': 'Item deleted successfully'}), 200
 
 
