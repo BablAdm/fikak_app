@@ -131,20 +131,20 @@ def stats():
 
 
 @app.errorhandler(404)
-def not_found(error):
+def not_found(e):
     """Handle 404 errors"""
     return jsonify({'error': 'Endpoint not found'}), 404
 
 
 @app.errorhandler(500)
-def internal_error(error):
+def internal_error(e):
     """Handle 500 errors"""
     logger.error("Internal server error occurred")
     return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.errorhandler(Exception)
-def handle_exception(error):
+def handle_exception(e):
     """Handle unhandled exceptions"""
     logger.error("Unhandled exception occurred")
     return jsonify({'error': 'Internal server error'}), 500
