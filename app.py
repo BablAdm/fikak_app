@@ -15,6 +15,17 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+# Set security headers to prevent common attacks
+@app.after_request
+def set_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Content-Security-Policy'] = "default-src 'self'"
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    return response
+
 # Store for demo purposes (in-memory)
 # Note: In production, use a real database. This demo is single-worker only (see Dockerfile).
 data_store = {
