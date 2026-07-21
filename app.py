@@ -137,6 +137,13 @@ def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
 
+@app.errorhandler(Exception)
+def handle_exception(error):
+    """Handle unhandled exceptions"""
+    logger.error("Unhandled exception occurred")
+    return jsonify({'error': 'Internal server error'}), 500
+
+
 if __name__ == '__main__':
     # Development server only - use gunicorn in production (see Dockerfile)
     # NOTE: This Flask development server should NEVER be used in production.
