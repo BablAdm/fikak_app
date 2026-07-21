@@ -15,6 +15,12 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+# Configure Flask security settings
+app.config['JSON_SORT_KEYS'] = False
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024  # 1MB max request size
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Don't cache responses by default
+
 # Set security headers to prevent common attacks
 @app.after_request
 def set_security_headers(response):
