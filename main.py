@@ -9,10 +9,16 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-# Configure CORS with specific origins for production
-# TODO: Set ALLOWED_ORIGINS environment variable with comma-separated origins
-allowed_origins = os.getenv('ALLOWED_ORIGINS', '*').split(',')
-CORS(app, origins=allowed_origins if allowed_origins != ['*'] else '*')
+# Configure CORS - requires ALLOWED_ORIGINS environment variable
+# For development, set ALLOWED_ORIGINS=* explicitly
+# For production, set specific origins: ALLOWED_ORIGINS=https://example.com,https://app.example.com
+allowed_origins_str = os.getenv('ALLOWED_ORIGINS', '')
+if allowed_origins_str:
+    allowed_origins = allowed_origins_str.split(',')
+    CORS(app, origins=allowed_origins)
+else:
+    # No CORS enabled by default for security
+    app.logger.warning('CORS not configured. Set ALLOWED_ORIGINS environment variable to enable.')
 
 # Configuration
 PORT = int(os.getenv('PORT', 5000))
