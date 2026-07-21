@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+import secrets
 
 
 class Settings(BaseSettings):
@@ -14,7 +15,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://fikak_user:fikak_pass@localhost:5432/fikak_db"
 
     # JWT Authentication
-    secret_key: str = "your-secret-key-change-in-production"
+    secret_key: str = secrets.token_urlsafe(32)
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 

@@ -91,8 +91,7 @@ sleep 10
 # Check MariaDB health
 print_info "Checking MariaDB..."
 for i in {1..30}; do
-    if docker exec fikak_mariadb mysqladmin ping -h localhost -pchmod +x setup.sh
-admin123 --silent 2>/dev/null; then
+    if docker exec fikak_mariadb mysqladmin ping -h localhost -padmin123 --silent 2>/dev/null; then
         print_success "MariaDB is ready"
         break
     fi
