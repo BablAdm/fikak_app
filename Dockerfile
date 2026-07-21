@@ -35,7 +35,7 @@ EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -fsS http://localhost:8080/health || exit 1
+    CMD curl -fsS http://localhost:${PORT:-8080}/health || exit 1
 
 # Run the application with gunicorn
 # Note: Using 1 worker for demo app with in-memory store. In production, use persistent storage and scale workers.

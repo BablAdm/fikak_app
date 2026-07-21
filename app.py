@@ -77,7 +77,7 @@ def items():
 
     elif request.method == 'POST':
         try:
-            data = request.get_json(silent=True)
+            data = request.get_json(silent=False)
         except Exception:
             return jsonify({'error': 'Invalid JSON'}), 400
 
@@ -149,7 +149,7 @@ def handle_exception(e):
     """Handle unhandled exceptions (not HTTP exceptions)"""
     if isinstance(e, HTTPException):
         return e
-    logger.error("Unhandled exception occurred")
+    logger.exception("Unhandled exception occurred")
     return jsonify({'error': 'Internal server error'}), 500
 
 
