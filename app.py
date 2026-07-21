@@ -4,6 +4,7 @@ Fikak Application - A simple Flask web application for testing
 import os
 import logging
 from flask import Flask, jsonify, request
+from werkzeug.exceptions import HTTPException
 from datetime import datetime, timezone
 
 # Configure logging
@@ -80,7 +81,7 @@ def items():
         except Exception:
             return jsonify({'error': 'Invalid JSON'}), 400
 
-        if not data or 'name' not in data:
+        if not isinstance(data, dict) or 'name' not in data:
             return jsonify({'error': 'name field is required'}), 400
 
         name = data.get('name', '').strip() if isinstance(data.get('name'), str) else ''
@@ -145,7 +146,9 @@ def internal_error(e):
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    """Handle unhandled exceptions"""
+    """Handle unhandled exceptions (not HTTP exceptions)"""
+    if isinstance(e, HTTPException):
+        return e
     logger.error("Unhandled exception occurred")
     return jsonify({'error': 'Internal server error'}), 500
 
@@ -164,7 +167,13 @@ if __name__ == '__main__':
         port = 8080
         logger.warning("PORT out of valid range, using default 8080")
 
-    logger.info(f"Starting Fikak Application on port {port}")
+    # Bind host is configurable via HOST env var. Default to 0.0.0.0 so the
+    # server is reachable when running inside a container (Docker forwards
+    # published ports to the container's external interface, not loopback).
+    # Set HOST=127.0.0.1 for a hardened bare-metal local dev server.
+    host = os.environ.get('HOST', '0.0.0.0')
+
+    logger.info(f"Starting Fikak Application on {host}:{port}")
     # Always disable debug mode - development server is not for production use
     # Use Dockerfile with Gunicorn for any actual deployment (see Dockerfile)
-    app.run(host='127.0.0.1', port=port, debug=False)
+    app.run(host=host, port=port, debug=False)
