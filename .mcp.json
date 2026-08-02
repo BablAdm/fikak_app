@@ -5,11 +5,11 @@
       "command": "npx",
       "args": [
         "-y",
-        "mongodb-mcp-server@latest",
+        "mongodb-mcp-server@1.14.0",
         "--readOnly"
       ],
       "env": {
-        "MDB_MCP_CONNECTION_STRING": "<connection-string>"
+        "MDB_MCP_CONNECTION_STRING": "${MDB_MCP_CONNECTION_STRING}"
       }
     }
   }
