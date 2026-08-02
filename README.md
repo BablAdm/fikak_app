@@ -45,7 +45,7 @@ bash setup-fikak-mac.sh
 bash fix-and-test.sh
 ```
 
-Access: http://localhost:8080 · Login: `Administrator` / `admin`
+Access: http://localhost:8080 · Login: `Administrator` / *(password shown in setup script output)*
 
 ## Standalone API Testing (no Docker)
 

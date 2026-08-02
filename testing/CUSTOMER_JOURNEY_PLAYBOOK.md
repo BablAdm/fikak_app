@@ -11,10 +11,13 @@ If testing on your own machine, copy the files from outputs/ locally first, then
 pip install flask flask-cors flask-httpauth requests --break-system-packages
 cd <folder-with-files>
 
-# Set test account passwords (or accept the defaults printed on first run)
-export FIKAK_ADMIN_PASSWORD=<your-admin-password>
-export FIKAK_OFFICER_PASSWORD=<your-officer-password>
-export FIKAK_CUSTOMER_PASSWORD=<your-customer-password>
+# The server prints passwords on startup (search for "AUTHENTICATION" in fikak.log).
+# Copy them here before running the curl login steps — the shell variables must be
+# set or the $FIKAK_*_PASSWORD references in the commands below expand to empty.
+# Example (fill in the values from fikak.log):
+#   export FIKAK_ADMIN_PASSWORD=...
+#   export FIKAK_OFFICER_PASSWORD=...
+#   export FIKAK_CUSTOMER_PASSWORD=...
 
 setsid nohup python3 fikak-complete-deployment.py > fikak.log 2>&1 &
 curl http://localhost:8000/api/health        # expect "status":"healthy"

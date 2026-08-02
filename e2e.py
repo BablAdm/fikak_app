@@ -37,14 +37,16 @@ def run():
         frappe.get_doc({"doctype": "Financing Application", "customer": cust,
             "product": "Home Loan", "amount": 10000}).insert()
         check("Reject below-min amount (10K)", False, "was accepted!")
-    except frappe.ValidationError:
+    except frappe.ValidationError as exc:
+        frappe.logger().debug("Expected rejection for low amount: %s", exc)
         check("Reject below-min amount (10K)", True)
 
     try:
         app.status = "Disbursed"
         app.save()
         check("Block disburse before approve", False, "was allowed!")
-    except frappe.ValidationError:
+    except frappe.ValidationError as exc:
+        frappe.logger().debug("Expected rejection for premature disburse: %s", exc)
         check("Block disburse before approve", True)
         app.reload()
 

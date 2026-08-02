@@ -19,7 +19,7 @@ The script watches progress and prints the access details when done.
 |---|---|
 | **URL** | http://localhost:8080 |
 | **Username** | Administrator |
-| **Password** | admin |
+| **Password** | shown in setup-fikak-mac.sh output (or check .env.local) |
 | **Framework** | Frappe v15 + ERPNext v15.54.5 (real, persistent MariaDB) |
 
 Unlike the preview server, **data persists across restarts** — this is the
@@ -37,7 +37,7 @@ language: English — you can add Arabic in settings later). Then test:
    with role-gated transitions (mirrors what you tested on the preview API).
 5. **REST API** — Frappe auto-exposes every DocType:
    ```bash
-   curl -u Administrator:admin http://localhost:8080/api/resource/Customer
+   curl -u Administrator:$ADMIN_PASSWORD http://localhost:8080/api/resource/Customer
    ```
 6. **Audit trail** — every doc has a version history; check the sidebar timeline.
 
@@ -72,7 +72,7 @@ Then in the UI search bar type "Financing Application" — your custom DocType i
 4. Set status to Disbursed without approval → **must be rejected**
 5. Approve first, then Disburse → approval_date and disbursement_date auto-set
 6. Create a Payment Transaction → gateway_reference auto-generates (TXN-...)
-7. Verify via REST: `curl -u Administrator:admin http://localhost:8080/api/resource/Financing%20Application`
+7. Verify via REST: `curl -u Administrator:$ADMIN_PASSWORD http://localhost:8080/api/resource/Financing%20Application`
 
 ## OPERATIONS
 
