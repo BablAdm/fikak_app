@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "MongoDB": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "npx -y mongodb-mcp-server --connectionString \"mongodb+srv://Vercel-Admin-atlas-bronze-magnet:${MONGODB_PASSWORD}@atlas-bronze-magnet.zsemevn.mongodb.net/\" --readOnly"
+      ]
+    },
+    "Vercel": {
+      "command": "npx",
+      "args": ["-y", "@vercel/mcp"],
+      "env": {
+        "VERCEL_TOKEN": "${VERCEL_TOKEN}"
+      }
+    }
+  }
+}
