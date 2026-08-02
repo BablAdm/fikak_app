@@ -52,11 +52,13 @@ print_success "Docker Compose is installed"
 # Step 2: Setup environment files
 print_info "Setting up environment files..."
 
-if [ ! -f workspace/fikak-ui/.env.local ]; then
+if [ -f workspace/fikak-ui/.env.local ]; then
+    print_warning ".env.local already exists for fikak-ui"
+elif [ -f workspace/fikak-ui/.env.example ]; then
     cp workspace/fikak-ui/.env.example workspace/fikak-ui/.env.local
     print_success "Created .env.local for fikak-ui"
 else
-    print_warning ".env.local already exists for fikak-ui"
+    print_warning "workspace/fikak-ui not found - clone the fikak-ui repo into workspace/ first (skipping .env.local creation)"
 fi
 
 # Step 3: Check Docker resources

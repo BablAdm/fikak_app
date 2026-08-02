@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy import text, or_
 from datetime import datetime, timedelta
 from typing import List, Optional
 import logging
@@ -49,17 +49,20 @@ def on_startup():
 
 # Health check endpoint
 @app.get("/health", response_model=schemas.HealthCheck)
-def health_check(db: Session = Depends(get_db)):
+def health_check(response: Response, db: Session = Depends(get_db)):
     """Health check endpoint"""
     try:
         # Test database connection
         db.execute(text("SELECT 1"))
         db_status = "healthy"
+        overall_status = "healthy"
     except Exception as e:
         db_status = f"unhealthy: {str(e)}"
+        overall_status = "unhealthy"
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
     return {
-        "status": "healthy",
+        "status": overall_status,
         "database": db_status,
         "timestamp": datetime.utcnow()
     }
@@ -122,6 +125,55 @@ def get_current_user_info(current_user: models.User = Depends(auth.get_current_a
     return current_user
 
 
+@app.get("/api/auth/me/export")
+def export_my_data(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    """Export all personal data held for the current user (GDPR/CCPA data portability)"""
+    posts = db.query(models.Post).filter(models.Post.user_id == current_user.id).all()
+    files = db.query(models.FileUpload).filter(models.FileUpload.user_id == current_user.id).all()
+
+    return {
+        "user": {
+            "id": current_user.id,
+            "email": current_user.email,
+            "username": current_user.username,
+            "created_at": current_user.created_at,
+        },
+        "posts": [
+            {"id": p.id, "title": p.title, "content": p.content,
+             "published": p.published, "created_at": p.created_at}
+            for p in posts
+        ],
+        "files": [
+            {"id": f.id, "filename": f.filename, "file_size": f.file_size,
+             "content_type": f.content_type, "created_at": f.created_at}
+            for f in files
+        ],
+    }
+
+
+@app.delete("/api/auth/me", status_code=status.HTTP_204_NO_CONTENT)
+def delete_my_account(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    """Delete the current user's account and all associated data (GDPR/CCPA right to erasure)"""
+    files = db.query(models.FileUpload).filter(models.FileUpload.user_id == current_user.id).all()
+    for file_upload in files:
+        try:
+            s3_storage.delete_file(file_upload.file_key, file_upload.bucket_name)
+        except Exception as e:
+            logger.warning(f"Could not delete S3 object {file_upload.file_key}: {e}")
+        db.delete(file_upload)
+
+    db.query(models.Post).filter(models.Post.user_id == current_user.id).delete()
+    db.delete(current_user)
+    db.commit()
+    return None
+
+
 # ==================== Post Endpoints ====================
 
 @app.post("/api/posts", response_model=schemas.PostResponse, status_code=status.HTTP_201_CREATED)
@@ -140,13 +192,20 @@ def create_post(
 
 @app.get("/api/posts", response_model=List[schemas.PostResponse])
 def get_posts(
-    skip: int = 0,
-    limit: int = 10,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
-    """Get all posts"""
-    posts = db.query(models.Post).offset(skip).limit(limit).all()
+    """Get all published posts plus the current user's own drafts"""
+    posts = (
+        db.query(models.Post)
+        .filter(or_(models.Post.published.is_(True), models.Post.user_id == current_user.id))
+        .order_by(models.Post.id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return posts
 
 
@@ -159,6 +218,8 @@ def get_post(
     """Get a specific post"""
     post = db.query(models.Post).filter(models.Post.id == post_id).first()
     if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    if not post.published and post.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Post not found")
     return post
 
@@ -210,13 +271,25 @@ def delete_post(
 
 # ==================== File Upload Endpoints ====================
 
+MAX_UPLOAD_SIZE = 25 * 1024 * 1024  # 25 MB
+
+
 @app.post("/api/files/upload", response_model=schemas.FileUploadResponse)
-async def upload_file(
+def upload_file(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
-    """Upload a file to S3"""
+    """Upload a file to S3 (sync route: boto3 I/O runs in the threadpool)"""
+    file.file.seek(0, 2)
+    file_size = file.file.tell()
+    file.file.seek(0)
+    if file_size > MAX_UPLOAD_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"File exceeds maximum size of {MAX_UPLOAD_SIZE // (1024 * 1024)} MB"
+        )
+
     try:
         # Generate unique filename
         file_key = f"uploads/{current_user.id}/{datetime.utcnow().timestamp()}_{file.filename}"
@@ -228,7 +301,7 @@ async def upload_file(
         file_upload = models.FileUpload(
             filename=file.filename,
             file_key=file_key,
-            file_size=file.size,
+            file_size=file_size,
             content_type=file.content_type,
             bucket_name=result["bucket"],
             user_id=current_user.id
