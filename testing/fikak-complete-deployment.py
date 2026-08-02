@@ -43,21 +43,21 @@ class Config:
     """Application Configuration"""
     DEBUG = False
     TESTING = False
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'fikak-production-secret-key-2025')
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'change-me-in-env'
     JWT_EXPIRATION = 86400  # 24 hours
-    
-    # Payment Gateway Configuration
-    STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_fikak_stripe_key_2025')
-    STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', 'whsec_fikak_webhook_2025')
-    
+
+    # Payment Gateway Configuration (set real values via environment variables)
+    STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', '')
+    STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
+
     # KYC/AML Provider
     KYC_PROVIDER = 'local'  # 'local', 'kyc-pro', 'trulioo'
     AML_ENABLED = True
     AML_PROVIDER = 'local'
-    
+
     # Banking API
     BANK_API_ENDPOINT = 'https://api.bank.example.com'
-    BANK_API_KEY = os.environ.get('BANK_API_KEY', 'bank_api_key_2025')
+    BANK_API_KEY = os.environ.get('BANK_API_KEY', '')
     
     # Application Settings
     MAX_LOAN_AMOUNT = 5000000  # SAR
@@ -273,7 +273,7 @@ def verify_token(token):
             return None
         g.current_user = token_data
         return token_data
-    except:
+    except Exception:
         return None
 
 def require_role(*roles):

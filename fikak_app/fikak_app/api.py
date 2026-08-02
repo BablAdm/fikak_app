@@ -72,7 +72,7 @@ def generate_jwt_token(email):
     """
     payload = {
         "email": email,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=EXPIRATION_TIME)
+        "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=EXPIRATION_TIME)
     }
 
     # Encode the payload with the secret key
