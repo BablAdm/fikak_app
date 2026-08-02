@@ -42,7 +42,7 @@ def run():
             "product": "Home Loan", "amount": 10000}).insert()
         check("Reject below-min amount (10K)", False, "was accepted!")
     except frappe.ValidationError as exc:
-        _logger.debug("Expected rejection for low amount: %s", exc)
+        _logger.debug("Expected rejection for low amount", exc_info=exc)
         check("Reject below-min amount (10K)", True)
 
     try:
@@ -50,7 +50,7 @@ def run():
         app.save()
         check("Block disburse before approve", False, "was allowed!")
     except frappe.ValidationError as exc:
-        _logger.debug("Expected rejection for premature disburse: %s", exc)
+        _logger.debug("Expected rejection for premature disburse", exc_info=exc)
         check("Block disburse before approve", True)
         app.reload()
 

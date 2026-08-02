@@ -103,7 +103,7 @@ def get_kyc_answers():
             try:
                 answers[row.question] = json.loads(row.answer_value)
             except (TypeError, ValueError) as exc:
-                _logger.debug("Non-JSON answer value for %s: %s", row.question, exc)
+                _logger.debug("Non-JSON answer value for question %s", row.question, exc_info=exc)
                 answers[row.question] = row.answer_value
 
     return {"data": {

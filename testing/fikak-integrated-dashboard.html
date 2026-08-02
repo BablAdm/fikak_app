@@ -724,19 +724,25 @@
             const data = await response.json();
             
             const tbody = document.getElementById('applications-tbody');
-            tbody.innerHTML = '';
-            
+            tbody.textContent = '';
+
+            const fragment = document.createDocumentFragment();
             data.data.forEach(app => {
-                const statusClass = `status-${app.status.toLowerCase()}`;
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${app.id}</td>
-                        <td>${app.customerName}</td>
-                        <td>${formatSAR(app.amount)}</td>
-                        <td><span class="status-badge ${statusClass}">${app.status}</span></td>
-                    </tr>
-                `;
+                const row = document.createElement('tr');
+                [app.id, app.customer_id || '', formatSAR(app.amount)].forEach(val => {
+                    const td = document.createElement('td');
+                    td.textContent = val != null ? String(val) : '';
+                    row.appendChild(td);
+                });
+                const statusTd = document.createElement('td');
+                const badge = document.createElement('span');
+                badge.className = `status-badge status-${String(app.status || '').toLowerCase()}`;
+                badge.textContent = app.status || '';
+                statusTd.appendChild(badge);
+                row.appendChild(statusTd);
+                fragment.appendChild(row);
             });
+            tbody.appendChild(fragment);
         } catch (error) {
             console.error('Failed to load applications:', error);
         }
@@ -804,7 +810,7 @@
         
         const data = {
             customerName: document.getElementById('app-customer').value,
-            amount: parseInt(document.getElementById('app-amount').value),
+            amount: Number.parseInt(document.getElementById('app-amount').value, 10),
             product: document.getElementById('app-product').value
         };
 

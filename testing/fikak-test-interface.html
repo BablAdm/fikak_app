@@ -165,7 +165,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     customerName: name,
-                    amount: parseInt(amount),
+                    amount: Number.parseInt(amount, 10),
                     product: product
                 })
             });
@@ -199,7 +199,12 @@
 
         function showResponse(data, title) {
             const el = document.getElementById('response');
-            el.innerHTML = `<strong>${title}</strong><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            el.textContent = '';
+            const heading = document.createElement('strong');
+            heading.textContent = title;
+            const pre = document.createElement('pre');
+            pre.textContent = JSON.stringify(data, null, 2);
+            el.append(heading, pre);
         }
     </script>
 </body>
