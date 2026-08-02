@@ -99,7 +99,8 @@ def get_kyc_answers():
         for row in submission.answers:
             try:
                 answers[row.question] = json.loads(row.answer_value)
-            except (TypeError, ValueError):
+            except (TypeError, ValueError) as exc:
+                frappe.logger().debug("Non-JSON answer value for %s: %s", row.question, exc)
                 answers[row.question] = row.answer_value
 
     return {"data": {

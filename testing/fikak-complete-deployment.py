@@ -43,7 +43,7 @@ class Config:
     """Application Configuration"""
     DEBUG = False
     TESTING = False
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'change-me-in-env'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or secrets.token_urlsafe(32)
     JWT_EXPIRATION = 86400  # 24 hours
 
     # Payment Gateway Configuration (set real values via environment variables)
