@@ -10,18 +10,24 @@ If testing on your own machine, copy the files from outputs/ locally first, then
 ```bash
 pip install flask flask-cors flask-httpauth requests --break-system-packages
 cd <folder-with-files>
+
+# Set test account passwords (or accept the defaults printed on first run)
+export FIKAK_ADMIN_PASSWORD=<your-admin-password>
+export FIKAK_OFFICER_PASSWORD=<your-officer-password>
+export FIKAK_CUSTOMER_PASSWORD=<your-customer-password>
+
 setsid nohup python3 fikak-complete-deployment.py > fikak.log 2>&1 &
 curl http://localhost:8000/api/health        # expect "status":"healthy"
 ```
 
 Open in browser: `fikak-test-interface.html` (API tester) and keep a terminal for curl.
 
-**Test accounts:**
-| Role | Email | Password | Can do |
-|---|---|---|---|
-| Customer | customer@fikak.sa | customer1 | Submit applications only |
-| Officer | officer@fikak.sa | officer1 | Approve, disburse, KYC, payments |
-| Admin | admin@fikak.sa | admin | Everything + audit logs |
+**Test accounts** (passwords are set via env vars above, or auto-generated on first run — check `fikak.log`):
+| Role | Email | Can do |
+|---|---|---|
+| Customer | customer@fikak.sa | Submit applications only |
+| Officer | officer@fikak.sa | Approve, disburse, KYC, payments |
+| Admin | admin@fikak.sa | Everything + audit logs |
 
 ---
 
@@ -31,11 +37,11 @@ Open in browser: `fikak-test-interface.html` (API tester) and keep a terminal fo
 ```bash
 curl -s -X POST http://localhost:8000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"customer@fikak.sa","password":"customer1"}'
+  -d "{\"email\":\"customer@fikak.sa\",\"password\":\"$FIKAK_CUSTOMER_PASSWORD\"}"
 ```
 ✅ **Expect:** `"success":true` + a token. Save it:
 ```bash
-CUST_TOKEN=$(curl -s -X POST http://localhost:8000/api/auth/login -H "Content-Type: application/json" -d '{"email":"customer@fikak.sa","password":"customer1"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+CUST_TOKEN=$(curl -s -X POST http://localhost:8000/api/auth/login -H "Content-Type: application/json" -d "{\"email\":\"customer@fikak.sa\",\"password\":\"$FIKAK_CUSTOMER_PASSWORD\"}" | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 ```
 
 ### Step 2: Customer browses products
@@ -46,7 +52,7 @@ Products available: Home Loan (4.25%), Asset Finance (3.50%), Investment (5.00%)
 
 ### Step 3: Get a customer ID to apply with
 ```bash
-ADMIN_TOKEN=$(curl -s -X POST http://localhost:8000/api/auth/login -H "Content-Type: application/json" -d '{"email":"admin@fikak.sa","password":"admin"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+ADMIN_TOKEN=$(curl -s -X POST http://localhost:8000/api/auth/login -H "Content-Type: application/json" -d "{\"email\":\"admin@fikak.sa\",\"password\":\"$FIKAK_ADMIN_PASSWORD\"}" | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
 
 curl -s http://localhost:8000/api/customers -H "Authorization: Bearer $ADMIN_TOKEN" | python3 -m json.tool | grep '"id"'
 ```

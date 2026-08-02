@@ -56,6 +56,9 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
+    environment:
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD env var}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD env var}
     entrypoint:
       - bash
       - -c
@@ -77,14 +80,14 @@ services:
           fi
         done;
         echo "sites/common_site_config.json found";
-        bench new-site --mariadb-user-host-login-scope='%' --admin-password=${ADMIN_PASSWORD:?Set ADMIN_PASSWORD env var} --db-root-username=root --db-root-password=${DB_PASSWORD:?Set DB_PASSWORD env var} --install-app erpnext --set-default frontend;
+        bench new-site --mariadb-user-host-login-scope='%' --admin-password="$$ADMIN_PASSWORD" --db-root-username=root --db-root-password="$$DB_PASSWORD" --install-app erpnext --set-default frontend;
 
   db:
     image: mariadb:10.6
     networks:
       - frappe_network
     healthcheck:
-      test: mysqladmin ping -h localhost --password=$$MYSQL_ROOT_PASSWORD
+      test: mysqladmin ping -h localhost --password="$$MYSQL_ROOT_PASSWORD"
       interval: 1s
       retries: 20
     deploy:

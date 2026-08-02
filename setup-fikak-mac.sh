@@ -1,7 +1,8 @@
 #!/bin/bash
 # FIKAK FRAPPE STACK - macOS setup (Phase 1: real Frappe/ERPNext v15)
 set -e
-cd "$(dirname "$0")/frappe_docker"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR/frappe_docker"
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "❌ Docker not found. Install Docker Desktop for Mac first:"
@@ -13,12 +14,22 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
+# Load persisted credentials from a prior run so volumes and passwords stay in sync
+ENV_FILE="$SCRIPT_DIR/.env.local"
+if [ -f "$ENV_FILE" ]; then
+  # shellcheck source=/dev/null
+  . "$ENV_FILE"
+fi
+
 # Generate random passwords for local dev if not already set via environment
 : "${DB_PASSWORD:=$(openssl rand -hex 12)}"
 : "${ADMIN_PASSWORD:=$(openssl rand -hex 12)}"
 export DB_PASSWORD ADMIN_PASSWORD
 
-echo "🔐 Using credentials (save these):"
+# Write back so subsequent runs (after docker compose down) reuse the same passwords
+printf 'DB_PASSWORD=%s\nADMIN_PASSWORD=%s\n' "$DB_PASSWORD" "$ADMIN_PASSWORD" > "$ENV_FILE"
+
+echo "🔐 Using credentials (save these or see .env.local):"
 echo "   DB root password:  $DB_PASSWORD"
 echo "   Frappe admin pass: $ADMIN_PASSWORD"
 echo ""
