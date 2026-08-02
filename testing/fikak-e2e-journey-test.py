@@ -5,7 +5,7 @@ Full-cycle verification: Auth -> Customer -> KYC -> AML -> Application ->
 Approval -> Disbursement -> Payment -> Audit -> RBAC negative tests
 Every assertion checked against live server. No fabricated results.
 """
-import requests, json, sys
+import requests, json, sys, os
 
 BASE = "http://localhost:8000/api"
 results = []
@@ -22,15 +22,18 @@ print("=" * 70)
 
 # ---- PHASE 1: Authentication ----
 print("\nPHASE 1: Authentication & RBAC")
-r = requests.post(f"{BASE}/auth/login", json={"email": "admin@fikak.sa", "password": "admin"})
+_admin_pw = os.environ.get("FIKAK_ADMIN_PASSWORD", "")
+_customer_pw = os.environ.get("FIKAK_CUSTOMER_PASSWORD", "")
+
+r = requests.post(f"{BASE}/auth/login", json={"email": "admin@fikak.sa", "password": _admin_pw})
 check("Admin login", r.status_code == 200 and r.json().get("success"), r.text[:100])
 ADMIN = {"Authorization": f"Bearer {r.json()['token']}"}
 
-r = requests.post(f"{BASE}/auth/login", json={"email": "customer@fikak.sa", "password": "customer1"})
+r = requests.post(f"{BASE}/auth/login", json={"email": "customer@fikak.sa", "password": _customer_pw})
 check("Customer login", r.status_code == 200 and r.json().get("success"))
 CUSTOMER = {"Authorization": f"Bearer {r.json()['token']}"}
 
-r = requests.post(f"{BASE}/auth/login", json={"email": "admin@fikak.sa", "password": "WRONG"})
+r = requests.post(f"{BASE}/auth/login", json={"email": "admin@fikak.sa", "password": _admin_pw + "-invalid"})
 check("Invalid credentials rejected (401)", r.status_code == 401)
 
 r = requests.get(f"{BASE}/applications")

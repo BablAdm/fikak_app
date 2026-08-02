@@ -29,7 +29,7 @@ from functools import wraps
 from datetime import datetime, timedelta
 import json
 import uuid
-import hashlib
+import secrets
 import logging
 from enum import Enum
 import os
@@ -117,6 +117,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Seed passwords for the built-in test accounts.  Override via environment
+# variables; a random value is generated when none is provided so there are
+# no hardcoded credentials in the source.
+_ADMIN_PASSWORD = os.environ.get("FIKAK_ADMIN_PASSWORD") or secrets.token_urlsafe(12)
+_OFFICER_PASSWORD = os.environ.get("FIKAK_OFFICER_PASSWORD") or secrets.token_urlsafe(12)
+_CUSTOMER_PASSWORD = os.environ.get("FIKAK_CUSTOMER_PASSWORD") or secrets.token_urlsafe(12)
+
 # ============================================================================
 # DATABASE SIMULATION
 # ============================================================================
@@ -141,9 +148,9 @@ class Database:
     def _initialize_data(self):
         """Load initial data"""
         # Create users
-        self.create_user('admin@fikak.sa', 'admin', UserRole.ADMIN.value)
-        self.create_user('officer@fikak.sa', 'officer1', UserRole.OFFICER.value)
-        self.create_user('customer@fikak.sa', 'customer1', UserRole.CUSTOMER.value)
+        self.create_user('admin@fikak.sa', _ADMIN_PASSWORD, UserRole.ADMIN.value)
+        self.create_user('officer@fikak.sa', _OFFICER_PASSWORD, UserRole.OFFICER.value)
+        self.create_user('customer@fikak.sa', _CUSTOMER_PASSWORD, UserRole.CUSTOMER.value)
         
         # Create products
         self.create_product('Home Loan', 1000000, 4.25, 240)
@@ -164,11 +171,10 @@ class Database:
     def create_user(self, email, password, role):
         """Create user with authentication"""
         user_id = str(uuid.uuid4())
-        password_hash = hashlib.sha256(password.encode()).hexdigest()
         self.users[user_id] = {
             'id': user_id,
             'email': email,
-            'password_hash': password_hash,
+            'password': password,
             'role': role,
             'created_at': datetime.now().isoformat(),
             'active': True
@@ -250,8 +256,7 @@ def get_token(email, password):
     if not user:
         return None
     
-    password_hash = hashlib.sha256(password.encode()).hexdigest()
-    if user['password_hash'] != password_hash:
+    if not secrets.compare_digest(user['password'], password):
         return None
     
     token = {
@@ -273,7 +278,8 @@ def verify_token(token):
             return None
         g.current_user = token_data
         return token_data
-    except Exception:
+    except Exception as exc:  # noqa: BLE001
+        logger.debug("Token verification failed: %s", exc)
         return None
 
 def require_role(*roles):
@@ -869,10 +875,10 @@ if __name__ == '__main__':
     print(f'  📍 API Base:    http://localhost:{PORT}/api')
     print(f'  📍 Health:      http://localhost:{PORT}/api/health')
     
-    print(f'\n🔐 AUTHENTICATION')
-    print(f'  📧 Admin:       admin@fikak.sa / admin')
-    print(f'  📧 Officer:     officer@fikak.sa / officer1')
-    print(f'  📧 Customer:    customer@fikak.sa / customer1')
+    print(f'\n🔐 AUTHENTICATION (set FIKAK_*_PASSWORD env vars to override)')
+    print(f'  📧 Admin:       admin@fikak.sa  / {_ADMIN_PASSWORD}')
+    print(f'  📧 Officer:     officer@fikak.sa / {_OFFICER_PASSWORD}')
+    print(f'  📧 Customer:    customer@fikak.sa / {_CUSTOMER_PASSWORD}')
     
     print(f'\n🏠 ENDPOINTS')
     print(f'  POST   /api/auth/login              - Authenticate user')
