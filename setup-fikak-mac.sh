@@ -13,6 +13,16 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
+# Generate random passwords for local dev if not already set via environment
+: "${DB_PASSWORD:=$(openssl rand -hex 12)}"
+: "${ADMIN_PASSWORD:=$(openssl rand -hex 12)}"
+export DB_PASSWORD ADMIN_PASSWORD
+
+echo "🔐 Using credentials (save these):"
+echo "   DB root password:  $DB_PASSWORD"
+echo "   Frappe admin pass: $ADMIN_PASSWORD"
+echo ""
+
 echo "🚀 Starting Frappe/ERPNext v15 stack (this pulls ~2GB of images on first run)..."
 docker compose -f pwd.yml up -d
 
@@ -26,7 +36,7 @@ echo "════════════════════════�
 echo "✅ FIKAK FRAPPE STACK READY"
 echo "   URL:      http://localhost:8080"
 echo "   Login:    Administrator"
-echo "   Password: admin"
+echo "   Password: $ADMIN_PASSWORD"
 echo "══════════════════════════════════════════════════════"
 echo "Stop:    docker compose -f pwd.yml down"
 echo "Destroy: docker compose -f pwd.yml down -v   (deletes all data)"

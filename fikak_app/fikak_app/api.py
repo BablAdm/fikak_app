@@ -37,8 +37,8 @@ def custom_login(email, password):
             "csrf_token" : frappe.sessions.get_csrf_token(),
             "session_id": frappe.session.sid  # Return the session ID
         }
-    except frappe.exceptions.AuthenticationError:
-        # If authentication fails, return an error
+    except frappe.exceptions.AuthenticationError as auth_err:
+        frappe.logger().debug("Login failed for %s: %s", email, auth_err)
         frappe.clear_messages()
         frappe.local.response["http_status_code"] = 401
         return {

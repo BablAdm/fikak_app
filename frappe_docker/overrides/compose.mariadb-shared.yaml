@@ -6,7 +6,7 @@ services:
     image: mariadb:10.6
     restart: unless-stopped
     healthcheck:
-      test: mysqladmin ping -h localhost --password=${DB_PASSWORD:-changeit}
+      test: mysqladmin ping -h localhost --password=${DB_PASSWORD:?Set DB_PASSWORD env var}
       interval: 1s
       retries: 20
     command:
@@ -15,7 +15,7 @@ services:
       - --skip-character-set-client-handshake
       - --skip-innodb-read-only-compressed
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-changeit}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD env var}
     volumes:
       - db-data:/var/lib/mysql
     networks:
