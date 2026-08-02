@@ -1,7 +1,10 @@
 import json
+import logging
 
 import frappe
 from frappe import _
+
+_logger = logging.getLogger(__name__)
 
 
 def _get_active_kyc():
@@ -100,7 +103,7 @@ def get_kyc_answers():
             try:
                 answers[row.question] = json.loads(row.answer_value)
             except (TypeError, ValueError) as exc:
-                frappe.logger().debug("Non-JSON answer value for %s: %s", row.question, exc)
+                _logger.debug("Non-JSON answer value for %s: %s", row.question, exc)
                 answers[row.question] = row.answer_value
 
     return {"data": {

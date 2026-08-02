@@ -1,11 +1,15 @@
 
 
 
+import logging
+
 import frappe
 from frappe import _
 import jwt
 import datetime
 from frappe.utils import now_datetime
+
+_logger = logging.getLogger(__name__)
 
 EXPIRATION_TIME = 360000  # Token expiration time in seconds
 
@@ -38,7 +42,7 @@ def custom_login(email, password):
             "session_id": frappe.session.sid  # Return the session ID
         }
     except frappe.exceptions.AuthenticationError as auth_err:
-        frappe.logger().debug("Login failed for %s: %s", email, auth_err)
+        _logger.debug("Login failed for %s: %s", email, auth_err)
         frappe.clear_messages()
         frappe.local.response["http_status_code"] = 401
         return {

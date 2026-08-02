@@ -1,4 +1,8 @@
+import logging
+
 import frappe
+
+_logger = logging.getLogger(__name__)
 
 def run():
     results = []
@@ -38,7 +42,7 @@ def run():
             "product": "Home Loan", "amount": 10000}).insert()
         check("Reject below-min amount (10K)", False, "was accepted!")
     except frappe.ValidationError as exc:
-        frappe.logger().debug("Expected rejection for low amount: %s", exc)
+        _logger.debug("Expected rejection for low amount: %s", exc)
         check("Reject below-min amount (10K)", True)
 
     try:
@@ -46,7 +50,7 @@ def run():
         app.save()
         check("Block disburse before approve", False, "was allowed!")
     except frappe.ValidationError as exc:
-        frappe.logger().debug("Expected rejection for premature disburse: %s", exc)
+        _logger.debug("Expected rejection for premature disburse: %s", exc)
         check("Block disburse before approve", True)
         app.reload()
 
