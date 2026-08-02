@@ -1,0 +1,25 @@
+{
+ "doctype": "DocType",
+ "name": "Financial Product",
+ "module": "Fikak",
+ "custom": 0,
+ "naming_rule": "By fieldname",
+ "autoname": "field:product_name",
+ "engine": "InnoDB",
+ "field_order": ["product_name", "product_name_ar", "product_type", "max_amount", "interest_rate", "term_months", "status", "description"],
+ "fields": [
+  {"fieldname": "product_name", "fieldtype": "Data", "label": "Product Name", "reqd": 1, "unique": 1},
+  {"fieldname": "product_name_ar", "fieldtype": "Data", "label": "Product Name (Arabic)"},
+  {"fieldname": "product_type", "fieldtype": "Select", "label": "Type", "options": "Financing\nInvestment\nSavings"},
+  {"fieldname": "max_amount", "fieldtype": "Currency", "label": "Maximum Amount (SAR)"},
+  {"fieldname": "interest_rate", "fieldtype": "Percent", "label": "Interest Rate"},
+  {"fieldname": "term_months", "fieldtype": "Int", "label": "Term (Months)"},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Active\nInactive", "default": "Active"},
+  {"fieldname": "description", "fieldtype": "Small Text", "label": "Description"}
+ ],
+ "permissions": [
+  {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

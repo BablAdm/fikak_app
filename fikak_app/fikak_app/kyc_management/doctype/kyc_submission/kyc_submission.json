@@ -1,0 +1,112 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-07-12 00:00:00.000000",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "kyc",
+  "kyc_title",
+  "column_break_sub1",
+  "submitted_on",
+  "risk_score",
+  "risk_classification",
+  "section_break_answers",
+  "answers"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "User",
+   "options": "User",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "kyc",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "KYC",
+   "options": "KYC",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "kyc.kyc_title",
+   "fieldname": "kyc_title",
+   "fieldtype": "Data",
+   "label": "KYC Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_sub1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "submitted_on",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Submitted On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "risk_score",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Risk Score",
+   "read_only": 1
+  },
+  {
+   "fieldname": "risk_classification",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Risk Classification",
+   "options": "No Risk\nMedium Risk\nHigh Risk",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_answers",
+   "fieldtype": "Section Break",
+   "label": "Answers"
+  },
+  {
+   "fieldname": "answers",
+   "fieldtype": "Table",
+   "label": "Answers",
+   "options": "KYC Submission Answer Item",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-07-12 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "KYC Management",
+ "name": "KYC Submission",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,22 @@
+{
+ "doctype": "DocType",
+ "name": "Payment Transaction",
+ "module": "Fikak",
+ "custom": 0,
+ "naming_rule": "Expression",
+ "autoname": "format:PAY-{YYYY}-{#####}",
+ "engine": "InnoDB",
+ "field_order": ["application", "amount", "method", "status", "gateway_reference"],
+ "fields": [
+  {"fieldname": "application", "fieldtype": "Link", "label": "Application", "options": "Financing Application", "reqd": 1},
+  {"fieldname": "amount", "fieldtype": "Currency", "label": "Amount (SAR)", "reqd": 1},
+  {"fieldname": "method", "fieldtype": "Select", "label": "Method", "options": "Bank Transfer\nCredit Card", "reqd": 1},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Initiated\nProcessing\nCompleted\nFailed\nRefunded", "default": "Initiated"},
+  {"fieldname": "gateway_reference", "fieldtype": "Data", "label": "Gateway Reference", "read_only": 1}
+ ],
+ "permissions": [
+  {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
