@@ -21,8 +21,9 @@ else:
     app.logger.warning('CORS not configured. Set ALLOWED_ORIGINS environment variable to enable.')
 
 # Configuration
+# HOST defaults to localhost; container/production deployments must set HOST=0.0.0.0 explicitly
 PORT = int(os.getenv('PORT', 5000))
-HOST = os.getenv('HOST', '0.0.0.0')
+HOST = os.getenv('HOST', '127.0.0.1')
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 @app.route('/')
