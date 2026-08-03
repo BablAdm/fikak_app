@@ -180,16 +180,22 @@ class TestCORSConfiguration:
 
     def test_cors_disabled_by_default(self, client):
         """Test that CORS is disabled when ALLOWED_ORIGINS not set."""
-        response = client.get('/')
+        # Send a request with an Origin header (required for CORS to work)
+        response = client.get('/', headers={'Origin': 'http://example.com'})
         # When CORS is not enabled, there should be no CORS headers
         assert 'Access-Control-Allow-Origin' not in response.headers
 
-    def test_cors_enabled_with_env_var(self, client, env_var, monkeypatch):
-        """Test that CORS can be enabled with environment variable."""
-        # This test would need app restart with new env var in real scenario
-        # For now, just verify the endpoint works
+    def test_cors_disabled_without_origin_header(self, client):
+        """Test that CORS headers are not sent without an Origin header."""
         response = client.get('/')
-        assert response.status_code == 200
+        # Even if CORS is enabled, without Origin header no ACAO header
+        assert 'Access-Control-Allow-Origin' not in response.headers
+
+    def test_cors_options_request_rejected(self, client):
+        """Test that OPTIONS preflight requests are rejected when CORS disabled."""
+        response = client.options('/', headers={'Origin': 'http://example.com'})
+        # Without CORS enabled, preflight should not succeed
+        assert response.status_code == 405 or 'Access-Control-Allow-Origin' not in response.headers
 
 
 class TestContentTypes:
