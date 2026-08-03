@@ -51,7 +51,7 @@ This repository now includes a **complete integration** of all Fikak App compone
 
 ## Features (Original FastAPI Backend - Available)
 
-> **Note:** This section and the PostgreSQL/JWT/`docker-compose.yml` flow apply to the FastAPI stack only. The unified Frappe/MariaDB stack uses `docker-compose.unified.yml` and `setup.sh` (see Quick Start above). Before `docker-compose up -d` on the FastAPI stack, copy `.env.example` to `.env` and set `POSTGRES_PASSWORD`, `SECRET_KEY`, `MINIO_ROOT_USER`, and `MINIO_ROOT_PASSWORD` - Compose fails with a clear error if they are missing.
+> **Note:** This section and the PostgreSQL/JWT/`docker-compose.yml` flow apply to the FastAPI stack only. The unified Frappe/MariaDB stack uses `docker-compose.unified.yml` and `setup.sh` (see Quick Start above). Before `docker compose up -d` on the FastAPI stack, copy `.env.example` to `.env` and set `POSTGRES_PASSWORD` and `SECRET_KEY` - Compose fails with a clear error if they are missing. MinIO is optional and behind a Compose profile: set `MINIO_ROOT_USER`/`MINIO_ROOT_PASSWORD` in `.env` and start it with `docker compose --profile minio up -d` (MinIO itself refuses to start if the credentials are empty).
 
 ### Backend (FastAPI)
 - **JWT Authentication** - Secure user registration and login with JWT tokens
@@ -101,8 +101,11 @@ cp backend/.env.example backend/.env
 ### 2. Start with Docker (Recommended)
 
 ```bash
-# Start all services (PostgreSQL, Backend API, MinIO)
-docker-compose up -d
+# Start the core services (PostgreSQL, Backend API)
+docker compose up -d
+
+# Optionally also start MinIO (S3-compatible storage; set its credentials in .env first)
+docker compose --profile minio up -d
 
 # Check status
 docker-compose ps

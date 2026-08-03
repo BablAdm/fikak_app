@@ -225,11 +225,12 @@ docker exec -it fikak_postgres psql -U fikak_user -d fikak_db -c "\dt"
 
 ### Option 1: MinIO (Local S3 - Recommended for Testing)
 
-MinIO is included in Docker Compose and provides S3-compatible storage locally.
+MinIO is included in Docker Compose (behind the optional `minio` profile)
+and provides S3-compatible storage locally.
 
 ```bash
-# 1. Start MinIO
-docker-compose up -d minio
+# 1. Start MinIO (set MINIO_ROOT_USER / MINIO_ROOT_PASSWORD in .env first)
+docker compose --profile minio up -d
 
 # 2. Access MinIO Console
 # Open http://localhost:9001
