@@ -18,7 +18,7 @@ class ExternalAPIClient:
     async def get_posts(self, limit: Optional[int] = 10) -> List[dict]:
         """Fetch posts from external API"""
         try:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(
                     f"{self.base_url}/posts",
                     params={"_limit": limit},
@@ -33,7 +33,7 @@ class ExternalAPIClient:
     async def get_post_by_id(self, post_id: int) -> dict:
         """Fetch a single post by ID"""
         try:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(
                     f"{self.base_url}/posts/{post_id}",
                     headers=self._get_headers()
@@ -47,7 +47,7 @@ class ExternalAPIClient:
     async def get_users(self) -> List[dict]:
         """Fetch users from external API"""
         try:
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(
                     f"{self.base_url}/users",
                     headers=self._get_headers()
