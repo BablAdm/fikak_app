@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fikak Test Interface</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+        h1 { color: #33CC66; text-align: center; }
+        .status { background: #d4edda; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        button { padding: 12px 20px; font-size: 14px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-primary { background: #33CC66; color: white; }
+        .btn-primary:hover { background: #1a9933; }
+        .btn-secondary { background: #007bff; color: white; }
+        .btn-secondary:hover { background: #0056b3; }
+        .response { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; max-height: 200px; overflow-y: auto; }
+        code { background: #e9ecef; padding: 2px 5px; border-radius: 3px; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info-box { background: #cfe2ff; padding: 15px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Fikak Application - Test Interface</h1>
+        
+        <div class="status">
+            <h3>✅ Server Status: <span id="status">Checking...</span></h3>
+            <p>Backend API: <code>http://localhost:8000</code></p>
+            <p>Dashboard: <code>fikak-integrated-dashboard.html</code></p>
+        </div>
+
+        <div class="info-box">
+            <strong>📌 Test Instructions:</strong>
+            <ul>
+                <li>Click buttons below to test API endpoints</li>
+                <li>All data comes from live backend server</li>
+                <li>Try creating applications and customers</li>
+                <li>Check responses in the output panel</li>
+                <li>Open fikak-integrated-dashboard.html for full interface</li>
+            </ul>
+        </div>
+
+        <h3>📊 API Endpoints Test</h3>
+        
+        <div class="button-group">
+            <button class="btn-primary" onclick="testHealth()">🏥 Health Check</button>
+            <button class="btn-primary" onclick="testDashboard()">📈 Dashboard Stats</button>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-secondary" onclick="testApplications()">📋 Get Applications</button>
+            <button class="btn-secondary" onclick="testCustomers()">👥 Get Customers</button>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-secondary" onclick="testProducts()">📦 Get Products</button>
+            <button class="btn-secondary" onclick="testPayments()">💳 Get Payments</button>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-secondary" onclick="testAnalytics()">📊 Get Analytics</button>
+            <button class="btn-secondary" onclick="testConfig()">⚙️ Get Config</button>
+        </div>
+
+        <h3>✨ Interactive Actions</h3>
+
+        <div style="margin: 20px 0;">
+            <h4>Create New Application</h4>
+            <input type="text" id="appName" placeholder="Customer Name" style="width: 100%; padding: 8px; margin: 5px 0;">
+            <input type="number" id="appAmount" placeholder="Amount (SAR)" style="width: 100%; padding: 8px; margin: 5px 0;">
+            <select id="appProduct" style="width: 100%; padding: 8px; margin: 5px 0;">
+                <option>Home Loan</option>
+                <option>Asset Finance</option>
+                <option>Investment</option>
+                <option>Savings</option>
+            </select>
+            <button class="btn-primary" onclick="createApplication()" style="width: 100%; margin-top: 10px;">➕ Create Application</button>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <h4>Create New Customer</h4>
+            <input type="text" id="custName" placeholder="Customer Name" style="width: 100%; padding: 8px; margin: 5px 0;">
+            <input type="email" id="custEmail" placeholder="Email" style="width: 100%; padding: 8px; margin: 5px 0;">
+            <input type="tel" id="custPhone" placeholder="Phone" style="width: 100%; padding: 8px; margin: 5px 0;">
+            <button class="btn-primary" onclick="createCustomer()" style="width: 100%; margin-top: 10px;">➕ Create Customer</button>
+        </div>
+
+        <h3>📤 Response Output</h3>
+        <div class="response" id="response">Click any button to see response...</div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+
+        // Check server status on load
+        window.addEventListener('load', testHealth);
+
+        async function testHealth() {
+            try {
+                const res = await fetch(`${API_URL}/health`);
+                const data = await res.json();
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = '';
+                const span = document.createElement('span');
+                span.className = 'success';
+                span.textContent = '✅ Connected';
+                statusEl.appendChild(span);
+                showResponse(data, 'Server Health Check');
+            } catch (e) {
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = '';
+                const span = document.createElement('span');
+                span.className = 'error';
+                span.textContent = '❌ Offline';
+                statusEl.appendChild(span);
+                showResponse({ error: e.message }, 'Error');
+            }
+        }
+
+        async function testDashboard() {
+            const res = await fetch(`${API_URL}/dashboard/stats`);
+            const data = await res.json();
+            showResponse(data, 'Dashboard Statistics');
+        }
+
+        async function testApplications() {
+            const res = await fetch(`${API_URL}/applications`);
+            const data = await res.json();
+            showResponse(data, 'All Applications');
+        }
+
+        async function testCustomers() {
+            const res = await fetch(`${API_URL}/customers`);
+            const data = await res.json();
+            showResponse(data, 'All Customers');
+        }
+
+        async function testProducts() {
+            const res = await fetch(`${API_URL}/products`);
+            const data = await res.json();
+            showResponse(data, 'All Products');
+        }
+
+        async function testPayments() {
+            const res = await fetch(`${API_URL}/payments`);
+            const data = await res.json();
+            showResponse(data, 'All Payments');
+        }
+
+        async function testAnalytics() {
+            const res = await fetch(`${API_URL}/analytics/overview`);
+            const data = await res.json();
+            showResponse(data, 'Analytics Overview');
+        }
+
+        async function testConfig() {
+            const res = await fetch(`${API_URL}/system/config`);
+            const data = await res.json();
+            showResponse(data, 'System Configuration');
+        }
+
+        async function createApplication() {
+            const name = document.getElementById('appName').value;
+            const amount = document.getElementById('appAmount').value;
+            const product = document.getElementById('appProduct').value;
+
+            if (!name || !amount) {
+                showResponse({ error: 'Please fill all fields' }, 'Error');
+                return;
+            }
+
+            const res = await fetch(`${API_URL}/applications`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customerName: name,
+                    amount: Number.parseInt(amount, 10),
+                    product: product
+                })
+            });
+            const data = await res.json();
+            document.getElementById('appName').value = '';
+            document.getElementById('appAmount').value = '';
+            showResponse(data, '✅ Application Created');
+        }
+
+        async function createCustomer() {
+            const name = document.getElementById('custName').value;
+            const email = document.getElementById('custEmail').value;
+            const phone = document.getElementById('custPhone').value;
+
+            if (!name || !email || !phone) {
+                showResponse({ error: 'Please fill all fields' }, 'Error');
+                return;
+            }
+
+            const res = await fetch(`${API_URL}/customers`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone })
+            });
+            const data = await res.json();
+            document.getElementById('custName').value = '';
+            document.getElementById('custEmail').value = '';
+            document.getElementById('custPhone').value = '';
+            showResponse(data, '✅ Customer Created');
+        }
+
+        function showResponse(data, title) {
+            const el = document.getElementById('response');
+            el.textContent = '';
+            const heading = document.createElement('strong');
+            heading.textContent = title;
+            const pre = document.createElement('pre');
+            pre.textContent = JSON.stringify(data, null, 2);
+            el.append(heading, pre);
+        }
+    </script>
+</body>
+</html>

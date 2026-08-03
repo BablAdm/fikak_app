@@ -1,0 +1,25 @@
+{
+ "doctype": "DocType",
+ "name": "Financing Application",
+ "module": "Fikak",
+ "custom": 0,
+ "naming_rule": "Expression",
+ "autoname": "format:APP-{YYYY}-{#####}",
+ "engine": "InnoDB",
+ "field_order": ["customer", "product", "amount", "status", "kyc_status", "credit_score", "approval_date", "disbursement_date"],
+ "fields": [
+  {"fieldname": "customer", "fieldtype": "Link", "label": "Customer", "options": "Customer", "reqd": 1},
+  {"fieldname": "product", "fieldtype": "Link", "label": "Product", "options": "Financial Product", "reqd": 1},
+  {"fieldname": "amount", "fieldtype": "Currency", "label": "Amount (SAR)", "reqd": 1},
+  {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Draft\nSubmitted\nUnder Review\nApproved\nRejected\nDisbursed\nCompleted", "default": "Draft"},
+  {"fieldname": "kyc_status", "fieldtype": "Select", "label": "KYC Status", "options": "Not Started\nIn Progress\nVerified\nRejected", "default": "Not Started"},
+  {"fieldname": "credit_score", "fieldtype": "Int", "label": "Credit Score"},
+  {"fieldname": "approval_date", "fieldtype": "Datetime", "label": "Approval Date", "read_only": 1},
+  {"fieldname": "disbursement_date", "fieldtype": "Datetime", "label": "Disbursement Date", "read_only": 1}
+ ],
+ "permissions": [
+  {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
