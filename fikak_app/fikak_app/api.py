@@ -66,7 +66,7 @@ def get_or_create_token(user):
             return access_token  # Return existing valid token
 
     # If no valid token is found, generate a new one
-    new_token = generate_jwt_token(user)[:130]
+    new_token = generate_jwt_token(user)
     store_bearer_token_in_frappe(user, new_token)
     return new_token
 
