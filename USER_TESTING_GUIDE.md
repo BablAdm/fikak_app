@@ -350,13 +350,13 @@ _____________________________________
 
 ```bash
 # Check if services are running
-docker-compose -f docker-compose.unified.yml ps
+docker compose -f docker-compose.unified.yml ps
 
 # Restart if needed
-docker-compose -f docker-compose.unified.yml restart
+docker compose -f docker-compose.unified.yml restart
 
 # View logs
-docker-compose -f docker-compose.unified.yml logs -f fikak_ui
+docker compose -f docker-compose.unified.yml logs -f fikak_ui
 ```
 
 ### If you see errors:
@@ -382,10 +382,10 @@ When you're done testing:
 
 ```bash
 # Stop all services
-docker-compose -f docker-compose.unified.yml down
+docker compose -f docker-compose.unified.yml down
 
 # Stop and remove all data (clean slate)
-docker-compose -f docker-compose.unified.yml down -v
+docker compose -f docker-compose.unified.yml down -v
 ```
 
 ---

@@ -111,13 +111,13 @@ FRAPPE_SITE_NAME=localhost
 cd fikak_app
 
 # Start all services
-docker-compose -f docker-compose.unified.yml up -d
+docker compose -f docker-compose.unified.yml up -d
 
 # Check status
-docker-compose -f docker-compose.unified.yml ps
+docker compose -f docker-compose.unified.yml ps
 
 # Watch logs (optional)
-docker-compose -f docker-compose.unified.yml logs -f
+docker compose -f docker-compose.unified.yml logs -f
 ```
 
 **Expected services:**
@@ -337,12 +337,12 @@ curl http://localhost:8000/api/method/frappe.auth.get_logged_user \
 
 ```bash
 # All services
-docker-compose -f docker-compose.unified.yml logs -f
+docker compose -f docker-compose.unified.yml logs -f
 
 # Specific service
-docker-compose -f docker-compose.unified.yml logs -f fikak_backend
-docker-compose -f docker-compose.unified.yml logs -f fikak_ui
-docker-compose -f docker-compose.unified.yml logs -f nginx_proxy
+docker compose -f docker-compose.unified.yml logs -f fikak_backend
+docker compose -f docker-compose.unified.yml logs -f fikak_ui
+docker compose -f docker-compose.unified.yml logs -f nginx_proxy
 
 # Frappe bench logs (inside backend container)
 docker exec -it fikak_backend tail -f logs/web.log
@@ -402,16 +402,16 @@ SELECT * FROM `tabUser` LIMIT 5;
 **Solutions**:
 ```bash
 # Check logs
-docker-compose -f docker-compose.unified.yml logs fikak_backend
+docker compose -f docker-compose.unified.yml logs fikak_backend
 
 # Ensure MariaDB is healthy
-docker-compose -f docker-compose.unified.yml ps mariadb
+docker compose -f docker-compose.unified.yml ps mariadb
 
 # Restart backend
-docker-compose -f docker-compose.unified.yml restart fikak_backend
+docker compose -f docker-compose.unified.yml restart fikak_backend
 
 # Rebuild if needed
-docker-compose -f docker-compose.unified.yml up -d --build fikak_backend
+docker compose -f docker-compose.unified.yml up -d --build fikak_backend
 ```
 
 ### Issue: Site not created
@@ -443,7 +443,7 @@ docker exec -it fikak_backend bench --site localhost list-apps
    ```
 4. Check Nginx proxy logs:
    ```bash
-   docker-compose -f docker-compose.unified.yml logs nginx_proxy
+   docker compose -f docker-compose.unified.yml logs nginx_proxy
    ```
 
 ### Issue: Port conflicts
@@ -458,7 +458,7 @@ lsof -i :3000
 lsof -i :8000
 lsof -i :3306
 
-# Stop conflicting services or modify docker-compose ports
+# Stop conflicting services or modify docker compose ports
 ```
 
 ### Issue: Out of memory
@@ -474,7 +474,7 @@ docker stats
 # Minimum: 8GB recommended
 
 # Or scale down workers
-docker-compose -f docker-compose.unified.yml up -d --scale frappe_queue_long=0
+docker compose -f docker-compose.unified.yml up -d --scale frappe_queue_long=0
 ```
 
 ### Issue: CORS errors
@@ -487,7 +487,7 @@ docker-compose -f docker-compose.unified.yml up -d --scale frappe_queue_long=0
 docker exec -it fikak_backend bench --site localhost set-config allow_cors "\"http://localhost:3000\""
 
 # Restart backend
-docker-compose -f docker-compose.unified.yml restart fikak_backend
+docker compose -f docker-compose.unified.yml restart fikak_backend
 ```
 
 ---
@@ -498,17 +498,17 @@ docker-compose -f docker-compose.unified.yml restart fikak_backend
 
 ```bash
 # Stop all services
-docker-compose -f docker-compose.unified.yml down
+docker compose -f docker-compose.unified.yml down
 
 # Stop and remove volumes (WARNING: deletes all data)
-docker-compose -f docker-compose.unified.yml down -v
+docker compose -f docker-compose.unified.yml down -v
 ```
 
 ### Clean Up
 
 ```bash
 # Remove all fikak containers
-docker-compose -f docker-compose.unified.yml rm -f
+docker compose -f docker-compose.unified.yml rm -f
 
 # Remove volumes
 docker volume prune
@@ -554,7 +554,7 @@ Before deploying to production:
 
 ```bash
 # Check all services
-docker-compose -f docker-compose.unified.yml ps
+docker compose -f docker-compose.unified.yml ps
 
 # Test backend
 curl -I http://localhost:8000

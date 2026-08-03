@@ -108,10 +108,10 @@ docker compose up -d
 docker compose --profile minio up -d
 
 # Check status
-docker-compose ps
+docker compose ps
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### 3. Access the Application
@@ -248,7 +248,7 @@ pip install -r requirements.txt
 cp .env.example .env
 
 # Run database (in Docker)
-docker-compose up -d postgres
+docker compose up -d postgres
 
 # Start backend
 uvicorn main:app --reload
@@ -491,10 +491,10 @@ fikak_app/
 ### Backend won't start
 - Check if port 8000 is available
 - Verify DATABASE_URL is correct
-- Check Docker containers are running: `docker-compose ps`
+- Check Docker containers are running: `docker compose ps`
 
 ### Database connection errors
-- Ensure PostgreSQL is running: `docker-compose up -d postgres`
+- Ensure PostgreSQL is running: `docker compose up -d postgres`
 - Check credentials in .env match docker-compose.yml
 - Wait a few seconds for database to initialize
 

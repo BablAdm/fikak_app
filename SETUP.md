@@ -45,7 +45,7 @@ Download from https://www.docker.com/products/docker-desktop
 
 ```bash
 docker --version
-docker-compose --version
+docker compose --version
 ```
 
 ---
@@ -64,7 +64,7 @@ cp backend/.env.example backend/.env
 # Default values work for local testing
 
 # 3. Start services with Docker Compose
-docker-compose up -d
+docker compose up -d
 
 # 4. Verify backend is running
 curl http://localhost:8000/health
@@ -171,7 +171,7 @@ Docker Compose automatically sets up PostgreSQL. No manual configuration needed!
 
 ```bash
 # Start PostgreSQL
-docker-compose up -d postgres
+docker compose up -d postgres
 
 # Connect to database
 docker exec -it fikak_postgres psql -U fikak_user -d fikak_db
@@ -250,7 +250,7 @@ S3_BUCKET_NAME=fikak-uploads
 S3_ENDPOINT_URL=http://localhost:9000
 
 # 5. Restart backend
-docker-compose restart backend
+docker compose restart backend
 ```
 
 ### Option 2: AWS S3 (Production)
@@ -283,7 +283,7 @@ AWS_REGION=us-east-1
 S3_BUCKET_NAME=your-bucket-name
 
 # 4. Restart backend
-docker-compose restart backend
+docker compose restart backend
 ```
 
 ### Option 3: Skip File Storage (Optional)
@@ -304,10 +304,10 @@ AWS_SECRET_ACCESS_KEY=
 
 ```bash
 # 1. Start all services
-docker-compose up -d
+docker compose up -d
 
 # 2. Check status
-docker-compose ps
+docker compose ps
 
 # Expected output:
 # fikak_postgres   Up (healthy)
@@ -315,7 +315,7 @@ docker-compose ps
 # fikak_minio      Up (healthy)
 
 # 3. View logs
-docker-compose logs -f
+docker compose logs -f
 
 # 4. Start frontend (in new terminal)
 cd frontend
@@ -488,10 +488,10 @@ Use this checklist to ensure everything is working:
 
 ```bash
 # Stop Docker services
-docker-compose down
+docker compose down
 
 # Stop and remove volumes (WARNING: deletes all data)
-docker-compose down -v
+docker compose down -v
 
 # Stop frontend (Ctrl+C in terminal where it's running)
 ```
@@ -511,7 +511,7 @@ docker-compose down -v
 
 If you encounter issues:
 
-1. Check logs: `docker-compose logs -f`
+1. Check logs: `docker compose logs -f`
 2. Review [TESTING.md](./TESTING.md) troubleshooting section
 3. Verify all environment variables are set correctly
 4. Ensure all required services are running

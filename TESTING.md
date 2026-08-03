@@ -46,13 +46,13 @@ cp backend/.env.example backend/.env
 
 ```bash
 # Start PostgreSQL, Backend API, and MinIO
-docker-compose up -d
+docker compose up -d
 
 # Check service status
-docker-compose ps
+docker compose ps
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### 3. Access the Services
@@ -398,13 +398,13 @@ docker exec -it fikak_postgres pg_isready -U fikak_user -d fikak_db
 **Solution:**
 ```bash
 # Check if PostgreSQL is running
-docker-compose ps
+docker compose ps
 
 # Restart PostgreSQL
-docker-compose restart postgres
+docker compose restart postgres
 
 # Check logs
-docker-compose logs postgres
+docker compose logs postgres
 ```
 
 ### Issue: Authentication Token Invalid
@@ -417,7 +417,7 @@ docker-compose logs postgres
 ### Issue: File Upload Fails
 
 **Solution:**
-- Verify MinIO is running: `docker-compose ps`
+- Verify MinIO is running: `docker compose ps`
 - Create bucket in MinIO Console
 - Check AWS credentials in backend/.env
 - Ensure bucket name is correct
@@ -528,10 +528,10 @@ backend/htmlcov/index.html
 
 ```bash
 # Stop Docker services
-docker-compose down
+docker compose down
 
 # Stop and remove volumes (WARNING: deletes all data)
-docker-compose down -v
+docker compose down -v
 ```
 
 ### Reset Database
@@ -584,7 +584,7 @@ make clean
 ## Support
 
 For issues or questions:
-- Check backend logs: `docker-compose logs backend`
-- Check database logs: `docker-compose logs postgres`
+- Check backend logs: `docker compose logs backend`
+- Check database logs: `docker compose logs postgres`
 - Review API docs: http://localhost:8000/docs
 - Check TESTING.md for common solutions
