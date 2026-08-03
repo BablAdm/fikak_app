@@ -22,6 +22,14 @@ python main.py
 
 The server starts on `http://127.0.0.1:5000` by default.
 
+### Testing
+
+```bash
+pytest test_main.py -v
+```
+
+All 25 tests should pass. Run without `-v` for less verbose output.
+
 ### Production
 
 ```bash
@@ -46,3 +54,15 @@ All configuration is via environment variables (a `.env` file is also supported)
 | GET | `/` | API welcome message and version. |
 | GET | `/health` | Health check. |
 | GET/POST | `/api/test` | Test endpoint; POST echoes a JSON body (400 on invalid JSON). |
+
+## Testing
+
+The project includes 25 comprehensive pytest tests covering:
+- All endpoints (/, /health, /api/test)
+- Valid and invalid JSON handling
+- HTTP method constraints
+- Error responses (404, 400, 405)
+- Content type validation
+- CORS configuration
+
+See `test_main.py` for the full test suite.
