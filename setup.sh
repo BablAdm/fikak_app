@@ -58,8 +58,24 @@ elif [ -f workspace/fikak-ui/.env.example ]; then
     cp workspace/fikak-ui/.env.example workspace/fikak-ui/.env.local
     print_success "Created .env.local for fikak-ui"
 else
-    print_warning "workspace/fikak-ui not found - clone the fikak-ui repo into workspace/ first (skipping .env.local creation)"
+    print_warning "No workspace/fikak-ui/.env.example found - clone the fikak-ui repo into workspace/ or add an env template (skipping .env.local creation)"
 fi
+
+# Generate root .env with strong random credentials if missing
+if ! grep -q '^DB_PASSWORD=' .env 2>/dev/null; then
+    echo "DB_PASSWORD=$(openssl rand -hex 16)" >> .env
+    print_success "Generated random DB_PASSWORD in .env"
+fi
+if ! grep -q '^ADMIN_PASSWORD=' .env 2>/dev/null; then
+    echo "ADMIN_PASSWORD=$(openssl rand -hex 12)" >> .env
+    print_success "Generated random ADMIN_PASSWORD in .env"
+fi
+
+# Load credentials for use below (docker-compose reads .env automatically)
+set -a
+# shellcheck disable=SC1091
+. ./.env
+set +a
 
 # Step 3: Check Docker resources
 print_info "Checking Docker resources..."
@@ -93,7 +109,7 @@ sleep 10
 # Check MariaDB health
 print_info "Checking MariaDB..."
 for i in {1..30}; do
-    if docker exec fikak_mariadb mysqladmin ping -h localhost -padmin123 --silent 2>/dev/null; then
+    if docker exec fikak_mariadb mysqladmin ping -h localhost -p"${DB_PASSWORD}" --silent 2>/dev/null; then
         print_success "MariaDB is ready"
         break
     fi
@@ -133,8 +149,8 @@ if docker exec fikak_backend bench list-sites | grep -q "localhost"; then
     print_warning "Site 'localhost' already exists, skipping creation"
 else
     docker exec fikak_backend bench new-site localhost \
-        --mariadb-root-password admin123 \
-        --admin-password admin \
+        --mariadb-root-password "${DB_PASSWORD}" \
+        --admin-password "${ADMIN_PASSWORD}" \
         --no-mariadb-socket 2>&1 | grep -v "WARN"
 
     if [ $? -eq 0 ]; then
@@ -182,9 +198,9 @@ echo "  • Frontend (direct):     http://localhost:3000"
 echo "  • Backend API:           http://localhost:8000"
 echo "  • Frappe Desk:           http://localhost:8000/app"
 echo ""
-echo "Default Credentials:"
+echo "Login Credentials:"
 echo "  • Username: Administrator"
-echo "  • Password: admin"
+echo "  • Password: stored as ADMIN_PASSWORD in .env"
 echo ""
 echo "Useful Commands:"
 echo "  • View logs:      docker-compose -f docker-compose.unified.yml logs -f"

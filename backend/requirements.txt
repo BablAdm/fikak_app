@@ -5,6 +5,10 @@ python-multipart==0.0.32
 
 # Database
 sqlalchemy==2.0.25
+# psycopg2 builds from source (recommended for production); requires a C
+# compiler and libpq headers: apt-get install gcc libpq-dev
+# For local development without those prerequisites, you can substitute
+# psycopg2-binary==2.9.9
 psycopg2==2.9.9
 alembic==1.13.1
 

@@ -9,10 +9,10 @@ class Settings(BaseSettings):
     # Application
     app_name: str = "Fikak App API"
     app_version: str = "1.0.0"
-    debug: bool = True
+    debug: bool = False
 
-    # Database
-    database_url: str = "postgresql://fikak_user:fikak_pass@localhost:5432/fikak_db"
+    # Database (set DATABASE_URL in .env; default has no embedded credentials)
+    database_url: str = "postgresql://fikak_user@localhost:5432/fikak_db"
 
     # JWT Authentication
     secret_key: str = secrets.token_urlsafe(32)

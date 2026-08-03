@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, field_validator
 from datetime import datetime
 from typing import Optional, List
 
@@ -11,6 +11,15 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+
+    @field_validator("password")
+    @classmethod
+    def password_within_bcrypt_limit(cls, v: str) -> str:
+        # bcrypt only hashes the first 72 bytes; reject longer passwords
+        # instead of silently truncating them
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("Password must not exceed 72 bytes")
+        return v
 
 
 class UserResponse(UserBase):

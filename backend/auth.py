@@ -18,13 +18,20 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against its bcrypt hash"""
-    # bcrypt only uses the first 72 bytes of the password
-    return bcrypt.checkpw(plain_password.encode("utf-8")[:72], hashed_password.encode("utf-8"))
+    password_bytes = plain_password.encode("utf-8")
+    # bcrypt only hashes the first 72 bytes; registration rejects longer
+    # passwords, so anything over the limit can never match a stored hash
+    if len(password_bytes) > 72:
+        return False
+    return bcrypt.checkpw(password_bytes, hashed_password.encode("utf-8"))
 
 
 def get_password_hash(password: str) -> str:
     """Hash a password with bcrypt"""
-    return bcrypt.hashpw(password.encode("utf-8")[:72], bcrypt.gensalt()).decode("utf-8")
+    password_bytes = password.encode("utf-8")
+    if len(password_bytes) > 72:
+        raise ValueError("Password must not exceed 72 bytes")
+    return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):

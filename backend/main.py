@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Query, Response
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File, Query, Request, Response
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -36,6 +37,31 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+MAX_UPLOAD_SIZE = 25 * 1024 * 1024  # 25 MB
+# Slack for multipart boundaries/headers when comparing Content-Length
+UPLOAD_SIZE_SLACK = 1024 * 1024
+
+
+@app.middleware("http")
+async def reject_oversized_uploads(request: Request, call_next):
+    """Reject oversized upload requests before the body is buffered.
+
+    Nginx also caps request bodies (client_max_body_size), but direct
+    backend deployments bypass the proxy, so enforce it here too.
+    """
+    if request.url.path == "/api/files/upload":
+        content_length = request.headers.get("content-length")
+        if content_length is not None:
+            try:
+                if int(content_length) > MAX_UPLOAD_SIZE + UPLOAD_SIZE_SLACK:
+                    return JSONResponse(
+                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                        content={"detail": f"File exceeds maximum size of {MAX_UPLOAD_SIZE // (1024 * 1024)} MB"},
+                    )
+            except ValueError:
+                pass
+    return await call_next(request)
 
 
 # Startup event
@@ -159,18 +185,38 @@ def delete_my_account(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
-    """Delete the current user's account and all associated data (GDPR/CCPA right to erasure)"""
+    """Delete the current user's account and all associated data (GDPR/CCPA right to erasure).
+
+    See PRIVACY.md for the data inventory and erasure policy. Deletion is
+    synchronous and aborts (so the user can retry) if any stored object
+    cannot be removed; an audit record is logged on completion.
+    """
     files = db.query(models.FileUpload).filter(models.FileUpload.user_id == current_user.id).all()
     for file_upload in files:
         try:
-            s3_storage.delete_file(file_upload.file_key, file_upload.bucket_name)
+            deleted = s3_storage.delete_file(file_upload.file_key, file_upload.bucket_name)
         except Exception as e:
             logger.warning(f"Could not delete S3 object {file_upload.file_key}: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Could not delete all account data; please retry"
+            ) from e
+        if not deleted:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Could not delete all account data; please retry"
+            )
         db.delete(file_upload)
 
-    db.query(models.Post).filter(models.Post.user_id == current_user.id).delete()
+    posts_deleted = db.query(models.Post).filter(models.Post.user_id == current_user.id).delete()
+    user_id = current_user.id
     db.delete(current_user)
     db.commit()
+    # Audit record for the erasure request (no PII beyond the internal id)
+    logger.info(
+        f"Erasure completed for user id={user_id}: "
+        f"{len(files)} file(s), {posts_deleted} post(s), account removed"
+    )
     return None
 
 
@@ -270,9 +316,6 @@ def delete_post(
 
 
 # ==================== File Upload Endpoints ====================
-
-MAX_UPLOAD_SIZE = 25 * 1024 * 1024  # 25 MB
-
 
 @app.post("/api/files/upload", response_model=schemas.FileUploadResponse)
 def upload_file(

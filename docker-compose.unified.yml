@@ -15,7 +15,7 @@ services:
       - --skip-character-set-client-handshake
       - --skip-innodb-read-only-compressed
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-admin123}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env (setup.sh generates one)}
       MYSQL_DATABASE: fikak_db
     volumes:
       - mariadb_data:/var/lib/mysql
@@ -102,7 +102,7 @@ services:
     environment:
       DB_HOST: mariadb
       DB_PORT: "3306"
-      DB_PASSWORD: ${DB_PASSWORD:-admin123}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env (setup.sh generates one)}
       REDIS_CACHE: "redis://redis_cache:6379"
       REDIS_QUEUE: "redis://redis_queue:6379"
       FRAPPE_SITE_NAME_HEADER: ${FRAPPE_SITE_NAME:-localhost}
