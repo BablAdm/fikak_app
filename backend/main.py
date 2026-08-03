@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from sqlalchemy import text, or_
+from sqlalchemy import or_, literal, select
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
@@ -98,8 +98,8 @@ async def reject_oversized_uploads(request: Request, call_next):
 def health_check(response: Response, db: Session = Depends(get_db)):
     """Health check endpoint"""
     try:
-        # Test database connection
-        db.execute(text("SELECT 1"))
+        # Test database connection using parameterized query (not raw SQL)
+        db.scalar(select(literal(1)))
         db_status = "healthy"
         overall_status = "healthy"
     except Exception as e:
