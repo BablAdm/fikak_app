@@ -201,17 +201,13 @@ services:
   # ==================== Frontend Service ====================
 
   fikak_ui:
-    build:
-      context: ./workspace/fikak-ui
-      dockerfile: Dockerfile
+    image: nginx:alpine
     container_name: fikak_ui
     restart: unless-stopped
-    environment:
-      NEXT_PUBLIC_FRAPPE_BASE_URL: http://frappe_backend:8000
-      NEXT_PUBLIC_IS_DEV: "1"
-      NODE_ENV: production
     ports:
       - "3000:3000"
+    volumes:
+      - ./nginx-ui.conf:/etc/nginx/nginx.conf:ro
     networks:
       - fikak_network
     depends_on:
