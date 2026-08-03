@@ -25,6 +25,7 @@ COMPONENTS:
 from flask import Flask, jsonify, request, g
 from flask_cors import CORS
 from flask_httpauth import HTTPTokenAuth
+from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from datetime import datetime, timedelta
 import json
@@ -174,7 +175,7 @@ class Database:
         self.users[user_id] = {
             'id': user_id,
             'email': email,
-            'password': password,
+            'password_hash': generate_password_hash(password),
             'role': role,
             'created_at': datetime.now().isoformat(),
             'active': True
@@ -256,7 +257,7 @@ def get_token(email, password):
     if not user:
         return None
     
-    if not secrets.compare_digest(user['password'], password):
+    if not check_password_hash(user['password_hash'], password):
         return None
     
     token = {
@@ -279,7 +280,7 @@ def verify_token(token):
         g.current_user = token_data
         return token_data
     except Exception as exc:  # noqa: BLE001
-        logger.debug("Token verification failed: %s", exc)
+        logger.debug("Token verification failed", exc_info=exc)
         return None
 
 def require_role(*roles):
@@ -393,7 +394,7 @@ def get_system_config():
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     """Authenticate user and return token"""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     email = data.get('email')
     password = data.get('password')
     
@@ -466,7 +467,7 @@ def get_application(app_id):
 @require_role('Customer', 'Agent', 'Officer', 'Admin')
 def create_application():
     """Create new financing application"""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     
     # Validation
     required = ['customer_id', 'product', 'amount']
@@ -586,7 +587,7 @@ def get_customers():
 @require_role('Agent', 'Officer', 'Admin')
 def create_customer():
     """Create new customer"""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     
     required = ['name', 'email', 'phone']
     if not all(field in data for field in required):
@@ -618,7 +619,7 @@ def create_customer():
 @require_role('Officer', 'Admin')
 def process_payment():
     """Process payment through integrated gateway"""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     
     required = ['application_id', 'amount', 'method']
     if not all(field in data for field in required):
