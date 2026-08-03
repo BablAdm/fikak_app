@@ -27,7 +27,7 @@ class S3Storage:
     def upload_file(self, file_obj, filename: str, bucket: Optional[str] = None) -> dict:
         """Upload a file to S3"""
         if not self.s3_client:
-            raise Exception("S3 client not configured. Please set AWS credentials.")
+            raise ValueError("S3 client not configured. Please set AWS credentials.")
 
         bucket_name = bucket or settings.s3_bucket_name
 
@@ -48,12 +48,12 @@ class S3Storage:
             }
         except ClientError as e:
             logger.exception("Error uploading file to S3")
-            raise RuntimeError(f"Failed to upload file: {e}") from e
+            raise RuntimeError("Failed to upload file") from e
 
     def get_presigned_url(self, file_key: str, bucket: Optional[str] = None, expiration: int = 3600) -> str:
         """Generate a presigned URL for file download"""
         if not self.s3_client:
-            raise Exception("S3 client not configured")
+            raise ValueError("S3 client not configured")
 
         bucket_name = bucket or settings.s3_bucket_name
 
@@ -66,12 +66,12 @@ class S3Storage:
             return url
         except ClientError as e:
             logger.exception("Error generating presigned URL")
-            raise RuntimeError(f"Failed to generate download URL: {e}") from e
+            raise RuntimeError("Failed to generate download URL") from e
 
     def delete_file(self, file_key: str, bucket: Optional[str] = None) -> bool:
         """Delete a file from S3"""
         if not self.s3_client:
-            raise Exception("S3 client not configured")
+            raise ValueError("S3 client not configured")
 
         bucket_name = bucket or settings.s3_bucket_name
 
