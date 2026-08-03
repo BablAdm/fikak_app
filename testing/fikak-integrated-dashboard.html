@@ -681,12 +681,44 @@
 
     function updateServerStatus(isHealthy) {
         const statusEl = document.getElementById('server-status');
+        statusEl.textContent = '';
+
         if (isHealthy) {
             statusEl.classList.remove('error');
-            statusEl.innerHTML = '<i class="fas fa-circle" style="color: #0f5132; margin-right: 0.5rem;"></i><span lang="en">Server Connected</span><span lang="ar" style="display: none;">متصل بالخادم</span>';
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-circle';
+            icon.style.color = '#0f5132';
+            icon.style.marginRight = '0.5rem';
+            statusEl.appendChild(icon);
+
+            const spanEn = document.createElement('span');
+            spanEn.lang = 'en';
+            spanEn.textContent = 'Server Connected';
+            statusEl.appendChild(spanEn);
+
+            const spanAr = document.createElement('span');
+            spanAr.lang = 'ar';
+            spanAr.style.display = 'none';
+            spanAr.textContent = 'متصل بالخادم';
+            statusEl.appendChild(spanAr);
         } else {
             statusEl.classList.add('error');
-            statusEl.innerHTML = '<i class="fas fa-circle" style="color: #842029; margin-right: 0.5rem;"></i><span lang="en">Server Offline</span><span lang="ar" style="display: none;">الخادم غير متصل</span>';
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-circle';
+            icon.style.color = '#842029';
+            icon.style.marginRight = '0.5rem';
+            statusEl.appendChild(icon);
+
+            const spanEn = document.createElement('span');
+            spanEn.lang = 'en';
+            spanEn.textContent = 'Server Offline';
+            statusEl.appendChild(spanEn);
+
+            const spanAr = document.createElement('span');
+            spanAr.lang = 'ar';
+            spanAr.style.display = 'none';
+            spanAr.textContent = 'الخادم غير متصل';
+            statusEl.appendChild(spanAr);
         }
     }
 
