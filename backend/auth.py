@@ -27,11 +27,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a password with bcrypt"""
+    """Hash a password with bcrypt using a strong cost factor"""
     password_bytes = password.encode("utf-8")
     if len(password_bytes) > 72:
         raise ValueError("Password must not exceed 72 bytes")
-    return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
+    # Use cost factor of 12 for strong password hashing (protects against brute force)
+    return bcrypt.hashpw(password_bytes, bcrypt.gensalt(rounds=12)).decode("utf-8")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):

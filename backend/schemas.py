@@ -14,9 +14,12 @@ class UserCreate(UserBase):
 
     @field_validator("password")
     @classmethod
-    def password_within_bcrypt_limit(cls, v: str) -> str:
-        """Reject passwords longer than bcrypt's 72-byte limit instead of truncating"""
-        if len(v.encode("utf-8")) > 72:
+    def validate_password(cls, v: str) -> str:
+        """Enforce minimum password length and reject passwords longer than bcrypt's 72-byte limit"""
+        password_bytes = v.encode("utf-8")
+        if len(password_bytes) < 8:
+            raise ValueError("Password must be at least 8 bytes long")
+        if len(password_bytes) > 72:
             raise ValueError("Password must not exceed 72 bytes")
         return v
 
