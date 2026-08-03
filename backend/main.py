@@ -7,6 +7,9 @@ from sqlalchemy import text, or_
 from datetime import datetime, timedelta
 from typing import List, Optional
 import logging
+import os
+import re
+import uuid
 
 from config import get_settings
 from database import get_db, init_db
@@ -333,16 +336,21 @@ def upload_file(
             detail=f"File exceeds maximum size of {MAX_UPLOAD_SIZE // (1024 * 1024)} MB"
         )
 
+    # Sanitize the user-supplied filename before it becomes part of the
+    # storage key: strip any path components and disallowed characters
+    safe_filename = os.path.basename(file.filename or "")
+    safe_filename = re.sub(r"[^A-Za-z0-9._-]", "_", safe_filename)[:255] or "upload"
+
     try:
-        # Generate unique filename
-        file_key = f"uploads/{current_user.id}/{datetime.utcnow().timestamp()}_{file.filename}"
+        # Generate a unique, collision-free storage key
+        file_key = f"uploads/{current_user.id}/{uuid.uuid4().hex}_{safe_filename}"
 
         # Upload to S3
         result = s3_storage.upload_file(file.file, file_key)
 
         # Save to database
         file_upload = models.FileUpload(
-            filename=file.filename,
+            filename=safe_filename,
             file_key=file_key,
             file_size=file_size,
             content_type=file.content_type,
