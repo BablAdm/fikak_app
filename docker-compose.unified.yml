@@ -121,7 +121,6 @@ services:
       - fikak_network
     ports:
       - "8000:8000"
-      - "9000:9000"
     depends_on:
       frappe_configurator:
         condition: service_completed_successfully
@@ -197,6 +196,34 @@ services:
     depends_on:
       frappe_configurator:
         condition: service_completed_successfully
+
+  frappe_socketio:
+    image: frappe/erpnext:v15.18.0
+    container_name: fikak_socketio
+    restart: unless-stopped
+    command:
+      - bench
+      - socketio
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      REDIS_CACHE: "redis://redis_cache:6379"
+      REDIS_QUEUE: "redis://redis_queue:6379"
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    ports:
+      - "9000:9000"
+    networks:
+      - fikak_network
+    depends_on:
+      frappe_configurator:
+        condition: service_completed_successfully
+    healthcheck:
+      test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   # ==================== Frontend Service ====================
 
