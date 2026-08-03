@@ -434,7 +434,7 @@ def get_file_download_url(
 
 @app.get("/api/external/posts", responses=INTERNAL_ERROR_RESPONSES)
 async def get_external_posts(
-    limit: Optional[int] = 10,
+    limit: int = Query(10, ge=1, le=100),
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
     """Fetch posts from external API"""

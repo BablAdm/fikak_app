@@ -86,5 +86,5 @@ def get_current_user(
 def get_current_active_user(current_user: models.User = Depends(get_current_user)) -> models.User:
     """Get the current active user"""
     if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User account is inactive")
     return current_user
