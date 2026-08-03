@@ -79,9 +79,9 @@ ensure_env_credential() {
     # docker-compose parses from the same .env line
     value="${value%\"}"; value="${value#\"}"
     value="${value%\'}"; value="${value#\'}"
-    if [ -z "$value" ]; then
+    if [[ -z "$value" ]]; then
         value=$(openssl rand -hex 16)
-        if [ -f .env ]; then
+        if [[ -f .env ]]; then
             grep -v -E "^${key}=$" .env > .env.tmp || true
             mv .env.tmp .env
         fi
@@ -171,7 +171,7 @@ else
         --no-mariadb-socket 2>&1) && site_status=0 || site_status=$?
     echo "$site_output" | grep -v "WARN" || true
 
-    if [ $site_status -eq 0 ]; then
+    if [[ "$site_status" -eq 0 ]]; then
         print_success "Created Frappe site: localhost"
     else
         print_error "Failed to create site"
@@ -183,22 +183,15 @@ fi
 docker exec fikak_backend bench use localhost
 print_success "Set localhost as current site"
 
-# Enable developer mode only for local/testing environments (the default
-# for this stack); set FIKAK_DEV_MODE=0 for anything closer to production
-if [ "${FIKAK_DEV_MODE:-1}" = "1" ]; then
+# Developer mode is OFF by default; opt in with FIKAK_DEV_MODE=1 for
+# local development features (file watching, test endpoints)
+if [[ "${FIKAK_DEV_MODE:-0}" = "1" ]]; then
+    docker exec fikak_backend bench set-config -g developer_mode 1
+    docker exec fikak_backend bench set-config -g allow_tests true
     docker exec fikak_backend bench --site localhost set-config developer_mode 1
-    print_success "Enabled developer mode (local/testing only - set FIKAK_DEV_MODE=0 to skip)"
+    print_success "Enabled developer mode (FIKAK_DEV_MODE=1 - local development only)"
 else
-    # The configurator enables these globally, so explicitly turn them off
-    docker exec fikak_backend bench set-config -g developer_mode 0
-    docker exec fikak_backend bench set-config -g allow_tests false
-    docker exec fikak_backend bench --site localhost set-config developer_mode 0
-    # Already-running Frappe processes started with the configurator's dev
-    # settings; restart them so the disabled flags actually take effect
-    print_info "Restarting Frappe services to apply production-mode settings..."
-    $COMPOSE -f docker-compose.unified.yml restart \
-        frappe_backend frappe_queue_short frappe_queue_long frappe_scheduler
-    print_success "Developer mode and test mode disabled (FIKAK_DEV_MODE=0)"
+    print_info "Developer mode disabled (default; run with FIKAK_DEV_MODE=1 to enable)"
 fi
 
 # Step 9: Check frontend

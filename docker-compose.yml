@@ -42,13 +42,18 @@ services:
       - ./backend:/app
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-  # Optional: MinIO (S3-compatible storage for local testing)
+  # Optional: MinIO (S3-compatible storage for local testing).
+  # Disabled by default via a Compose profile - enable with:
+  #   docker compose --profile minio up -d
+  # (set MINIO_ROOT_USER / MINIO_ROOT_PASSWORD in .env first; MinIO
+  # itself rejects startup with empty credentials)
   minio:
     image: minio/minio:latest
     container_name: fikak_minio
+    profiles: ["minio"]
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER in .env}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD in .env}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-}
     ports:
       - "9000:9000"
       - "9001:9001"

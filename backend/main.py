@@ -57,6 +57,9 @@ MAX_UPLOAD_SIZE = 25 * 1024 * 1024  # 25 MB
 # Slack for multipart boundaries/headers when comparing Content-Length
 UPLOAD_SIZE_SLACK = 1024 * 1024
 
+INTERNAL_ERROR_DETAIL = "Internal server error"
+INTERNAL_ERROR_RESPONSES = {500: {"description": INTERNAL_ERROR_DETAIL}}
+
 
 @app.middleware("http")
 async def reject_oversized_uploads(request: Request, call_next):
@@ -213,7 +216,9 @@ def delete_my_account(
         try:
             deleted = s3_storage.delete_file(file_upload.file_key, file_upload.bucket_name)
         except Exception as e:
-            logger.warning(f"Could not delete S3 object {file_upload.file_key}: {e}")
+            # Log the internal record id only - the storage key embeds a
+            # user-supplied filename and may contain personal data
+            logger.warning(f"Could not delete S3 object for file id={file_upload.id}: {e}")
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Could not delete all account data; please retry"
@@ -334,7 +339,7 @@ def delete_post(
 
 # ==================== File Upload Endpoints ====================
 
-@app.post("/api/files/upload", response_model=schemas.FileUploadResponse)
+@app.post("/api/files/upload", response_model=schemas.FileUploadResponse, responses=INTERNAL_ERROR_RESPONSES)
 def upload_file(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
@@ -355,13 +360,17 @@ def upload_file(
     safe_filename = os.path.basename(file.filename or "")
     safe_filename = re.sub(r"[^A-Za-z0-9._-]", "_", safe_filename)[:255] or "upload"
 
-    try:
-        # Generate a unique, collision-free storage key
-        file_key = f"uploads/{current_user.id}/{uuid.uuid4().hex}_{safe_filename}"
+    # Generate a unique, collision-free storage key
+    file_key = f"uploads/{current_user.id}/{uuid.uuid4().hex}_{safe_filename}"
 
+    try:
         # Upload to S3
         result = s3_storage.upload_file(file.file, file_key)
+    except Exception as e:
+        logger.exception("File upload to storage failed")
+        raise HTTPException(status_code=500, detail=INTERNAL_ERROR_DETAIL) from e
 
+    try:
         # Save to database
         file_upload = models.FileUpload(
             filename=safe_filename,
@@ -374,11 +383,16 @@ def upload_file(
         db.add(file_upload)
         db.commit()
         db.refresh(file_upload)
-
         return file_upload
     except Exception as e:
-        logger.exception("File upload failed")
-        raise HTTPException(status_code=500, detail="Internal server error") from e
+        # Metadata persistence failed: remove the just-uploaded object so
+        # no untracked storage is left behind
+        logger.exception("Persisting file metadata failed; removing uploaded object")
+        try:
+            s3_storage.delete_file(file_key, result["bucket"])
+        except Exception:
+            logger.exception("Cleanup of uploaded object failed")
+        raise HTTPException(status_code=500, detail=INTERNAL_ERROR_DETAIL) from e
 
 
 @app.get("/api/files", response_model=List[schemas.FileUploadResponse])
@@ -393,7 +407,7 @@ def get_user_files(
     return files
 
 
-@app.get("/api/files/{file_id}/download")
+@app.get("/api/files/{file_id}/download", responses=INTERNAL_ERROR_RESPONSES)
 def get_file_download_url(
     file_id: int,
     db: Session = Depends(get_db),
@@ -413,12 +427,12 @@ def get_file_download_url(
         return {"download_url": download_url, "expires_in": 3600}
     except Exception as e:
         logger.exception("Failed to generate download URL")
-        raise HTTPException(status_code=500, detail="Internal server error") from e
+        raise HTTPException(status_code=500, detail=INTERNAL_ERROR_DETAIL) from e
 
 
 # ==================== External API Endpoints ====================
 
-@app.get("/api/external/posts")
+@app.get("/api/external/posts", responses=INTERNAL_ERROR_RESPONSES)
 async def get_external_posts(
     limit: Optional[int] = 10,
     current_user: models.User = Depends(auth.get_current_active_user)
@@ -429,10 +443,10 @@ async def get_external_posts(
         return {"source": "external_api", "data": posts}
     except Exception as e:
         logger.exception("Failed to fetch external posts")
-        raise HTTPException(status_code=500, detail="Internal server error") from e
+        raise HTTPException(status_code=500, detail=INTERNAL_ERROR_DETAIL) from e
 
 
-@app.get("/api/external/posts/{post_id}")
+@app.get("/api/external/posts/{post_id}", responses=INTERNAL_ERROR_RESPONSES)
 async def get_external_post(
     post_id: int,
     current_user: models.User = Depends(auth.get_current_active_user)
@@ -443,10 +457,10 @@ async def get_external_post(
         return {"source": "external_api", "data": post}
     except Exception as e:
         logger.exception("Failed to fetch external post")
-        raise HTTPException(status_code=500, detail="Internal server error") from e
+        raise HTTPException(status_code=500, detail=INTERNAL_ERROR_DETAIL) from e
 
 
-@app.get("/api/external/users")
+@app.get("/api/external/users", responses=INTERNAL_ERROR_RESPONSES)
 async def get_external_users(
     current_user: models.User = Depends(auth.get_current_active_user)
 ):
@@ -456,7 +470,7 @@ async def get_external_users(
         return {"source": "external_api", "data": users}
     except Exception as e:
         logger.exception("Failed to fetch external users")
-        raise HTTPException(status_code=500, detail="Internal server error") from e
+        raise HTTPException(status_code=500, detail=INTERNAL_ERROR_DETAIL) from e
 
 
 # Root endpoint

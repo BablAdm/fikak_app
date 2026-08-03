@@ -29,8 +29,9 @@ above is the authoritative registry for this codebase.
   independent operations and are not transactional with the database: if a
   later S3 delete fails, the request returns HTTP 503 and **no database
   changes are committed**, but S3 objects already removed in that attempt
-  stay removed. The operation is idempotent — retrying skips already-deleted
-  objects and completes the erasure. A non-PII audit line (internal user id
+  stay removed. The operation is safely retryable — a retry reattempts
+  deletion of every recorded object, and S3 object deletion is idempotent,
+  so objects removed by an earlier partial attempt do not block completion. A non-PII audit line (internal user id
   and object counts) is logged on completion.
 
 ## Scope and why no deletion queue / retention automation
