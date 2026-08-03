@@ -100,7 +100,7 @@ pip install -r requirements.txt
 # Install PostgreSQL locally or use Docker:
 docker run --name fikak_postgres \
   -e POSTGRES_USER=fikak_user \
-  -e POSTGRES_PASSWORD=fikak_pass \
+  -e POSTGRES_PASSWORD=<your-db-password> \
   -e POSTGRES_DB=fikak_db \
   -p 5432:5432 \
   -d postgres:15-alpine
@@ -194,12 +194,12 @@ sudo systemctl start postgresql  # Ubuntu
 
 # 3. Create database and user
 psql postgres
-CREATE USER fikak_user WITH PASSWORD 'fikak_pass';
+CREATE USER fikak_user WITH PASSWORD '<your-db-password>';
 CREATE DATABASE fikak_db OWNER fikak_user;
 \q
 
 # 4. Update backend/.env
-DATABASE_URL=postgresql://fikak_user:fikak_pass@localhost:5432/fikak_db
+DATABASE_URL=postgresql://fikak_user:<your-db-password>@localhost:5432/fikak_db
 ```
 
 ### Database Migration (First Time)
@@ -231,7 +231,7 @@ docker-compose up -d minio
 
 # 2. Access MinIO Console
 # Open http://localhost:9001
-# Login: minioadmin / minioadmin
+# Login with the MINIO_ROOT_USER / MINIO_ROOT_PASSWORD values from your .env
 
 # 3. Create Bucket
 # - Click "Create Bucket"
@@ -240,8 +240,8 @@ docker-compose up -d minio
 
 # 4. Configure Backend
 # Edit backend/.env:
-AWS_ACCESS_KEY_ID=minioadmin
-AWS_SECRET_ACCESS_KEY=minioadmin
+AWS_ACCESS_KEY_ID=<your MINIO_ROOT_USER>
+AWS_SECRET_ACCESS_KEY=<your MINIO_ROOT_PASSWORD>
 AWS_REGION=us-east-1
 S3_BUCKET_NAME=fikak-uploads
 

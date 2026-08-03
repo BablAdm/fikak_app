@@ -113,7 +113,7 @@ docker-compose logs -f
 
 - **Backend API**: http://localhost:8000
 - **API Documentation**: http://localhost:8000/docs
-- **MinIO Console**: http://localhost:9001 (minioadmin/minioadmin)
+- **MinIO Console**: http://localhost:9001 (credentials from MINIO_ROOT_USER / MINIO_ROOT_PASSWORD in your .env)
 - **PostgreSQL**: localhost:5432
 
 ### 4. Create Your First User
@@ -316,16 +316,16 @@ APP_NAME=Fikak App API
 DEBUG=true
 
 # Database
-DATABASE_URL=postgresql://fikak_user:fikak_pass@localhost:5432/fikak_db
+DATABASE_URL=postgresql://fikak_user:<your-db-password>@localhost:5432/fikak_db
 
 # JWT
-SECRET_KEY=your-secret-key-here
+SECRET_KEY=<generate with: openssl rand -hex 32>
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 # AWS S3 (or MinIO for local)
-AWS_ACCESS_KEY_ID=minioadmin
-AWS_SECRET_ACCESS_KEY=minioadmin
+AWS_ACCESS_KEY_ID=<your MINIO_ROOT_USER>
+AWS_SECRET_ACCESS_KEY=<your MINIO_ROOT_PASSWORD>
 AWS_REGION=us-east-1
 S3_BUCKET_NAME=fikak-uploads
 

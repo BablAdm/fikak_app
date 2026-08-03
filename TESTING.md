@@ -59,8 +59,8 @@ docker-compose logs -f
 - **API Documentation**: http://localhost:8000/docs
 - **PostgreSQL**: localhost:5432
 - **MinIO Console**: http://localhost:9001
-  - Username: `minioadmin`
-  - Password: `minioadmin`
+  - Username: value of `MINIO_ROOT_USER` in your `.env`
+  - Password: value of `MINIO_ROOT_PASSWORD` in your `.env`
 
 ---
 
@@ -223,13 +223,13 @@ curl -X DELETE "http://localhost:8000/api/posts/1" \
 ### Option 1: Using MinIO (Local Testing)
 
 1. **Access MinIO Console**: http://localhost:9001
-2. **Login**: minioadmin / minioadmin
+2. **Login**: use the MinIO credentials from your `.env`
 3. **Create Bucket**: Click "Create Bucket" → Name: `fikak-uploads`
 
 4. **Update backend/.env**:
 ```env
-AWS_ACCESS_KEY_ID=minioadmin
-AWS_SECRET_ACCESS_KEY=minioadmin
+AWS_ACCESS_KEY_ID=<your MINIO_ROOT_USER>
+AWS_SECRET_ACCESS_KEY=<your MINIO_ROOT_PASSWORD>
 AWS_REGION=us-east-1
 S3_BUCKET_NAME=fikak-uploads
 ```
