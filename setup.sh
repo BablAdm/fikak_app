@@ -185,6 +185,11 @@ else
     docker exec fikak_backend bench set-config -g developer_mode 0
     docker exec fikak_backend bench set-config -g allow_tests false
     docker exec fikak_backend bench --site localhost set-config developer_mode 0
+    # Already-running Frappe processes started with the configurator's dev
+    # settings; restart them so the disabled flags actually take effect
+    print_info "Restarting Frappe services to apply production-mode settings..."
+    docker-compose -f docker-compose.unified.yml restart \
+        frappe_backend frappe_queue_short frappe_queue_long frappe_scheduler
     print_success "Developer mode and test mode disabled (FIKAK_DEV_MODE=0)"
 fi
 
