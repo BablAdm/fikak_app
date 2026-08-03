@@ -27,7 +27,9 @@ This document provides comprehensive instructions for testing the Fikak App with
 
 ---
 
-## Quick Start with Docker
+## Quick Start with Docker (FastAPI stack only)
+
+> These instructions cover the FastAPI/PostgreSQL stack (`docker-compose.yml`). For the unified Frappe stack, use `./setup.sh` and `docker-compose.unified.yml`.
 
 ### 1. Environment Setup
 
@@ -232,6 +234,7 @@ AWS_ACCESS_KEY_ID=<your MINIO_ROOT_USER>
 AWS_SECRET_ACCESS_KEY=<your MINIO_ROOT_PASSWORD>
 AWS_REGION=us-east-1
 S3_BUCKET_NAME=fikak-uploads
+S3_ENDPOINT_URL=http://localhost:9000
 ```
 
 5. **Test File Upload**:
@@ -489,6 +492,10 @@ ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
 - [ ] File upload works from frontend
 - [ ] External API data displays in frontend
 - [ ] Health check endpoint returns healthy status
+- [ ] Health check returns 503 when the database is stopped
+- [ ] Data export (`GET /api/auth/me/export`) returns the user's account, posts, and file metadata
+- [ ] Account deletion (`DELETE /api/auth/me`) removes the account, posts, file records, and S3 objects
+- [ ] Account deletion returns 503 and retains data when storage cleanup fails (retry succeeds)
 - [ ] API documentation is accessible
 - [ ] Docker services start and communicate properly
 

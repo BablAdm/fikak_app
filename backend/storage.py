@@ -12,13 +12,16 @@ class S3Storage:
     """S3-compatible storage service"""
 
     def __init__(self):
+        """Create the boto3 S3 client if credentials are configured"""
         self.s3_client = None
         if settings.aws_access_key_id and settings.aws_secret_access_key:
             self.s3_client = boto3.client(
                 's3',
                 aws_access_key_id=settings.aws_access_key_id,
                 aws_secret_access_key=settings.aws_secret_access_key,
-                region_name=settings.aws_region
+                region_name=settings.aws_region,
+                # Custom endpoint for S3-compatible storage such as MinIO
+                endpoint_url=settings.s3_endpoint_url or None,
             )
 
     def upload_file(self, file_obj, filename: str, bucket: Optional[str] = None) -> dict:
@@ -44,8 +47,8 @@ class S3Storage:
                 "message": "File uploaded successfully"
             }
         except ClientError as e:
-            logger.error(f"Error uploading file to S3: {e}")
-            raise Exception(f"Failed to upload file: {str(e)}")
+            logger.exception("Error uploading file to S3")
+            raise RuntimeError(f"Failed to upload file: {e}") from e
 
     def get_presigned_url(self, file_key: str, bucket: Optional[str] = None, expiration: int = 3600) -> str:
         """Generate a presigned URL for file download"""
@@ -62,8 +65,8 @@ class S3Storage:
             )
             return url
         except ClientError as e:
-            logger.error(f"Error generating presigned URL: {e}")
-            raise Exception(f"Failed to generate download URL: {str(e)}")
+            logger.exception("Error generating presigned URL")
+            raise RuntimeError(f"Failed to generate download URL: {e}") from e
 
     def delete_file(self, file_key: str, bucket: Optional[str] = None) -> bool:
         """Delete a file from S3"""
@@ -75,8 +78,8 @@ class S3Storage:
         try:
             self.s3_client.delete_object(Bucket=bucket_name, Key=file_key)
             return True
-        except ClientError as e:
-            logger.error(f"Error deleting file from S3: {e}")
+        except ClientError:
+            logger.exception("Error deleting file from S3")
             return False
 
 

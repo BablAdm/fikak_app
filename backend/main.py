@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy import text, or_
-from datetime import datetime, timedelta
+from contextlib import asynccontextmanager
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 import logging
 import os
@@ -25,11 +26,22 @@ logger = logging.getLogger(__name__)
 
 settings = get_settings()
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialize the database when the application starts"""
+    logger.info("Initializing database...")
+    init_db()
+    logger.info("Database initialized successfully")
+    yield
+
+
 # Create FastAPI app
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="Full-stack API with authentication, database, file storage, and external API integration"
+    description="Full-stack API with authentication, database, file storage, and external API integration",
+    lifespan=lifespan,
 )
 
 # Configure CORS
@@ -37,8 +49,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 MAX_UPLOAD_SIZE = 25 * 1024 * 1024  # 25 MB
@@ -53,27 +65,29 @@ async def reject_oversized_uploads(request: Request, call_next):
     Nginx also caps request bodies (client_max_body_size), but direct
     backend deployments bypass the proxy, so enforce it here too.
     """
-    if request.url.path == "/api/files/upload":
+    if request.url.path == "/api/files/upload" and request.method == "POST":
         content_length = request.headers.get("content-length")
-        if content_length is not None:
-            try:
-                if int(content_length) > MAX_UPLOAD_SIZE + UPLOAD_SIZE_SLACK:
-                    return JSONResponse(
-                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                        content={"detail": f"File exceeds maximum size of {MAX_UPLOAD_SIZE // (1024 * 1024)} MB"},
-                    )
-            except ValueError:
-                pass
+        if content_length is None:
+            # Chunked uploads would bypass the size check below and be fully
+            # buffered by the multipart parser before the route could reject
+            # them, so require a declared length up front
+            return JSONResponse(
+                status_code=status.HTTP_411_LENGTH_REQUIRED,
+                content={"detail": "Content-Length header is required for uploads"},
+            )
+        try:
+            declared_length = int(content_length)
+        except ValueError:
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"detail": "Invalid Content-Length header"},
+            )
+        if declared_length > MAX_UPLOAD_SIZE + UPLOAD_SIZE_SLACK:
+            return JSONResponse(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                content={"detail": f"File exceeds maximum size of {MAX_UPLOAD_SIZE // (1024 * 1024)} MB"},
+            )
     return await call_next(request)
-
-
-# Startup event
-@app.on_event("startup")
-def on_startup():
-    """Initialize database on startup"""
-    logger.info("Initializing database...")
-    init_db()
-    logger.info("Database initialized successfully")
 
 
 # Health check endpoint
@@ -93,7 +107,7 @@ def health_check(response: Response, db: Session = Depends(get_db)):
     return {
         "status": overall_status,
         "database": db_status,
-        "timestamp": datetime.utcnow()
+        "timestamp": datetime.now(timezone.utc)
     }
 
 
@@ -363,7 +377,8 @@ def upload_file(
 
         return file_upload
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("File upload failed")
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @app.get("/api/files", response_model=List[schemas.FileUploadResponse])
@@ -397,7 +412,8 @@ def get_file_download_url(
         download_url = s3_storage.get_presigned_url(file_upload.file_key, file_upload.bucket_name)
         return {"download_url": download_url, "expires_in": 3600}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Failed to generate download URL")
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 # ==================== External API Endpoints ====================
@@ -412,7 +428,8 @@ async def get_external_posts(
         posts = await external_api_client.get_posts(limit)
         return {"source": "external_api", "data": posts}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Failed to fetch external posts")
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @app.get("/api/external/posts/{post_id}")
@@ -425,7 +442,8 @@ async def get_external_post(
         post = await external_api_client.get_post_by_id(post_id)
         return {"source": "external_api", "data": post}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Failed to fetch external post")
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @app.get("/api/external/users")
@@ -437,7 +455,8 @@ async def get_external_users(
         users = await external_api_client.get_users()
         return {"source": "external_api", "data": users}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Failed to fetch external users")
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 # Root endpoint

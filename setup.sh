@@ -61,21 +61,26 @@ else
     print_warning "No workspace/fikak-ui/.env.example found - clone the fikak-ui repo into workspace/ or add an env template (skipping .env.local creation)"
 fi
 
-# Generate root .env with strong random credentials if missing
-if ! grep -q '^DB_PASSWORD=' .env 2>/dev/null; then
-    echo "DB_PASSWORD=$(openssl rand -hex 16)" >> .env
-    print_success "Generated random DB_PASSWORD in .env"
-fi
-if ! grep -q '^ADMIN_PASSWORD=' .env 2>/dev/null; then
-    echo "ADMIN_PASSWORD=$(openssl rand -hex 12)" >> .env
-    print_success "Generated random ADMIN_PASSWORD in .env"
-fi
+# Ensure a credential exists in .env (generating one if missing or empty)
+# and export it for use below. Parses only the requested key rather than
+# sourcing the whole file, since compose .env syntax is not bash syntax.
+ensure_env_credential() {
+    key="$1"
+    value=$(grep -E "^${key}=" .env 2>/dev/null | tail -1 | cut -d= -f2-)
+    if [ -z "$value" ]; then
+        value=$(openssl rand -hex 16)
+        if [ -f .env ]; then
+            grep -v -E "^${key}=$" .env > .env.tmp || true
+            mv .env.tmp .env
+        fi
+        echo "${key}=${value}" >> .env
+        print_success "Generated random ${key} in .env"
+    fi
+    export "${key}=${value}"
+}
 
-# Load credentials for use below (docker-compose reads .env automatically)
-set -a
-# shellcheck disable=SC1091
-. ./.env
-set +a
+ensure_env_credential DB_PASSWORD
+ensure_env_credential ADMIN_PASSWORD
 
 # Step 3: Check Docker resources
 print_info "Checking Docker resources..."
@@ -148,12 +153,13 @@ print_info "Creating Frappe site..."
 if docker exec fikak_backend bench list-sites | grep -q "localhost"; then
     print_warning "Site 'localhost' already exists, skipping creation"
 else
-    docker exec fikak_backend bench new-site localhost \
+    site_output=$(docker exec fikak_backend bench new-site localhost \
         --mariadb-root-password "${DB_PASSWORD}" \
         --admin-password "${ADMIN_PASSWORD}" \
-        --no-mariadb-socket 2>&1 | grep -v "WARN"
+        --no-mariadb-socket 2>&1) && site_status=0 || site_status=$?
+    echo "$site_output" | grep -v "WARN" || true
 
-    if [ $? -eq 0 ]; then
+    if [ $site_status -eq 0 ]; then
         print_success "Created Frappe site: localhost"
     else
         print_error "Failed to create site"
@@ -165,9 +171,14 @@ fi
 docker exec fikak_backend bench use localhost
 print_success "Set localhost as current site"
 
-# Enable developer mode
-docker exec fikak_backend bench --site localhost set-config developer_mode 1
-print_success "Enabled developer mode"
+# Enable developer mode only for local/testing environments (the default
+# for this stack); set FIKAK_DEV_MODE=0 for anything closer to production
+if [ "${FIKAK_DEV_MODE:-1}" = "1" ]; then
+    docker exec fikak_backend bench --site localhost set-config developer_mode 1
+    print_success "Enabled developer mode (local/testing only - set FIKAK_DEV_MODE=0 to skip)"
+else
+    print_info "Skipping developer mode (FIKAK_DEV_MODE=0)"
+fi
 
 # Step 9: Check frontend
 print_info "Checking frontend..."

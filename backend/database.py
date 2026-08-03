@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 from config import get_settings
 
 settings = get_settings()
@@ -21,6 +20,7 @@ Base = declarative_base()
 
 # Dependency to get DB session
 def get_db():
+    """Yield a database session, closing it when the request finishes"""
     db = SessionLocal()
     try:
         yield db

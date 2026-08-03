@@ -25,16 +25,25 @@ above is the authoritative registry for this codebase.
   data held for the authenticated user (account fields, posts, file
   metadata) in a machine-readable JSON format.
 - **Erasure** — `DELETE /api/auth/me` synchronously deletes the user's S3
-  objects, file records, posts, and account. There is no deletion queue:
-  erasure is immediate and transactional. If any stored object cannot be
-  removed, the request fails with HTTP 503 and no partial deletion is
-  committed, so the user can retry. A non-PII audit line (internal user id
+  objects, then their file records, posts, and account. S3 deletions are
+  independent operations and are not transactional with the database: if a
+  later S3 delete fails, the request returns HTTP 503 and **no database
+  changes are committed**, but S3 objects already removed in that attempt
+  stay removed. The operation is idempotent — retrying skips already-deleted
+  objects and completes the erasure. A non-PII audit line (internal user id
   and object counts) is logged on completion.
 
-## Why no deletion queue / retention automation
+## Scope and why no deletion queue / retention automation
 
-The backend stores all personal data in a single relational database plus a
-single S3 bucket, both fully owned by the application. Erasure therefore has
-no cross-system fan-out that would require queuing, and no data is retained
-after account deletion that would require retention-period tracking. Server
-logs contain internal ids only, not email addresses or usernames.
+**This document covers the FastAPI backend only** — its relational database
+(PostgreSQL) and its S3 bucket, both fully owned by the application. Erasure
+within that scope has no cross-system fan-out that would require queuing, and
+no FastAPI-stack data is retained after account deletion that would require
+retention-period tracking. Server logs contain internal ids only, not email
+addresses or usernames.
+
+**Out of scope:** the unified Frappe/MariaDB stack stores its own user and
+business data with separate deletion tooling (Frappe's "Personal Data
+Deletion" feature), and any site backups created via `bench backup` retain
+copies of data until the backup files themselves are deleted. Operators must
+manage Frappe-side erasure and backup retention separately.

@@ -50,7 +50,9 @@ docker-compose --version
 
 ---
 
-## Backend Setup
+## Backend Setup (FastAPI stack only)
+
+> These instructions cover the FastAPI/PostgreSQL stack. For the unified Frappe stack, use `./setup.sh` and `docker-compose.unified.yml` instead.
 
 ### Option 1: Using Docker (Recommended)
 
@@ -244,6 +246,7 @@ AWS_ACCESS_KEY_ID=<your MINIO_ROOT_USER>
 AWS_SECRET_ACCESS_KEY=<your MINIO_ROOT_PASSWORD>
 AWS_REGION=us-east-1
 S3_BUCKET_NAME=fikak-uploads
+S3_ENDPOINT_URL=http://localhost:9000
 
 # 5. Restart backend
 docker-compose restart backend
@@ -263,7 +266,10 @@ docker-compose restart backend
 # 2. Create IAM User with S3 Access
 # - Go to IAM service
 # - Create user with programmatic access
-# - Attach policy: AmazonS3FullAccess (or custom policy)
+# - Attach a bucket-scoped custom policy (do NOT use AmazonS3FullAccess).
+#   Grant only s3:PutObject, s3:GetObject, s3:DeleteObject on
+#   arn:aws:s3:::fikak-uploads/uploads/* and s3:ListBucket on
+#   arn:aws:s3:::fikak-uploads
 # - Save Access Key ID and Secret Access Key
 
 # 3. Configure Backend

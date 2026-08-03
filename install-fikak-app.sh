@@ -75,8 +75,14 @@ case $choice in
         else
             print_error "Failed to clone fikak_app"
             print_info "Make sure your SSH key has access to the repository"
+            docker exec fikak_backend bash -c "rm -f /tmp/id_rsa /tmp/id_rsa.pub ~/.ssh/id_rsa"
             exit 1
         fi
+
+        # Do not leave the private key inside the container after cloning
+        print_info "Removing copied SSH key from container..."
+        docker exec fikak_backend bash -c "rm -f /tmp/id_rsa /tmp/id_rsa.pub ~/.ssh/id_rsa"
+        print_success "SSH key removed from container"
         ;;
 
     2)

@@ -11,6 +11,7 @@ class ExternalAPIClient:
     """Client for external API integrations"""
 
     def __init__(self):
+        """Store the external API base URL and key from settings"""
         self.base_url = settings.external_api_url
         self.api_key = settings.external_api_key
 
@@ -26,8 +27,8 @@ class ExternalAPIClient:
                 response.raise_for_status()
                 return response.json()
         except httpx.HTTPError as e:
-            logger.error(f"Error fetching external posts: {e}")
-            raise Exception(f"Failed to fetch external data: {str(e)}")
+            logger.exception("Error fetching external posts")
+            raise RuntimeError(f"Failed to fetch external data: {e}") from e
 
     async def get_post_by_id(self, post_id: int) -> dict:
         """Fetch a single post by ID"""
@@ -40,8 +41,8 @@ class ExternalAPIClient:
                 response.raise_for_status()
                 return response.json()
         except httpx.HTTPError as e:
-            logger.error(f"Error fetching external post {post_id}: {e}")
-            raise Exception(f"Failed to fetch post: {str(e)}")
+            logger.exception(f"Error fetching external post {post_id}")
+            raise RuntimeError(f"Failed to fetch post: {e}") from e
 
     async def get_users(self) -> List[dict]:
         """Fetch users from external API"""
@@ -54,8 +55,8 @@ class ExternalAPIClient:
                 response.raise_for_status()
                 return response.json()
         except httpx.HTTPError as e:
-            logger.error(f"Error fetching external users: {e}")
-            raise Exception(f"Failed to fetch users: {str(e)}")
+            logger.exception("Error fetching external users")
+            raise RuntimeError(f"Failed to fetch users: {e}") from e
 
     def _get_headers(self) -> dict:
         """Get headers for API requests"""

@@ -63,15 +63,21 @@ services:
     image: frappe/erpnext:v15.18.0
     container_name: fikak_configurator
     restart: "no"
+    # Run the whole initialization sequence as one bash script so a failure
+    # in any step is reported instead of being silently skipped
+    entrypoint:
+      - bash
+      - -c
     command:
       - |
-        ls -1 apps > sites/apps.txt;
-        bench set-config -g db_host mariadb;
-        bench set-config -gp db_port 3306;
-        bench set-config -g redis_cache "redis://redis_cache:6379";
-        bench set-config -g redis_queue "redis://redis_queue:6379";
-        bench set-config -g developer_mode 1;
-        bench set-config -g allow_tests true;
+        set -e
+        ls -1 apps > sites/apps.txt
+        bench set-config -g db_host mariadb
+        bench set-config -gp db_port 3306
+        bench set-config -g redis_cache "redis://redis_cache:6379"
+        bench set-config -g redis_queue "redis://redis_queue:6379"
+        bench set-config -g developer_mode 1
+        bench set-config -g allow_tests true
     environment:
       DB_HOST: mariadb
       DB_PORT: "3306"

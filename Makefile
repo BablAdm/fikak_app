@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 .PHONY: help install dev test clean docker-up docker-down backend-test
 
 help:

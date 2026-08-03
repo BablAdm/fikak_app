@@ -21,6 +21,7 @@ Base.metadata.create_all(bind=engine)
 
 
 def override_get_db():
+    """Provide an in-memory SQLite session in place of the real database"""
     try:
         db = TestingSessionLocal()
         yield db

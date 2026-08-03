@@ -15,8 +15,7 @@ class UserCreate(UserBase):
     @field_validator("password")
     @classmethod
     def password_within_bcrypt_limit(cls, v: str) -> str:
-        # bcrypt only hashes the first 72 bytes; reject longer passwords
-        # instead of silently truncating them
+        """Reject passwords longer than bcrypt's 72-byte limit instead of truncating"""
         if len(v.encode("utf-8")) > 72:
             raise ValueError("Password must not exceed 72 bytes")
         return v
@@ -66,7 +65,7 @@ class PostResponse(PostBase):
     id: int
     user_id: int
     created_at: datetime
-    updated_at: Optional[datetime]
+    updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
 
