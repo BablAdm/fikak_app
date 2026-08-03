@@ -102,7 +102,7 @@ def health_check(response: Response, db: Session = Depends(get_db)):
         db.scalar(select(literal(1)))
         db_status = "healthy"
         overall_status = "healthy"
-    except Exception as e:
+    except Exception:
         # Log the error for debugging, but don't expose details to clients
         logger.exception("Database health check failed")
         db_status = "unhealthy"

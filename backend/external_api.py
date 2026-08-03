@@ -11,14 +11,15 @@ class ExternalAPIClient:
     """Client for external API integrations"""
 
     def __init__(self):
-        """Store the external API base URL and key from settings"""
+        """Store the external API base URL, key, and timeout from settings"""
         self.base_url = settings.external_api_url
         self.api_key = settings.external_api_key
+        self.timeout = settings.external_api_timeout
 
     async def get_posts(self, limit: Optional[int] = 10) -> List[dict]:
         """Fetch posts from external API"""
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.get(
                     f"{self.base_url}/posts",
                     params={"_limit": limit},
@@ -33,7 +34,7 @@ class ExternalAPIClient:
     async def get_post_by_id(self, post_id: int) -> dict:
         """Fetch a single post by ID"""
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.get(
                     f"{self.base_url}/posts/{post_id}",
                     headers=self._get_headers()
@@ -47,7 +48,7 @@ class ExternalAPIClient:
     async def get_users(self) -> List[dict]:
         """Fetch users from external API"""
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
                 response = await client.get(
                     f"{self.base_url}/users",
                     headers=self._get_headers()

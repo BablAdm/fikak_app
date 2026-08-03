@@ -35,6 +35,8 @@ class Settings(BaseSettings):
     # External API (example)
     external_api_url: str = "https://jsonplaceholder.typicode.com"
     external_api_key: str = ""
+    # Request timeout (seconds) for outbound calls to the external API
+    external_api_timeout: float = 10.0
 
     # CORS
     cors_origins: list = ["http://localhost:3000", "http://localhost:8000"]
