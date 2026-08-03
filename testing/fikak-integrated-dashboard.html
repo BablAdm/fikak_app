@@ -438,8 +438,8 @@
             <p><span lang="en">Welcome back, Administrator</span><span lang="ar" style="display: none;">أهلا بك، المسؤول</span></p>
         </div>
         <div class="header-actions">
-            <span class="server-status" id="server-status">
-                <i class="fas fa-circle" style="color: #0f5132; margin-right: 0.5rem;"></i>
+            <span class="server-status" id="server-status" role="status" aria-live="polite">
+                <i class="fas fa-circle" aria-hidden="true" style="color: #0f5132; margin-right: 0.5rem;"></i>
                 <span lang="en">Server Connected</span>
                 <span lang="ar" style="display: none;">متصل بالخادم</span>
             </span>
@@ -687,6 +687,7 @@
             statusEl.classList.remove('error');
             const icon = document.createElement('i');
             icon.className = 'fas fa-circle';
+            icon.setAttribute('aria-hidden', 'true');
             icon.style.color = '#0f5132';
             icon.style.marginRight = '0.5rem';
             statusEl.appendChild(icon);
@@ -705,6 +706,7 @@
             statusEl.classList.add('error');
             const icon = document.createElement('i');
             icon.className = 'fas fa-circle';
+            icon.setAttribute('aria-hidden', 'true');
             icon.style.color = '#842029';
             icon.style.marginRight = '0.5rem';
             statusEl.appendChild(icon);

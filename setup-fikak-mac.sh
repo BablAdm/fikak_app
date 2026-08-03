@@ -28,6 +28,7 @@ export DB_PASSWORD ADMIN_PASSWORD
 
 # Write back so subsequent runs (after docker compose down) reuse the same passwords
 printf 'DB_PASSWORD=%q\nADMIN_PASSWORD=%q\n' "$DB_PASSWORD" "$ADMIN_PASSWORD" > "$ENV_FILE"
+chmod 600 "$ENV_FILE"
 
 echo "🔐 Credentials saved to .env.local (keep it secure):"
 echo "   DB root password:  ***REDACTED*** (check .env.local)"

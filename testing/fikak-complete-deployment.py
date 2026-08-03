@@ -876,10 +876,10 @@ if __name__ == '__main__':
     print(f'  📍 API Base:    http://localhost:{PORT}/api')
     print(f'  📍 Health:      http://localhost:{PORT}/api/health')
     
-    print(f'\n🔐 AUTHENTICATION (set FIKAK_*_PASSWORD env vars to override)')
-    print(f'  📧 Admin:       admin@fikak.sa  / ***PASSWORD***')
-    print(f'  📧 Officer:     officer@fikak.sa / ***PASSWORD***')
-    print(f'  📧 Customer:    customer@fikak.sa / ***PASSWORD***')
+    print(f'\n🔐 AUTHENTICATION (local test-only credentials, set FIKAK_*_PASSWORD env vars to override)')
+    print(f'  📧 Admin:       admin@fikak.sa  / {_ADMIN_PASSWORD}')
+    print(f'  📧 Officer:     officer@fikak.sa / {_OFFICER_PASSWORD}')
+    print(f'  📧 Customer:    customer@fikak.sa / {_CUSTOMER_PASSWORD}')
     
     print(f'\n🏠 ENDPOINTS')
     print(f'  POST   /api/auth/login              - Authenticate user')

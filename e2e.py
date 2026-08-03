@@ -1,4 +1,5 @@
 import logging
+import os
 
 import frappe
 
@@ -73,9 +74,17 @@ def run():
     user.save(ignore_permissions=True)
     frappe.db.commit()
 
+    # Write credentials to a private, non-committed file rather than stdout -
+    # this script's output is routinely captured into shared logs/terminal
+    # pastes (see fix-and-test.sh), and these rotate the Administrator's
+    # live API secret on every run.
+    creds_path = frappe.get_site_path("private", "files", "fikak_e2e_api_credentials.txt")
+    with open(creds_path, "w") as f:
+        f.write(f"API_KEY={user.api_key}\nAPI_SECRET={secret}\n")
+    os.chmod(creds_path, 0o600)
+
     print("")
     print("RESULTS: %d/%d passed" % (sum(results), len(results)))
     print("")
-    print("REST API CREDENTIALS (saved in environment):")
-    print("  API_KEY=***REDACTED***")
-    print("  API_SECRET=***REDACTED***")
+    print("REST API CREDENTIALS (rotated on Administrator - do not paste these into shared logs):")
+    print(f"  Retrieve with: cat {creds_path}")
