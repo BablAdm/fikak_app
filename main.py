@@ -2,7 +2,7 @@
 Fikak App - Main Application
 """
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 import uvicorn
@@ -23,7 +23,7 @@ async def health_check():
         status_code=200,
         content={
             "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
     )
 
@@ -40,7 +40,7 @@ async def app_info():
             "version": "1.0.0",
             "description": "A simple API with health and info endpoints",
             "environment": os.getenv("ENVIRONMENT", "development"),
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
     )
 
