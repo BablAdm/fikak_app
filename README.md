@@ -111,7 +111,9 @@ curl http://localhost:8080/api/stats
 ## Environment Variables
 
 - `PORT` - Port to run the application on (default: 8080)
-- `DEBUG` - Enable debug mode (default: False)
+- `HOST` - Interface to bind the development server to (default: 0.0.0.0; use 127.0.0.1 to restrict to localhost)
+
+Note: Debug mode is always disabled and is not configurable via environment variable, since the built-in Flask debugger must never be exposed outside local development.
 
 ## Docker Commands Reference
 
@@ -122,8 +124,8 @@ docker build -t fikak_app .
 # Run the container
 docker run -p 8080:8080 fikak_app
 
-# Run with environment variables
-docker run -p 8080:8080 -e DEBUG=True fikak_app
+# Run on a custom port
+docker run -p 9090:9090 -e PORT=9090 fikak_app
 
 # Run in detached mode
 docker run -d -p 8080:8080 --name fikak_app fikak_app
