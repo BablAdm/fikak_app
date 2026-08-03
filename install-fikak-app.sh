@@ -24,7 +24,7 @@ echo ""
 # Check if backend is running
 if ! docker ps | grep -q fikak_backend; then
     print_error "Frappe backend container is not running"
-    print_info "Start services first with: docker-compose -f docker-compose.unified.yml up -d"
+    print_info "Start services first with: docker compose -f docker-compose.unified.yml up -d"
     exit 1
 fi
 

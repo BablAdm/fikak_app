@@ -49,6 +49,14 @@ if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/
 fi
 print_success "Docker Compose is installed"
 
+# Use the standalone docker-compose binary if present, otherwise the
+# "docker compose" plugin (Compose v2, the default on modern Docker)
+if command -v docker-compose &> /dev/null; then
+    COMPOSE="docker-compose"
+else
+    COMPOSE="docker compose"
+fi
+
 # Step 2: Setup environment files
 print_info "Setting up environment files..."
 
@@ -101,15 +109,15 @@ fi
 
 # Step 4: Pull images
 print_info "Pulling Docker images (this may take a while)..."
-docker-compose -f docker-compose.unified.yml pull || print_warning "Some images couldn't be pulled, will build instead"
+$COMPOSE -f docker-compose.unified.yml pull || print_warning "Some images couldn't be pulled, will build instead"
 
 # Step 5: Build custom images
 print_info "Building frontend image..."
-docker-compose -f docker-compose.unified.yml build fikak_ui
+$COMPOSE -f docker-compose.unified.yml build fikak_ui
 
 # Step 6: Start services
 print_info "Starting all services..."
-docker-compose -f docker-compose.unified.yml up -d
+$COMPOSE -f docker-compose.unified.yml up -d
 
 # Step 7: Wait for services to be healthy
 print_info "Waiting for services to become healthy (this may take 2-3 minutes)..."
@@ -146,7 +154,7 @@ for i in {1..60}; do
     fi
     if [ $i -eq 60 ]; then
         print_error "Frappe backend failed to start"
-        print_info "Check logs with: docker-compose -f docker-compose.unified.yml logs fikak_backend"
+        print_info "Check logs with: $COMPOSE -f docker-compose.unified.yml logs fikak_backend"
         exit 1
     fi
     sleep 3
@@ -188,7 +196,7 @@ else
     # Already-running Frappe processes started with the configurator's dev
     # settings; restart them so the disabled flags actually take effect
     print_info "Restarting Frappe services to apply production-mode settings..."
-    docker-compose -f docker-compose.unified.yml restart \
+    $COMPOSE -f docker-compose.unified.yml restart \
         frappe_backend frappe_queue_short frappe_queue_long frappe_scheduler
     print_success "Developer mode and test mode disabled (FIKAK_DEV_MODE=0)"
 fi
@@ -203,7 +211,7 @@ for i in {1..20}; do
     fi
     if [ $i -eq 20 ]; then
         print_warning "Frontend might not be ready yet"
-        print_info "Check logs with: docker-compose -f docker-compose.unified.yml logs fikak_ui"
+        print_info "Check logs with: $COMPOSE -f docker-compose.unified.yml logs fikak_ui"
     fi
     sleep 2
 done
@@ -227,9 +235,9 @@ echo "  • Username: Administrator"
 echo "  • Password: stored as ADMIN_PASSWORD in .env"
 echo ""
 echo "Useful Commands:"
-echo "  • View logs:      docker-compose -f docker-compose.unified.yml logs -f"
-echo "  • Stop services:  docker-compose -f docker-compose.unified.yml down"
-echo "  • Check status:   docker-compose -f docker-compose.unified.yml ps"
+echo "  • View logs:      $COMPOSE -f docker-compose.unified.yml logs -f"
+echo "  • Stop services:  $COMPOSE -f docker-compose.unified.yml down"
+echo "  • Check status:   $COMPOSE -f docker-compose.unified.yml ps"
 echo ""
 echo "For detailed testing instructions, see: COMPLETE_SETUP.md"
 echo ""
