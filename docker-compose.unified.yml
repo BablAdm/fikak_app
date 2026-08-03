@@ -1,8 +1,6 @@
 # Fikak App - Unified Docker Compose Setup
 # This orchestrates Frappe backend + fikak-ui frontend + all dependencies
 
-version: '3.8'
-
 services:
   # ==================== Database Services ====================
 
