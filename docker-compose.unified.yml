@@ -6,6 +6,11 @@ version: '3.8'
 services:
   # ==================== Database Services ====================
 
+  # NOTE: this stack is for local testing and stores MariaDB data on an
+  # UNENCRYPTED Docker volume. Any production-like deployment must enable
+  # data-at-rest encryption - see "Encryption at rest" in PRIVACY.md for
+  # the key-management strategy (MariaDB encryption plugin backed by a
+  # KMS/CMK, plus encrypted host volumes).
   mariadb:
     image: mariadb:10.6
     container_name: fikak_mariadb

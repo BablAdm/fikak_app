@@ -268,8 +268,10 @@ docker-compose restart backend
 # - Create user with programmatic access
 # - Attach a bucket-scoped custom policy (do NOT use AmazonS3FullAccess).
 #   Grant only s3:PutObject, s3:GetObject, s3:DeleteObject on
-#   arn:aws:s3:::fikak-uploads/uploads/* and s3:ListBucket on
-#   arn:aws:s3:::fikak-uploads
+#   arn:aws:s3:::<your-bucket-name>/uploads/* and s3:ListBucket on
+#   arn:aws:s3:::<your-bucket-name>
+#   (replace <your-bucket-name> with the bucket you created in step 1;
+#   it must also match S3_BUCKET_NAME in backend/.env)
 # - Save Access Key ID and Secret Access Key
 
 # 3. Configure Backend

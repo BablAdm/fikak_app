@@ -593,8 +593,10 @@ docker exec -it fikak_backend bench --site localhost backup \
 docker cp fikak_backend:/home/frappe/frappe-bench/sites/localhost/private/backups/ ./backups/
 
 # Restore (on new installation): copy the backup into the container first,
-# because bench restore reads paths inside the container
-docker cp ./backups/backup.sql.gz fikak_backend:/tmp/backup.sql.gz
+# because bench restore reads paths inside the container.
+# Backup files are timestamped (e.g. 20240101_120000-localhost-database.sql.gz);
+# check ./backups/ and substitute the actual filename below.
+docker cp ./backups/<timestamp>-localhost-database.sql.gz fikak_backend:/tmp/backup.sql.gz
 docker exec -it fikak_backend bench --site localhost restore \
   /tmp/backup.sql.gz \
   --mariadb-root-password "$DB_PASSWORD"

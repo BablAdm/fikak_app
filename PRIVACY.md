@@ -47,3 +47,21 @@ business data with separate deletion tooling (Frappe's "Personal Data
 Deletion" feature), and any site backups created via `bench backup` retain
 copies of data until the backup files themselves are deleted. Operators must
 manage Frappe-side erasure and backup retention separately.
+
+## Encryption at rest
+
+The local testing stacks (`docker-compose.yml` and
+`docker-compose.unified.yml`) store database data on **unencrypted** Docker
+volumes; they must not hold real personal data. For any production-like
+deployment the key-management strategy is:
+
+- **MariaDB (Frappe stack):** enable the data-at-rest encryption plugin
+  (`file_key_management` at minimum; a KMS-backed plugin such as the AWS Key
+  Management plugin for customer-managed keys), encrypt tables, logs, and
+  temporary files, and rotate keys per your key-rotation policy.
+- **PostgreSQL (FastAPI stack):** run on encrypted storage (e.g. LUKS or
+  cloud-provider encrypted volumes with a customer-managed key).
+- **S3 objects:** enable default bucket encryption (SSE-KMS with a
+  customer-managed key preferred).
+- Store encryption keys outside the database hosts, restrict access to the
+  operators who need it, and document rotation in your operations runbook.

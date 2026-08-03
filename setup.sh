@@ -67,6 +67,10 @@ fi
 ensure_env_credential() {
     key="$1"
     value=$(grep -E "^${key}=" .env 2>/dev/null | tail -1 | cut -d= -f2-)
+    # Strip surrounding quotes so the exported value matches what
+    # docker-compose parses from the same .env line
+    value="${value%\"}"; value="${value#\"}"
+    value="${value%\'}"; value="${value#\'}"
     if [ -z "$value" ]; then
         value=$(openssl rand -hex 16)
         if [ -f .env ]; then
@@ -177,7 +181,11 @@ if [ "${FIKAK_DEV_MODE:-1}" = "1" ]; then
     docker exec fikak_backend bench --site localhost set-config developer_mode 1
     print_success "Enabled developer mode (local/testing only - set FIKAK_DEV_MODE=0 to skip)"
 else
-    print_info "Skipping developer mode (FIKAK_DEV_MODE=0)"
+    # The configurator enables these globally, so explicitly turn them off
+    docker exec fikak_backend bench set-config -g developer_mode 0
+    docker exec fikak_backend bench set-config -g allow_tests false
+    docker exec fikak_backend bench --site localhost set-config developer_mode 0
+    print_success "Developer mode and test mode disabled (FIKAK_DEV_MODE=0)"
 fi
 
 # Step 9: Check frontend
