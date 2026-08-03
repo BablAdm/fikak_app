@@ -103,7 +103,9 @@ def health_check(response: Response, db: Session = Depends(get_db)):
         db_status = "healthy"
         overall_status = "healthy"
     except Exception as e:
-        db_status = f"unhealthy: {str(e)}"
+        # Log the error for debugging, but don't expose details to clients
+        logger.exception("Database health check failed")
+        db_status = "unhealthy"
         overall_status = "unhealthy"
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
 
