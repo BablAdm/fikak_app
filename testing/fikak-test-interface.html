@@ -100,10 +100,20 @@
             try {
                 const res = await fetch(`${API_URL}/health`);
                 const data = await res.json();
-                document.getElementById('status').innerHTML = '<span class="success">✅ Connected</span>';
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = '';
+                const span = document.createElement('span');
+                span.className = 'success';
+                span.textContent = '✅ Connected';
+                statusEl.appendChild(span);
                 showResponse(data, 'Server Health Check');
             } catch (e) {
-                document.getElementById('status').innerHTML = '<span class="error">❌ Offline</span>';
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = '';
+                const span = document.createElement('span');
+                span.className = 'error';
+                span.textContent = '❌ Offline';
+                statusEl.appendChild(span);
                 showResponse({ error: e.message }, 'Error');
             }
         }
