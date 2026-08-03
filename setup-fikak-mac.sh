@@ -29,9 +29,9 @@ export DB_PASSWORD ADMIN_PASSWORD
 # Write back so subsequent runs (after docker compose down) reuse the same passwords
 printf 'DB_PASSWORD=%q\nADMIN_PASSWORD=%q\n' "$DB_PASSWORD" "$ADMIN_PASSWORD" > "$ENV_FILE"
 
-echo "🔐 Using credentials (save these or see .env.local):"
-echo "   DB root password:  $DB_PASSWORD"
-echo "   Frappe admin pass: $ADMIN_PASSWORD"
+echo "🔐 Credentials saved to .env.local (keep it secure):"
+echo "   DB root password:  ***REDACTED*** (check .env.local)"
+echo "   Frappe admin pass: ***REDACTED*** (check .env.local)"
 echo ""
 
 echo "🚀 Starting Frappe/ERPNext v15 stack (this pulls ~2GB of images on first run)..."
@@ -47,7 +47,7 @@ echo "════════════════════════�
 echo "✅ FIKAK FRAPPE STACK READY"
 echo "   URL:      http://localhost:8080"
 echo "   Login:    Administrator"
-echo "   Password: $ADMIN_PASSWORD"
+echo "   Password: ***REDACTED*** (stored in .env.local)"
 echo "══════════════════════════════════════════════════════"
 echo "Stop:    docker compose -f pwd.yml down"
 echo "Destroy: docker compose -f pwd.yml down -v   (deletes all data)"
