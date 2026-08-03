@@ -4,11 +4,11 @@ A complete full-stack financial services application with eligibility assessment
 
 ## 🚀 Complete Integration Setup (New!)
 
-This repository now includes a **complete integration** of all Fikak App components:
+This repository now includes a **complete Frappe-based stack** for the unified deployment:
 
-- ✅ **fikak-ui**: Next.js 14 frontend with React 18 (EN/AR/FR languages)
-- ✅ **Frappe Framework**: Python ERP backend with custom fikak_app
-- ✅ **Full Infrastructure**: Docker Compose orchestration for production-ready deployment
+- ✅ **Frappe Framework**: Python ERP backend with custom fikak_app (supports multi-language)
+- ✅ **Nginx Frontend**: Reverse proxy to Frappe backend (runs on port 3000, forwards to port 8000)
+- ✅ **Full Infrastructure**: Docker Compose orchestration with MariaDB, Redis, workers, and scheduler
 
 ### Quick Start (3 Commands)
 
@@ -26,19 +26,20 @@ This repository now includes a **complete integration** of all Fikak App compone
 ### Documentation
 
 - 📖 **[USER_TESTING_GUIDE.md](USER_TESTING_GUIDE.md)** - For end-user testing (start here!)
-- 🛠️ **[COMPLETE_SETUP.md](COMPLETE_SETUP.md)** - Complete deployment guide
+- 🛠️ **[COMPLETE_SETUP.md](COMPLETE_SETUP.md)** - Complete deployment guide with Frappe setup details
 - 🧪 **[TESTING.md](TESTING.md)** - Detailed API testing instructions
 
-### What's Included
+### What's Included (Unified Frappe Stack)
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| Frontend | Next.js 14 + React 18 | User interface with multi-language |
-| Backend | Frappe Framework v15 | ERP system with custom APIs |
+| Frontend Proxy | Nginx Alpine | Reverse proxy to Frappe backend on port 3000 |
+| Backend | Frappe Framework v15 | ERP system with custom APIs and multi-language |
 | Database | MariaDB 10.6 | Persistent data storage |
-| Cache | Redis 6.2 | Session and queue management |
-| Proxy | Nginx | Reverse proxy and routing |
-| Workers | RQ | Background job processing |
+| Cache | Redis 6.2 | Session and cache management |
+| Queue | Redis 6.2 | Background job queue |
+| Workers | Frappe RQ | Short, long, and scheduled job processing |
+| Reverse Proxy | Nginx Alpine | Main entry point at port 80 |
 
 ### Access Points
 

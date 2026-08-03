@@ -53,32 +53,16 @@ This guide will help you set up and test the complete Fikak App ecosystem with a
 
 ## Step-by-Step Setup
 
-### Step 1: Clone All Repositories
+### Step 1: Unified Stack Architecture
 
-All repositories are already in the `workspace/` directory:
-- `fikak-ui` - Frontend application
-- `frappe_docker` - Frappe framework setup
-- `circleci-docs` - Documentation (optional)
-- `node-semver` - Node semver utility (optional)
+The unified stack uses a simple architecture:
+- **Frontend**: Nginx reverse proxy (forwards requests to Frappe backend)
+- **Backend**: Frappe Framework with MariaDB, Redis, and workers
+- **Multi-language**: Handled by Frappe (not a separate Next.js app)
 
-### Step 2: Configure Environment Variables
+No separate frontend repository or `.env.local` configuration is needed—the nginx-ui.conf is configured automatically.
 
-```bash
-# Create environment file for fikak-ui
-cd workspace/fikak-ui
-cp .env.example .env.local
-
-# Edit .env.local if needed (defaults work fine)
-cat .env.local
-```
-
-**Default values:**
-```env
-NEXT_PUBLIC_FRAPPE_BASE_URL=http://localhost:8000
-NEXT_PUBLIC_IS_DEV=1
-```
-
-### Step 3: Configure Docker Compose
+### Step 2: Configure Docker Compose
 
 The `docker-compose.unified.yml` file orchestrates all services. Review the configuration:
 
