@@ -76,7 +76,8 @@ class FileUploadResponse(BaseModel):
     filename: str
     file_key: str
     file_size: int
-    content_type: str
+    # Nullable to match the model: multipart parts may omit Content-Type
+    content_type: Optional[str] = None
     bucket_name: str
     created_at: datetime
     download_url: Optional[str] = None
