@@ -191,11 +191,14 @@ class TestCORSConfiguration:
         # Even if CORS is enabled, without Origin header no ACAO header
         assert 'Access-Control-Allow-Origin' not in response.headers
 
-    def test_cors_options_request_rejected(self, client):
-        """Test that OPTIONS preflight requests are rejected when CORS disabled."""
+    def test_cors_options_request_no_headers_when_disabled(self, client):
+        """Test that OPTIONS preflight doesn't emit CORS headers when disabled."""
         response = client.options('/', headers={'Origin': 'http://example.com'})
-        # Without CORS enabled, preflight should not succeed
-        assert response.status_code == 405 or 'Access-Control-Allow-Origin' not in response.headers
+        # When CORS is disabled, no CORS headers should be sent even on OPTIONS
+        # This is the actual security verification
+        assert 'Access-Control-Allow-Origin' not in response.headers
+        assert 'Access-Control-Allow-Methods' not in response.headers
+        assert 'Access-Control-Allow-Headers' not in response.headers
 
 
 class TestContentTypes:
