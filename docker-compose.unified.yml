@@ -63,10 +63,7 @@ services:
   # ==================== Frappe Backend Services ====================
 
   frappe_configurator:
-    image: frappe/erpnext:v15.18.0
-    # frappe/erpnext publishes amd64-only images; on Apple Silicon (arm64)
-    # Docker runs them via emulation. Harmless (native) on amd64 hosts.
-    platform: linux/amd64
+    image: frappe/erpnext:v15.54.5
     container_name: fikak_configurator
     restart: "no"
     # Run the whole initialization sequence as one bash script so a failure
@@ -101,10 +98,7 @@ services:
         condition: service_healthy
 
   frappe_backend:
-    image: frappe/erpnext:v15.18.0
-    # frappe/erpnext publishes amd64-only images; on Apple Silicon (arm64)
-    # Docker runs them via emulation. Harmless (native) on amd64 hosts.
-    platform: linux/amd64
+    image: frappe/erpnext:v15.54.5
     container_name: fikak_backend
     restart: unless-stopped
     command:
@@ -137,10 +131,7 @@ services:
       retries: 10
 
   frappe_queue_short:
-    image: frappe/erpnext:v15.18.0
-    # frappe/erpnext publishes amd64-only images; on Apple Silicon (arm64)
-    # Docker runs them via emulation. Harmless (native) on amd64 hosts.
-    platform: linux/amd64
+    image: frappe/erpnext:v15.54.5
     container_name: fikak_queue_short
     restart: unless-stopped
     command:
@@ -163,10 +154,7 @@ services:
         condition: service_completed_successfully
 
   frappe_queue_long:
-    image: frappe/erpnext:v15.18.0
-    # frappe/erpnext publishes amd64-only images; on Apple Silicon (arm64)
-    # Docker runs them via emulation. Harmless (native) on amd64 hosts.
-    platform: linux/amd64
+    image: frappe/erpnext:v15.54.5
     container_name: fikak_queue_long
     restart: unless-stopped
     command:
@@ -189,10 +177,7 @@ services:
         condition: service_completed_successfully
 
   frappe_scheduler:
-    image: frappe/erpnext:v15.18.0
-    # frappe/erpnext publishes amd64-only images; on Apple Silicon (arm64)
-    # Docker runs them via emulation. Harmless (native) on amd64 hosts.
-    platform: linux/amd64
+    image: frappe/erpnext:v15.54.5
     container_name: fikak_scheduler
     restart: unless-stopped
     command:
@@ -213,10 +198,7 @@ services:
         condition: service_completed_successfully
 
   frappe_socketio:
-    image: frappe/erpnext:v15.18.0
-    # frappe/erpnext publishes amd64-only images; on Apple Silicon (arm64)
-    # Docker runs them via emulation. Harmless (native) on amd64 hosts.
-    platform: linux/amd64
+    image: frappe/erpnext:v15.54.5
     container_name: fikak_socketio
     restart: unless-stopped
     # Frappe v15 runs the persistent Socket.IO server via this Node entrypoint.
