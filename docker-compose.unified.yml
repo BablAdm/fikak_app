@@ -284,15 +284,20 @@ networks:
 # ==================== Volumes ====================
 
 volumes:
+  # Named with a fikak_app_ prefix (not just fikak_) to avoid colliding with
+  # unrelated "fikak"-named projects that may already exist on the host -
+  # Docker volume names are global, not scoped per Compose project, so a
+  # bare "fikak_mariadb_data" can silently attach to someone else's volume
+  # and its pre-existing root password/grants instead of a fresh one.
   mariadb_data:
-    name: fikak_mariadb_data
+    name: fikak_app_mariadb_data
   redis_cache_data:
-    name: fikak_redis_cache_data
+    name: fikak_app_redis_cache_data
   redis_queue_data:
-    name: fikak_redis_queue_data
+    name: fikak_app_redis_queue_data
   sites:
-    name: fikak_sites
+    name: fikak_app_sites
   logs:
-    name: fikak_logs
+    name: fikak_app_logs
   assets:
-    name: fikak_assets
+    name: fikak_app_assets
