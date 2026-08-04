@@ -162,7 +162,7 @@ done
 
 # Step 8: Create Frappe site
 print_info "Creating Frappe site..."
-if docker exec fikak_backend bench list-sites | grep -q "localhost"; then
+if docker exec fikak_backend test -d sites/localhost; then
     print_warning "Site 'localhost' already exists, skipping creation"
 else
     site_output=$(docker exec fikak_backend bench new-site localhost \

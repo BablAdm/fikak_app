@@ -29,7 +29,7 @@ if ! docker ps | grep -q fikak_backend; then
 fi
 
 # Check if site exists
-if ! docker exec fikak_backend bench list-sites | grep -q "localhost"; then
+if ! docker exec fikak_backend test -d sites/localhost; then
     print_error "Site 'localhost' does not exist"
     print_info "Create site first with: docker exec fikak_backend bench new-site localhost"
     exit 1
