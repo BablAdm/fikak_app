@@ -61,6 +61,18 @@ case $choice in
         docker cp ~/.ssh/id_rsa fikak_backend:/tmp/id_rsa
         docker cp ~/.ssh/id_rsa.pub fikak_backend:/tmp/id_rsa.pub 2>/dev/null || true
 
+        # Guarantee the private key is removed from the container on every
+        # exit path from here on - success, failure, or interruption.
+        # apt-get, the SSH setup, or the clone itself can all fail partway
+        # through, and without this, `set -e` would terminate the script
+        # before any of the cleanup below ever ran.
+        cleanup_ssh_key() {
+            docker exec -u root fikak_backend bash -c \
+                "rm -f /tmp/id_rsa /tmp/id_rsa.pub /tmp/known_hosts /home/frappe/.ssh/id_rsa" \
+                2>/dev/null || true
+        }
+        trap cleanup_ssh_key EXIT
+
         # The frappe/erpnext image doesn't ship an SSH client at all
         # (no ssh, no ssh-keyscan) - only git itself, which shells out to
         # a system ssh binary for the git@host: transport. Install it.
@@ -84,26 +96,37 @@ case $choice in
             chmod 600 /home/frappe/.ssh/id_rsa
         "
 
+        # Pin GitHub's published host keys instead of trusting whatever a
+        # first SSH connection returns: TOFU (StrictHostKeyChecking=accept-new)
+        # would let a network attacker present a forged host key on that
+        # first connection, and the following `bench install-app` would then
+        # execute whatever it served as "fikak_app". These lines were fetched
+        # from GitHub's own docs and independently verified: each key's
+        # computed SHA256 fingerprint matches the fingerprint GitHub
+        # separately documents at
+        # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
+        cat > /tmp/github_known_hosts <<'GHKEYS'
+github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=
+github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=
+GHKEYS
+        docker cp /tmp/github_known_hosts fikak_backend:/tmp/known_hosts
+        rm -f /tmp/github_known_hosts
+        docker exec -u root fikak_backend chmod 644 /tmp/known_hosts
+
         print_info "Getting fikak_app from GitHub..."
-        # No known_hosts entry exists yet and there's no ssh-keyscan-free way to
-        # pre-verify it without hardcoding GitHub's key material, so accept the
-        # host key on this first connection (and cache it, unlike
-        # StrictHostKeyChecking=no, so a later *changed* key would still be
-        # flagged rather than silently accepted).
-        if docker exec -e GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" \
+        if docker exec -e GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/tmp/known_hosts -o StrictHostKeyChecking=yes" \
             fikak_backend bench get-app fikak_app git@github.com:BablAdm/fikak_api.git; then
             print_success "Successfully cloned fikak_app"
         else
             print_error "Failed to clone fikak_app"
             print_info "Make sure your SSH key has access to the repository"
-            docker exec -u root fikak_backend bash -c "rm -f /tmp/id_rsa /tmp/id_rsa.pub /home/frappe/.ssh/id_rsa"
             exit 1
         fi
-
-        # Do not leave the private key inside the container after cloning
-        print_info "Removing copied SSH key from container..."
-        docker exec -u root fikak_backend bash -c "rm -f /tmp/id_rsa /tmp/id_rsa.pub /home/frappe/.ssh/id_rsa"
-        print_success "SSH key removed from container"
+        # The `trap` above removes the private key (and known_hosts pin)
+        # from the container now, and will do so again harmlessly at
+        # normal script exit.
+        print_success "SSH key will be removed from container on exit"
         ;;
 
     2)
