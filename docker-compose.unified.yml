@@ -243,6 +243,10 @@ services:
     depends_on:
       frappe_backend:
         condition: service_healthy
+      # nginx resolves upstream hostnames once at startup and exits if a host
+      # is missing, so wait until the Socket.IO service is up before starting
+      frappe_socketio:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
       interval: 10s
