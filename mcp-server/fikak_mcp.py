@@ -13,11 +13,14 @@ practices for stdio vs streamable HTTP).
 """
 
 import asyncio
+import ipaddress
 import json
 import os
+import re
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 import httpx
 from mcp.server.fastmcp import FastMCP
@@ -49,6 +52,9 @@ COMPOSE_COMMAND_TIMEOUT = 30.0
 # satisfied (e.g. frappe_configurator -> frappe_backend), which routinely takes
 # well over 30s, so it gets its own, longer budget.
 COMPOSE_UP_TIMEOUT = 150.0
+# `stop`/`down` send SIGTERM and wait up to 10s per container before SIGKILL, so a
+# ~10-service stack needs far more than the default read-only budget.
+COMPOSE_STOP_TIMEOUT = 180.0
 
 mcp = FastMCP("fikak_mcp")
 
@@ -101,7 +107,7 @@ async def _run_compose(*args: str, timeout: float = COMPOSE_COMMAND_TIMEOUT) -> 
     except asyncio.TimeoutError:
         proc.kill()
         await proc.wait()
-        raise TimeoutError(f"`{' '.join(cmd)}` timed out after {timeout}s")
+        raise TimeoutError(f"`{' '.join(cmd)}` timed out after {timeout}s") from None
 
     return {
         "returncode": proc.returncode,
@@ -111,7 +117,7 @@ async def _run_compose(*args: str, timeout: float = COMPOSE_COMMAND_TIMEOUT) -> 
 
 
 def _parse_compose_ps(stdout: str) -> List[Dict[str, str]]:
-    """Parse newline-delimited JSON from `docker compose ps --format json`."""
+    """Parse newline-delimited JSON from `docker compose ps --all --format json`."""
     services = []
     for line in stdout.splitlines():
         line = line.strip()
@@ -120,6 +126,10 @@ def _parse_compose_ps(stdout: str) -> List[Dict[str, str]]:
         try:
             entry = json.loads(line)
         except json.JSONDecodeError:
+            continue
+        if not isinstance(entry, dict):
+            # Compose < 2.21.0 returned a single JSON array instead of JSON Lines;
+            # skip rather than crash on an unexpected shape.
             continue
         health = entry.get("Health") or ""
         state = entry.get("State") or "unknown"
@@ -130,22 +140,35 @@ def _parse_compose_ps(stdout: str) -> List[Dict[str, str]]:
                 "state": state,
                 "health": health,
                 "status": entry.get("Status", ""),
+                "exit_code": str(entry.get("ExitCode", "")),
             }
         )
     return services
 
 
+def _is_settled(service: Dict[str, str]) -> bool:
+    """True if a service is running and healthy, or is a one-shot task that exited successfully.
+
+    `docker-compose.unified.yml` defines `frappe_configurator` with
+    `condition: service_completed_successfully`, so it exits by design once it has
+    done its job - that must count as settled, not "not running".
+    """
+    if service["state"] == "running":
+        return service["health"] in ("", "healthy")
+    return service["state"] == "exited" and service["exit_code"] == "0"
+
+
 def _summarize_services(services: List[Dict[str, str]]) -> str:
     if not services:
-        return "no services running"
-    healthy = sum(1 for s in services if s["health"] in ("healthy", "") and s["state"] == "running")
-    unhealthy = [s["name"] for s in services if s["health"] == "unhealthy"]
-    not_running = [s["name"] for s in services if s["state"] != "running"]
-    parts = [f"{healthy}/{len(services)} services running"]
+        return "no services found"
+    settled = sum(1 for s in services if _is_settled(s))
+    unhealthy = [s["name"] for s in services if s["state"] == "running" and s["health"] == "unhealthy"]
+    not_settled = [s["name"] for s in services if not _is_settled(s) and s["name"] not in unhealthy]
+    parts = [f"{settled}/{len(services)} services ready"]
     if unhealthy:
         parts.append(f"unhealthy: {', '.join(unhealthy)}")
-    if not_running:
-        parts.append(f"not running: {', '.join(not_running)}")
+    if not_settled:
+        parts.append(f"not ready: {', '.join(not_settled)}")
     return "; ".join(parts)
 
 
@@ -168,13 +191,64 @@ class FikakConnectionError(Exception):
     """Raised when the Frappe backend cannot be reached at all."""
 
 
-async def _frappe_login(client: httpx.AsyncClient) -> None:
-    """Authenticate the given httpx client against Frappe, storing the session cookie."""
+def _is_loopback_host(hostname: Optional[str]) -> bool:
+    if not hostname:
+        return False
+    if hostname == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(hostname).is_loopback
+    except ValueError:
+        return False
+
+
+def _assert_base_url_safe_for_credentials(url: str) -> None:
+    """Refuse to send the admin password over plaintext HTTP to a non-local host."""
+    parsed = urlparse(url)
+    if parsed.scheme == "https":
+        return
+    if parsed.scheme == "http" and _is_loopback_host(parsed.hostname):
+        return
+    raise FikakAuthError(
+        f"Error: Refusing to send Frappe credentials to {url} - it is not HTTPS and not a "
+        "localhost/127.0.0.1 address, which would send the admin password in cleartext over "
+        "the network. Set FIKAK_BASE_URL to an https:// URL, or use http:// only for local "
+        "addresses (localhost, 127.0.0.1, ::1)."
+    )
+
+
+# Frappe embeds a `frappe.csrf_token = "...";` assignment in the /app page's inline
+# script for authenticated sessions; there is no dedicated REST endpoint for it.
+_CSRF_TOKEN_RE = re.compile(r'frappe\.csrf_token\s*=\s*"([0-9a-fA-F]+)"')
+
+
+async def _frappe_get_csrf_token(client: httpx.AsyncClient) -> Optional[str]:
+    """Best-effort fetch of the current session's CSRF token from the Frappe desk boot payload.
+
+    Returns None if it can't be found (e.g. developer_mode=1 disables CSRF enforcement
+    entirely, or the page shape differs) - callers should treat a missing token as
+    "no CSRF header to send" rather than an error, since the site may not require one.
+    """
+    try:
+        resp = await client.get(f"{FIKAK_BASE_URL}/app")
+    except httpx.RequestError:
+        return None
+    match = _CSRF_TOKEN_RE.search(resp.text)
+    return match.group(1) if match else None
+
+
+async def _frappe_login(client: httpx.AsyncClient) -> Optional[str]:
+    """Authenticate the given httpx client against Frappe, storing the session cookie.
+
+    Returns the session's CSRF token if one could be found (needed for subsequent
+    POST/PUT/DELETE requests when CSRF enforcement is active), or None otherwise.
+    """
     if not FIKAK_ADMIN_PASSWORD:
         raise FikakAuthError(
             "Error: FIKAK_ADMIN_PASSWORD is not set. Set it to the ADMIN_PASSWORD value "
             "from your fikak_app .env file (in claude_desktop_config.json's \"env\" block)."
         )
+    _assert_base_url_safe_for_credentials(FIKAK_BASE_URL)
     try:
         resp = await client.post(
             f"{FIKAK_BASE_URL}/api/method/login",
@@ -193,13 +267,18 @@ async def _frappe_login(client: httpx.AsyncClient) -> None:
             ".env file."
         )
 
+    return await _frappe_get_csrf_token(client)
+
 
 async def _frappe_create_doc(doctype: str, data: Dict[str, Any]) -> Dict[str, Any]:
     """Log in and create a Frappe document, returning the created document's fields."""
     async with httpx.AsyncClient(timeout=HTTP_TIMEOUT) as client:
-        await _frappe_login(client)
+        csrf_token = await _frappe_login(client)
+        headers = {"X-Frappe-CSRF-Token": csrf_token} if csrf_token else {}
         try:
-            resp = await client.post(f"{FIKAK_BASE_URL}/api/resource/{doctype}", json=data)
+            resp = await client.post(
+                f"{FIKAK_BASE_URL}/api/resource/{doctype}", json=data, headers=headers
+            )
         except httpx.RequestError as e:
             raise FikakConnectionError(
                 f"Error: Could not reach Fikak backend at {FIKAK_BASE_URL} while creating "
@@ -356,6 +435,9 @@ async def fikak_get_status(params: FikakStatusInput) -> str:
     Error Handling:
         - Returns "Error: FIKAK_REPO_PATH is not set..." if the repo path env var is missing
         - Returns "Error: Docker is not installed or not on PATH..." if `docker` cannot be found
+        - Returns "Error: `docker compose ps` failed..." with stderr if Docker is installed but
+          the daemon is down or the command otherwise errors (distinct from an unstarted stack,
+          which returns "no services found" instead)
         - Backend unreachable is reported in the result, not raised as an error (the platform
           may simply not be started yet - see fikak_start_platform)
     """
@@ -364,7 +446,7 @@ async def fikak_get_status(params: FikakStatusInput) -> str:
         return err
 
     try:
-        result = await _run_compose("ps", "--format", "json")
+        result = await _run_compose("ps", "--all", "--format", "json")
     except FileNotFoundError:
         return (
             "Error: Docker is not installed or not on PATH. Install Docker Desktop and make "
@@ -372,6 +454,9 @@ async def fikak_get_status(params: FikakStatusInput) -> str:
         )
     except TimeoutError as e:
         return f"Error: {e}"
+
+    if result["returncode"] != 0:
+        return f"Error: `docker compose ps` failed:\n{result['stderr'][-2000:]}"
 
     services = _parse_compose_ps(result["stdout"])
     backend = await _check_backend_reachable()
@@ -473,23 +558,27 @@ async def fikak_start_platform(params: FikakStartInput) -> str:
 
     timed_out = False
     services: List[Dict[str, str]] = []
-    if params.wait_for_healthy:
-        elapsed = 0
-        interval = 5
-        while elapsed <= params.timeout_seconds:
-            ps_result = await _run_compose("ps", "--format", "json")
-            services = _parse_compose_ps(ps_result["stdout"])
-            if services and all(
-                s["state"] == "running" and s["health"] in ("", "healthy") for s in services
-            ):
-                break
-            await asyncio.sleep(interval)
-            elapsed += interval
+    try:
+        if params.wait_for_healthy:
+            elapsed = 0
+            interval = 5
+            while True:
+                ps_result = await _run_compose("ps", "--all", "--format", "json")
+                services = _parse_compose_ps(ps_result["stdout"])
+                if services and all(_is_settled(s) for s in services):
+                    break
+                if elapsed >= params.timeout_seconds:
+                    timed_out = True
+                    break
+                await asyncio.sleep(interval)
+                elapsed += interval
         else:
-            timed_out = True
-    else:
-        ps_result = await _run_compose("ps", "--format", "json")
-        services = _parse_compose_ps(ps_result["stdout"])
+            ps_result = await _run_compose("ps", "--all", "--format", "json")
+            services = _parse_compose_ps(ps_result["stdout"])
+    except FileNotFoundError:
+        return "Error: Docker is not installed or not on PATH. Install Docker Desktop first."
+    except TimeoutError as e:
+        return f"Error: {e}"
 
     summary = _summarize_services(services)
 
@@ -556,7 +645,7 @@ async def fikak_stop_platform(params: FikakStopInput) -> str:
 
     subcommand = "down" if params.remove_containers else "stop"
     try:
-        result = await _run_compose(subcommand)
+        result = await _run_compose(subcommand, timeout=COMPOSE_STOP_TIMEOUT)
     except FileNotFoundError:
         return "Error: Docker is not installed or not on PATH. Install Docker Desktop first."
     except TimeoutError as e:
