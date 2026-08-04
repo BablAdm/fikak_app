@@ -57,21 +57,21 @@ case $choice in
             exit 1
         fi
 
-        print_info "Copying SSH keys to container..."
-        docker cp ~/.ssh/id_rsa fikak_backend:/tmp/id_rsa
-        docker cp ~/.ssh/id_rsa.pub fikak_backend:/tmp/id_rsa.pub 2>/dev/null || true
-
         # Guarantee the private key is removed from the container on every
-        # exit path from here on - success, failure, or interruption.
-        # apt-get, the SSH setup, or the clone itself can all fail partway
-        # through, and without this, `set -e` would terminate the script
-        # before any of the cleanup below ever ran.
+        # exit path from here on - success, failure, or interruption,
+        # including one that hits mid-copy. apt-get, the SSH setup, or the
+        # clone itself can all fail partway through too, and without this,
+        # `set -e` would terminate the script before any cleanup ran.
         cleanup_ssh_key() {
             docker exec -u root fikak_backend bash -c \
                 "rm -f /tmp/id_rsa /tmp/id_rsa.pub /tmp/known_hosts /home/frappe/.ssh/id_rsa" \
                 2>/dev/null || true
         }
         trap cleanup_ssh_key EXIT
+
+        print_info "Copying SSH keys to container..."
+        docker cp ~/.ssh/id_rsa fikak_backend:/tmp/id_rsa
+        docker cp ~/.ssh/id_rsa.pub fikak_backend:/tmp/id_rsa.pub 2>/dev/null || true
 
         # The frappe/erpnext image doesn't ship an SSH client at all
         # (no ssh, no ssh-keyscan) - only git itself, which shells out to
@@ -123,10 +123,14 @@ GHKEYS
             print_info "Make sure your SSH key has access to the repository"
             exit 1
         fi
-        # The `trap` above removes the private key (and known_hosts pin)
-        # from the container now, and will do so again harmlessly at
-        # normal script exit.
-        print_success "SSH key will be removed from container on exit"
+
+        # Remove the key now rather than waiting for the trap at final
+        # script exit: install-app/migrate and any fikak_app code they run
+        # happen next, and the key must not still be sitting in the
+        # container, readable, while that executes. The trap stays
+        # registered as a safety net for any later failure/interruption.
+        cleanup_ssh_key
+        print_success "SSH key removed from container"
         ;;
 
     2)
