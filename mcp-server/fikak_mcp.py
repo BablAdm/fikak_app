@@ -117,19 +117,36 @@ async def _run_compose(*args: str, timeout: float = COMPOSE_COMMAND_TIMEOUT) -> 
 
 
 def _parse_compose_ps(stdout: str) -> List[Dict[str, str]]:
-    """Parse newline-delimited JSON from `docker compose ps --all --format json`."""
-    services = []
-    for line in stdout.splitlines():
-        line = line.strip()
-        if not line:
-            continue
+    """Parse `docker compose ps --all --format json` output.
+
+    Compose >= 2.21.0 emits JSON Lines - one object per line. Older versions
+    emit a single JSON array instead (optionally pretty-printed across many
+    lines). Both shapes are handled: try the whole output as one JSON value
+    first (matches the array case, since json.loads tolerates embedded
+    newlines within a single value), then fall back to line-by-line NDJSON.
+    """
+    raw_entries: List[Any] = []
+    stripped = stdout.strip()
+    if stripped:
         try:
-            entry = json.loads(line)
+            whole = json.loads(stripped)
         except json.JSONDecodeError:
-            continue
+            whole = None
+        if isinstance(whole, list):
+            raw_entries = whole
+        else:
+            for line in stdout.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    raw_entries.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+
+    services = []
+    for entry in raw_entries:
         if not isinstance(entry, dict):
-            # Compose < 2.21.0 returned a single JSON array instead of JSON Lines;
-            # skip rather than crash on an unexpected shape.
             continue
         health = entry.get("Health") or ""
         state = entry.get("State") or "unknown"
@@ -147,15 +164,22 @@ def _parse_compose_ps(stdout: str) -> List[Dict[str, str]]:
 
 
 def _is_settled(service: Dict[str, str]) -> bool:
-    """True if a service is running and healthy, or is a one-shot task that exited successfully.
+    """True if a service is running and healthy, or is the configurator's one-shot exit.
 
     `docker-compose.unified.yml` defines `frappe_configurator` with
     `condition: service_completed_successfully`, so it exits by design once it has
-    done its job - that must count as settled, not "not running".
+    done its job - that must count as settled, not "not running". This is scoped to
+    that one service specifically: any *other* exited service (including code 0 from
+    a graceful `docker compose stop`) is genuinely not running and must not be
+    reported as ready, or a fully stopped platform would summarize as healthy.
     """
     if service["state"] == "running":
         return service["health"] in ("", "healthy")
-    return service["state"] == "exited" and service["exit_code"] == "0"
+    return (
+        service["service"] == "frappe_configurator"
+        and service["state"] == "exited"
+        and service["exit_code"] == "0"
+    )
 
 
 def _summarize_services(services: List[Dict[str, str]]) -> str:
