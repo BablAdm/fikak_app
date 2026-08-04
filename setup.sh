@@ -198,7 +198,7 @@ else
     docker exec fikak_backend bench --site localhost set-config developer_mode 0
     print_info "Restarting Frappe services to apply production-mode settings..."
     $COMPOSE -f docker-compose.unified.yml restart \
-        frappe_backend frappe_queue_short frappe_queue_long frappe_scheduler
+        frappe_backend frappe_queue_short frappe_queue_long frappe_scheduler frappe_socketio
     print_success "Developer mode disabled (default; run with FIKAK_DEV_MODE=1 to enable)"
 fi
 

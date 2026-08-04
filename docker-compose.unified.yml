@@ -201,9 +201,12 @@ services:
     image: frappe/erpnext:v15.18.0
     container_name: fikak_socketio
     restart: unless-stopped
+    # Frappe v15 runs the persistent Socket.IO server via this Node entrypoint.
+    # `bench socketio` only sets up dependencies and exits, so the container
+    # would restart-loop and port 9000 would never come up.
     command:
-      - bench
-      - socketio
+      - node
+      - apps/frappe/socketio.js
     environment:
       DB_HOST: mariadb
       DB_PORT: "3306"
