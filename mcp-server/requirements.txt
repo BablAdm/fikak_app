@@ -1,0 +1,5 @@
+# Pinned to the 1.x line of the official MCP SDK, which exposes the
+# mcp.server.fastmcp.FastMCP API this server is built against.
+mcp>=1.9.0,<2.0.0
+httpx>=0.27.0
+pydantic>=2.5.0
