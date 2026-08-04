@@ -61,27 +61,48 @@ case $choice in
         docker cp ~/.ssh/id_rsa fikak_backend:/tmp/id_rsa
         docker cp ~/.ssh/id_rsa.pub fikak_backend:/tmp/id_rsa.pub 2>/dev/null || true
 
+        # The frappe/erpnext image doesn't ship an SSH client at all
+        # (no ssh, no ssh-keyscan) - only git itself, which shells out to
+        # a system ssh binary for the git@host: transport. Install it.
+        print_info "Installing SSH client in container (not included in the base image)..."
+        docker exec -u root fikak_backend bash -c "apt-get update -qq && apt-get install -y --no-install-recommends openssh-client -qq" > /dev/null
+
+        # `docker cp` preserves the file's numeric host UID/GID, which the
+        # container's default non-root user (frappe) usually can't read.
+        # /tmp also has the sticky bit set, so that user couldn't even
+        # remove a file it doesn't own during cleanup. Do the file handling
+        # as root, but place the key in the *frappe* user's home (not
+        # root's, which `~` would resolve to under -u root) so `bench
+        # get-app` - which must run as the normal user for correct file
+        # ownership on the cloned app - can still find it afterward.
         print_info "Setting up SSH in container..."
-        docker exec fikak_backend bash -c "
-            mkdir -p ~/.ssh && \
-            cp /tmp/id_rsa ~/.ssh/ && \
-            chmod 600 ~/.ssh/id_rsa && \
-            ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+        docker exec -u root fikak_backend bash -c "
+            mkdir -p /home/frappe/.ssh && \
+            cp /tmp/id_rsa /home/frappe/.ssh/id_rsa && \
+            chown frappe:frappe /home/frappe/.ssh /home/frappe/.ssh/id_rsa && \
+            chmod 700 /home/frappe/.ssh && \
+            chmod 600 /home/frappe/.ssh/id_rsa
         "
 
         print_info "Getting fikak_app from GitHub..."
-        if docker exec fikak_backend bench get-app fikak_app git@github.com:BablAdm/fikak_api.git; then
+        # No known_hosts entry exists yet and there's no ssh-keyscan-free way to
+        # pre-verify it without hardcoding GitHub's key material, so accept the
+        # host key on this first connection (and cache it, unlike
+        # StrictHostKeyChecking=no, so a later *changed* key would still be
+        # flagged rather than silently accepted).
+        if docker exec -e GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=accept-new" \
+            fikak_backend bench get-app fikak_app git@github.com:BablAdm/fikak_api.git; then
             print_success "Successfully cloned fikak_app"
         else
             print_error "Failed to clone fikak_app"
             print_info "Make sure your SSH key has access to the repository"
-            docker exec fikak_backend bash -c "rm -f /tmp/id_rsa /tmp/id_rsa.pub ~/.ssh/id_rsa"
+            docker exec -u root fikak_backend bash -c "rm -f /tmp/id_rsa /tmp/id_rsa.pub /home/frappe/.ssh/id_rsa"
             exit 1
         fi
 
         # Do not leave the private key inside the container after cloning
         print_info "Removing copied SSH key from container..."
-        docker exec fikak_backend bash -c "rm -f /tmp/id_rsa /tmp/id_rsa.pub ~/.ssh/id_rsa"
+        docker exec -u root fikak_backend bash -c "rm -f /tmp/id_rsa /tmp/id_rsa.pub /home/frappe/.ssh/id_rsa"
         print_success "SSH key removed from container"
         ;;
 
